@@ -52,6 +52,14 @@ export default {
 					DEFAULT: 'hsl(var(--card))',
 					foreground: 'hsl(var(--card-foreground))'
 				},
+				// GoPRO Brand Colors
+				'brand-orange': {
+					DEFAULT: 'hsl(var(--brand-orange))',
+					foreground: 'hsl(var(--brand-orange-foreground))'
+				},
+				'brand-blue': 'hsl(var(--brand-blue))',
+				'brand-green': 'hsl(var(--brand-green))',
+				'brand-purple': 'hsl(var(--brand-purple))',
 				sidebar: {
 					DEFAULT: 'hsl(var(--sidebar-background))',
 					foreground: 'hsl(var(--sidebar-foreground))',

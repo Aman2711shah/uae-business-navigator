@@ -17,8 +17,8 @@ All colors MUST be HSL.
     --popover: 0 0% 100%;
     --popover-foreground: 222.2 84% 4.9%;
 
-    --primary: 222.2 47.4% 11.2%;
-    --primary-foreground: 210 40% 98%;
+    --primary: 213 100% 40%;
+    --primary-foreground: 0 0% 100%;
 
     --secondary: 210 40% 96.1%;
     --secondary-foreground: 222.2 47.4% 11.2%;
@@ -35,6 +35,26 @@ All colors MUST be HSL.
     --border: 214.3 31.8% 91.4%;
     --input: 214.3 31.8% 91.4%;
     --ring: 222.2 84% 4.9%;
+
+    /* GoPRO Brand Colors */
+    --brand-orange: 18 85% 60%;
+    --brand-orange-foreground: 0 0% 100%;
+    --brand-blue: 213 100% 40%;
+    --brand-green: 142 76% 36%;
+    --brand-purple: 262 83% 58%;
+    
+    /* Gradients */
+    --gradient-orange: linear-gradient(135deg, hsl(18 85% 60%), hsl(18 85% 55%));
+    --gradient-blue: linear-gradient(135deg, hsl(213 100% 40%), hsl(213 100% 35%));
+    --gradient-subtle: linear-gradient(180deg, hsl(0 0% 100%), hsl(210 40% 98%));
+    
+    /* Shadows */
+    --shadow-card: 0 4px 6px -1px hsl(0 0% 0% / 0.1), 0 2px 4px -1px hsl(0 0% 0% / 0.06);
+    --shadow-lg: 0 10px 15px -3px hsl(0 0% 0% / 0.1), 0 4px 6px -2px hsl(0 0% 0% / 0.05);
+    --shadow-orange: 0 8px 25px -5px hsl(18 85% 60% / 0.3);
+    
+    /* Animations */
+    --transition-smooth: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
 
     --radius: 0.5rem;
 
