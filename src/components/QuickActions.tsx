@@ -1,5 +1,6 @@
 import { Building2, FileText, Plane, Eye } from "lucide-react";
 import { Card, CardContent } from "@/components/ui/card";
+import { useNavigate } from "react-router-dom";
 
 const quickActions = [
   {
@@ -33,6 +34,15 @@ const quickActions = [
 ];
 
 const QuickActions = () => {
+  const navigate = useNavigate();
+
+  const handleActionClick = (index: number) => {
+    if (index === 0) { // Start New Company
+      navigate("/business-setup");
+    }
+    // Add more navigation logic for other actions as needed
+  };
+
   return (
     <div className="px-4">
       <h2 className="text-xl font-bold text-foreground mb-4">Quick Actions</h2>
@@ -41,6 +51,7 @@ const QuickActions = () => {
           <Card 
             key={index} 
             className="border-none shadow-sm hover:shadow-md transition-all duration-300 cursor-pointer hover:scale-105"
+            onClick={() => handleActionClick(index)}
           >
             <CardContent className="p-4">
               <div className={`w-12 h-12 rounded-xl ${action.bgColor} flex items-center justify-center mb-3`}>

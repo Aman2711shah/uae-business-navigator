@@ -9,6 +9,7 @@ import Community from "./pages/Community";
 import Growth from "./pages/Growth";
 import More from "./pages/More";
 import NotFound from "./pages/NotFound";
+import BusinessSetupFlow from "./pages/BusinessSetupFlow";
 
 const queryClient = new QueryClient();
 
@@ -24,6 +25,7 @@ const App = () => (
           <Route path="/community" element={<Community />} />
           <Route path="/growth" element={<Growth />} />
           <Route path="/more" element={<More />} />
+          <Route path="/business-setup" element={<BusinessSetupFlow />} />
           {/* ADD ALL CUSTOM ROUTES ABOVE THE CATCH-ALL "*" ROUTE */}
           <Route path="*" element={<NotFound />} />
         </Routes>
