@@ -1,10 +1,12 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import { ArrowLeft, ArrowRight, Building2, Users, Plane, FileText, Calculator } from "lucide-react";
 import { useNavigate } from "react-router-dom";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Badge } from "@/components/ui/badge";
+import { useBusinessCosts } from "@/hooks/useBusinessCosts";
+import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
 
 const businessActivities = {
   "Trading": [
@@ -49,6 +51,10 @@ const BusinessSetupFlow = () => {
   const [visas, setVisas] = useState<number>(1);
   const [entityType, setEntityType] = useState<string>("");
   const [estimatedCost, setEstimatedCost] = useState<number>(0);
+  const [costBreakdown, setCostBreakdown] = useState<any>(null);
+  const [isFreezone, setIsFreezone] = useState<boolean>(false);
+  
+  const { getActivityCosts, getEntityCost, getShareholderFee, getVisaFee, isLoading } = useBusinessCosts();
 
   const steps = [
     { number: 1, title: "Business Activities", icon: Building2 },
@@ -67,26 +73,47 @@ const BusinessSetupFlow = () => {
   };
 
   const calculateCost = () => {
-    let baseCost = 5000; // Base cost in AED
+    // Determine if it's a freezone entity
+    const isFreezoneBusiness = entityType === "fzc";
+    setIsFreezone(isFreezoneBusiness);
     
-    // Cost based on entity type
-    const entityCosts = {
-      sole: 3000,
-      llc: 5000,
-      fzc: 8000,
-      branch: 10000,
-      offshore: 12000
+    // Get activity costs
+    const activityCosts = getActivityCosts(selectedActivities, isFreezoneBusiness);
+    const totalLicenseFee = activityCosts.reduce((sum, item) => sum + item.fee, 0);
+    
+    // Get legal entity fee
+    const legalEntityFee = getEntityCost(entityType, isFreezoneBusiness);
+    
+    // Get additional fees
+    const shareholderFee = getShareholderFee() * Math.max(0, shareholders - 1);
+    const visaFee = getVisaFee() * visas;
+    
+    // Calculate total cost
+    const totalCost = totalLicenseFee + legalEntityFee + shareholderFee + visaFee;
+    
+    // Create detailed breakdown
+    const breakdown = {
+      activities: activityCosts,
+      totalLicenseFee,
+      legalEntityFee,
+      shareholderFee,
+      visaFee,
+      shareholders: shareholders - 1, // extra shareholders
+      visaCount: visas,
+      entityType: legalEntityTypes.find(e => e.value === entityType)?.label || entityType,
+      isFreezone: isFreezoneBusiness
     };
     
-    baseCost = entityCosts[entityType as keyof typeof entityCosts] || 5000;
-    
-    // Additional costs
-    baseCost += (shareholders - 1) * 1000; // Additional shareholders
-    baseCost += (visas - 1) * 2000; // Additional visas
-    baseCost += selectedActivities.length * 500; // Additional activities
-    
-    setEstimatedCost(baseCost);
+    setCostBreakdown(breakdown);
+    setEstimatedCost(totalCost);
   };
+
+  // Auto-calculate when dependencies change
+  useEffect(() => {
+    if (selectedActivities.length > 0 && entityType && currentStep === 5) {
+      calculateCost();
+    }
+  }, [selectedActivities, shareholders, visas, entityType, currentStep]);
 
   const nextStep = () => {
     if (currentStep < 5) {
@@ -271,16 +298,60 @@ const BusinessSetupFlow = () => {
                 <div className="text-4xl font-bold text-primary">
                   AED {estimatedCost.toLocaleString()}
                 </div>
-                <div className="text-sm text-muted-foreground">Estimated Setup Cost</div>
+                <div className="text-sm text-muted-foreground">
+                  Estimated Setup Cost {isFreezone ? "(Free Zone)" : "(Mainland)"}
+                </div>
               </div>
             </Card>
+
+            {costBreakdown && (
+              <Card className="p-6">
+                <h3 className="font-semibold text-foreground mb-4">Detailed Cost Breakdown</h3>
+                <Table>
+                  <TableHeader>
+                    <TableRow>
+                      <TableHead>Service</TableHead>
+                      <TableHead className="text-right">Cost (AED)</TableHead>
+                    </TableRow>
+                  </TableHeader>
+                  <TableBody>
+                    {costBreakdown.activities.map((activity: any, index: number) => (
+                      <TableRow key={index}>
+                        <TableCell>{activity.activity}</TableCell>
+                        <TableCell className="text-right">{activity.fee.toLocaleString()}</TableCell>
+                      </TableRow>
+                    ))}
+                    <TableRow>
+                      <TableCell className="font-medium">Legal Entity ({costBreakdown.entityType})</TableCell>
+                      <TableCell className="text-right">{costBreakdown.legalEntityFee.toLocaleString()}</TableCell>
+                    </TableRow>
+                    {costBreakdown.shareholders > 0 && (
+                      <TableRow>
+                        <TableCell>Additional Shareholders ({costBreakdown.shareholders})</TableCell>
+                        <TableCell className="text-right">{costBreakdown.shareholderFee.toLocaleString()}</TableCell>
+                      </TableRow>
+                    )}
+                    <TableRow>
+                      <TableCell>Employment Visas ({costBreakdown.visaCount})</TableCell>
+                      <TableCell className="text-right">{costBreakdown.visaFee.toLocaleString()}</TableCell>
+                    </TableRow>
+                    <TableRow className="border-t-2">
+                      <TableCell className="font-bold">Total Cost</TableCell>
+                      <TableCell className="text-right font-bold text-primary">
+                        AED {estimatedCost.toLocaleString()}
+                      </TableCell>
+                    </TableRow>
+                  </TableBody>
+                </Table>
+              </Card>
+            )}
             
             <Card className="p-6">
               <h3 className="font-semibold text-foreground mb-4">Your Selection Summary:</h3>
               <div className="space-y-3 text-sm">
                 <div className="flex justify-between">
                   <span className="text-muted-foreground">Business Activities:</span>
-                  <span className="text-foreground">{selectedActivities.length} selected</span>
+                  <span className="text-foreground">{selectedActivities.join(", ")}</span>
                 </div>
                 <div className="flex justify-between">
                   <span className="text-muted-foreground">Shareholders:</span>
@@ -295,6 +366,10 @@ const BusinessSetupFlow = () => {
                   <span className="text-foreground">
                     {legalEntityTypes.find(e => e.value === entityType)?.label}
                   </span>
+                </div>
+                <div className="flex justify-between">
+                  <span className="text-muted-foreground">Zone Type:</span>
+                  <span className="text-foreground">{isFreezone ? "Free Zone" : "Mainland"}</span>
                 </div>
               </div>
             </Card>
