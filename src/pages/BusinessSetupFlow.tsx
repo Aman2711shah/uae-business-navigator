@@ -54,7 +54,7 @@ const BusinessSetupFlow = () => {
   const [costBreakdown, setCostBreakdown] = useState<any>(null);
   const [isFreezone, setIsFreezone] = useState<boolean>(false);
   
-  const { getActivityCosts, getEntityCost, getShareholderFee, getVisaFee, isLoading } = useBusinessCosts();
+  const { getActivityCosts, getEntityCost, getShareholderFee, getVisaFee, isLoading, calculateFreezoneTotal, getFreezoneOptions } = useBusinessCosts();
 
   const steps = [
     { number: 1, title: "Business Activities", icon: Building2 },
@@ -74,38 +74,46 @@ const BusinessSetupFlow = () => {
 
   const calculateCost = () => {
     // Determine if it's a freezone entity
-    const isFreezoneBusiness = entityType === "fzc";
+    const isFreezoneBusiness = entityType === "fzc" || entityType === "branch";
     setIsFreezone(isFreezoneBusiness);
     
-    // Get activity costs
-    const activityCosts = getActivityCosts(selectedActivities, isFreezoneBusiness);
-    const totalLicenseFee = activityCosts.reduce((sum, item) => sum + item.fee, 0);
-    
-    // Get legal entity fee
-    const legalEntityFee = getEntityCost(entityType, isFreezoneBusiness);
-    
-    // Get additional fees
-    const shareholderFee = getShareholderFee() * Math.max(0, shareholders - 1);
-    const visaFee = getVisaFee() * visas;
-    
-    // Calculate total cost
-    const totalCost = totalLicenseFee + legalEntityFee + shareholderFee + visaFee;
-    
-    // Create detailed breakdown
-    const breakdown = {
-      activities: activityCosts,
-      totalLicenseFee,
-      legalEntityFee,
-      shareholderFee,
-      visaFee,
-      shareholders: shareholders - 1, // extra shareholders
-      visaCount: visas,
-      entityType: legalEntityTypes.find(e => e.value === entityType)?.label || entityType,
-      isFreezone: isFreezoneBusiness
-    };
-    
-    setCostBreakdown(breakdown);
-    setEstimatedCost(totalCost);
+    if (isFreezoneBusiness) {
+      // Use new freezone cost calculation
+      const { totalCost, breakdown } = calculateFreezoneTotal(
+        selectedActivities, 
+        entityType, 
+        shareholders, 
+        visas
+      );
+      
+      setEstimatedCost(totalCost);
+      setCostBreakdown(breakdown);
+    } else {
+      // Use legacy mainland cost calculation
+      const activityCosts = getActivityCosts(selectedActivities, false);
+      const totalLicenseFee = activityCosts.reduce((sum, item) => sum + item.fee, 0);
+      
+      const legalEntityFee = getEntityCost(entityType, false);
+      const shareholderFee = getShareholderFee() * Math.max(0, shareholders - 1);
+      const visaFee = getVisaFee() * visas;
+      
+      const totalCost = totalLicenseFee + legalEntityFee + shareholderFee + visaFee;
+      
+      const breakdown = {
+        activities: activityCosts,
+        totalLicenseFee,
+        legalEntityFee,
+        shareholderFee,
+        visaFee,
+        shareholders: shareholders - 1,
+        visaCount: visas,
+        entityType: legalEntityTypes.find(e => e.value === entityType)?.label || entityType,
+        isFreezone: false
+      };
+      
+      setCostBreakdown(breakdown);
+      setEstimatedCost(totalCost);
+    }
   };
 
   // Auto-calculate when dependencies change
@@ -371,6 +379,12 @@ const BusinessSetupFlow = () => {
                   <span className="text-muted-foreground">Zone Type:</span>
                   <span className="text-foreground">{isFreezone ? "Free Zone" : "Mainland"}</span>
                 </div>
+                {costBreakdown?.freezoneName && (
+                  <div className="flex justify-between">
+                    <span className="text-muted-foreground">Free Zone:</span>
+                    <span className="text-foreground">{costBreakdown.freezoneName}</span>
+                  </div>
+                )}
               </div>
             </Card>
             

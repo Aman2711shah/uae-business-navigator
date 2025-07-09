@@ -41,6 +41,45 @@ export type Database = {
         }
         Relationships: []
       }
+      freezone_costs: {
+        Row: {
+          additional_fee: number
+          base_license_cost: number
+          created_at: string | null
+          freezone_name: string
+          id: number
+          license_type: string
+          minimum_cost: number
+          no_of_activity: number
+          updated_at: string | null
+          visa_cost: number
+        }
+        Insert: {
+          additional_fee: number
+          base_license_cost: number
+          created_at?: string | null
+          freezone_name: string
+          id?: number
+          license_type: string
+          minimum_cost: number
+          no_of_activity: number
+          updated_at?: string | null
+          visa_cost: number
+        }
+        Update: {
+          additional_fee?: number
+          base_license_cost?: number
+          created_at?: string | null
+          freezone_name?: string
+          id?: number
+          license_type?: string
+          minimum_cost?: number
+          no_of_activity?: number
+          updated_at?: string | null
+          visa_cost?: number
+        }
+        Relationships: []
+      }
     }
     Views: {
       [_ in never]: never
