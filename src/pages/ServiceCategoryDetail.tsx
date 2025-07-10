@@ -5,6 +5,7 @@ import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import BottomNavigation from "@/components/BottomNavigation";
 import BusinessGrowthAdvisor from "@/components/BusinessGrowthAdvisor";
+import BusinessServicesAssistant from "@/components/BusinessServicesAssistant";
 
 const serviceCategoryDetails = {
   "company-formation": {
@@ -322,6 +323,27 @@ const ServiceCategoryDetail = () => {
             </CardContent>
           </Card>
         </div>
+
+        {/* Dynamic Service Assistant */}
+        <Card>
+          <CardHeader>
+            <CardTitle className="flex items-center gap-2">
+              <CheckCircle className="h-5 w-5 text-primary" />
+              AI Service Assistant
+            </CardTitle>
+          </CardHeader>
+          <CardContent>
+            <BusinessServicesAssistant 
+              inputs={{
+                selectedCategory: category.title,
+                selectedService: category.title,
+                userBusinessType: "General Business",
+                jurisdiction: "UAE-wide",
+                urgencyLevel: "Standard"
+              }}
+            />
+          </CardContent>
+        </Card>
 
         {/* AI Business Growth Advisor */}
         <BusinessGrowthAdvisor 
