@@ -4,6 +4,7 @@ import { Input } from "@/components/ui/input";
 import { Badge } from "@/components/ui/badge";
 import BottomNavigation from "@/components/BottomNavigation";
 import { useState } from "react";
+import { useNavigate } from "react-router-dom";
 
 const serviceCategories = [
   {
@@ -113,8 +114,29 @@ const serviceCategories = [
 ];
 
 const Services = () => {
+  const navigate = useNavigate();
   const [searchTerm, setSearchTerm] = useState("");
   const [selectedCategory, setSelectedCategory] = useState<string | null>(null);
+
+  const getServiceId = (serviceName: string) => {
+    const serviceMap: { [key: string]: string } = {
+      "LLC Formation": "llc-formation",
+      "Free Zone Company": "free-zone-company", 
+      "Mainland Company": "mainland-company",
+      "Branch Office": "branch-office",
+      "Representative Office": "representative-office"
+    };
+    return serviceMap[serviceName];
+  };
+
+  const handleServiceClick = (service: { name: string; description: string }, categoryTitle: string) => {
+    if (categoryTitle === "Company Formation") {
+      const serviceId = getServiceId(service.name);
+      if (serviceId) {
+        navigate(`/service/${serviceId}`);
+      }
+    }
+  };
 
   const filteredCategories = serviceCategories.filter(category =>
     category.title.toLowerCase().includes(searchTerm.toLowerCase()) ||
@@ -184,6 +206,7 @@ const Services = () => {
                     <div 
                       key={serviceIndex}
                       className="p-4 border-b border-border last:border-b-0 hover:bg-muted/50 cursor-pointer transition-colors"
+                      onClick={() => handleServiceClick(service, category.title)}
                     >
                       <div className="flex items-center justify-between">
                         <div className="flex-1">
