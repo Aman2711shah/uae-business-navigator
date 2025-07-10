@@ -8,107 +8,159 @@ import { useNavigate } from "react-router-dom";
 
 const serviceCategories = [
   {
-    title: "Company Formation",
+    title: "Company Formation & Licensing",
     icon: Building2,
     color: "text-brand-blue",
     bgColor: "bg-blue-50",
     services: [
-      { name: "LLC Formation", description: "Limited Liability Company setup in UAE" },
-      { name: "Free Zone Company", description: "Business setup in UAE free zones" },
-      { name: "Mainland Company", description: "Mainland business establishment" },
-      { name: "Branch Office", description: "Foreign company branch registration" },
-      { name: "Representative Office", description: "Non-trading office setup" }
+      { name: "Trade License Application & Renewals", description: "Complete trade license processing and renewals" },
+      { name: "Name Reservation & Initial Approvals", description: "Business name registration and approval" },
+      { name: "Drafting & Notarization of MOA/LSA Agreements", description: "Legal document preparation and notarization" },
+      { name: "Chamber of Commerce Registration", description: "Registration with local chamber of commerce" },
+      { name: "DED & Free Zone License Processes", description: "Department of Economic Development licensing" }
     ]
   },
   {
-    title: "Licensing Services",
-    icon: FileText,
-    color: "text-brand-green",
-    bgColor: "bg-green-50",
-    services: [
-      { name: "Trade License", description: "Commercial activity license" },
-      { name: "Professional License", description: "Service-based business license" },
-      { name: "Industrial License", description: "Manufacturing business license" },
-      { name: "Tourism License", description: "Tourism industry license" },
-      { name: "License Renewal", description: "Annual license renewal service" }
-    ]
-  },
-  {
-    title: "Visa & Immigration",
+    title: "Immigration & Visa Services",
     icon: UserCheck,
     color: "text-brand-purple",
     bgColor: "bg-purple-50",
     services: [
-      { name: "Investor Visa", description: "Long-term investor residence visa" },
-      { name: "Employee Visa", description: "Work permit and residence visa" },
-      { name: "Family Visa", description: "Dependent family member visa" },
-      { name: "Golden Visa", description: "10-year UAE residence visa" },
-      { name: "Visit Visa", description: "Tourist and business visit visa" }
+      { name: "Establishment Card Application/Renewal", description: "Company establishment card processing" },
+      { name: "Investor/Partner Visa Processing", description: "Investor and partner visa applications" },
+      { name: "Employment Visa Processing", description: "Work permit and employment visa services" },
+      { name: "Family Visa (Dependent) Applications", description: "Dependent family member visa processing" },
+      { name: "Visa Cancellation & Status Change", description: "Visa cancellation and status modification services" },
+      { name: "Emirates ID Application & Renewal", description: "Emirates ID processing and renewals" },
+      { name: "Medical Test Appointment & Follow-Up", description: "Medical examination coordination" },
+      { name: "Labour Contract Preparation & Submission", description: "Employment contract processing" }
     ]
   },
   {
-    title: "Legal & Compliance",
-    icon: Scale,
-    color: "text-red-600",
-    bgColor: "bg-red-50",
-    services: [
-      { name: "Legal Consultation", description: "Expert legal advice" },
-      { name: "Contract Drafting", description: "Business contract preparation" },
-      { name: "Compliance Review", description: "Regulatory compliance check" },
-      { name: "Dispute Resolution", description: "Business dispute mediation" },
-      { name: "Corporate Governance", description: "Board and shareholder agreements" }
-    ]
-  },
-  {
-    title: "Tax & Accounting",
-    icon: Calculator,
-    color: "text-brand-orange",
-    bgColor: "bg-orange-50",
-    services: [
-      { name: "VAT Registration", description: "Value Added Tax setup" },
-      { name: "Corporate Tax", description: "Corporate tax compliance" },
-      { name: "Bookkeeping", description: "Financial record maintenance" },
-      { name: "Audit Services", description: "Annual financial audit" },
-      { name: "Tax Consultation", description: "Tax planning and advice" }
-    ]
-  },
-  {
-    title: "Office Solutions",
-    icon: Building,
-    color: "text-indigo-600",
-    bgColor: "bg-indigo-50",
-    services: [
-      { name: "Office Rental", description: "Physical office space rental" },
-      { name: "Virtual Office", description: "Business address service" },
-      { name: "Co-working Space", description: "Shared office facilities" },
-      { name: "Meeting Rooms", description: "Conference room booking" },
-      { name: "Mail Handling", description: "Business mail management" }
-    ]
-  },
-  {
-    title: "PRO Services",
+    title: "Government Liaison & Approvals",
     icon: Users,
     color: "text-pink-600",
     bgColor: "bg-pink-50",
     services: [
-      { name: "Government Liaison", description: "Official document processing" },
-      { name: "Ministry Approvals", description: "Government ministry clearances" },
-      { name: "Municipality Services", description: "Local authority approvals" },
-      { name: "Immigration Services", description: "Visa and permit processing" },
-      { name: "Document Clearing", description: "Official paperwork completion" }
+      { name: "Coordination with MOHRE, GDRFA, DED, MOFA", description: "Government department coordination" },
+      { name: "Document Clearance with Government Departments", description: "Official document processing" },
+      { name: "Municipality Approvals & Permits", description: "Local authority permits and approvals" },
+      { name: "Health Authority Licensing (DHA/DOH/MOH)", description: "Health sector licensing and permits" }
     ]
   },
   {
-    title: "Bank Account Opening",
+    title: "Attestation & Legalization",
+    icon: FileText,
+    color: "text-brand-green",
+    bgColor: "bg-green-50",
+    services: [
+      { name: "Attestation of Educational, Commercial & POA Documents", description: "Document attestation services" },
+      { name: "MOFA Attestation", description: "Ministry of Foreign Affairs attestation" },
+      { name: "Consulate/Embassy Legalization", description: "Diplomatic legalization services" },
+      { name: "Legal Translation & Notarization Support", description: "Translation and notarization services" }
+    ]
+  },
+  {
+    title: "Corporate Compliance",
+    icon: Shield,
+    color: "text-blue-600",
+    bgColor: "bg-blue-50",
+    services: [
+      { name: "Labour Card & WPS Setup", description: "Labour card and wage protection system setup" },
+      { name: "Company Immigration & Labour File Opening", description: "Immigration and labour file establishment" },
+      { name: "GOSI Registration (if applicable)", description: "General Organization for Social Insurance registration" },
+      { name: "Renewal Reminders & Compliance Tracking", description: "Compliance monitoring and renewal tracking" },
+      { name: "E-Signature Card Application", description: "Digital signature card processing" }
+    ]
+  },
+  {
+    title: "Accounting & Bookkeeping",
+    icon: Calculator,
+    color: "text-brand-orange",
+    bgColor: "bg-orange-50",
+    services: [
+      { name: "Monthly & Quarterly Bookkeeping", description: "Regular bookkeeping and financial record maintenance" },
+      { name: "Financial Statement Preparation", description: "Comprehensive financial statement preparation" },
+      { name: "Management Reporting", description: "Management reports and financial analysis" },
+      { name: "IFRS-Compliant Accounting", description: "International financial reporting standards compliance" }
+    ]
+  },
+  {
+    title: "Taxation Services",
     icon: Banknote,
     color: "text-emerald-600",
     bgColor: "bg-emerald-50",
     services: [
-      { name: "Corporate Banking", description: "Business bank account setup" },
-      { name: "Multi-Currency Account", description: "Foreign currency accounts" },
-      { name: "Islamic Banking", description: "Sharia-compliant banking" },
-      { name: "Investment Accounts", description: "Business investment solutions" },
-      { name: "Credit Facilities", description: "Business loan arrangements" }
+      { name: "VAT Registration & Deregistration", description: "Value Added Tax registration services" },
+      { name: "VAT Return Filing & Compliance", description: "VAT return preparation and filing" },
+      { name: "VAT Advisory & Health Checks", description: "VAT consultation and compliance review" },
+      { name: "Corporate Tax Registration", description: "Corporate tax registration and setup" },
+      { name: "CT Return Filing & Advisory", description: "Corporate tax return filing and advice" },
+      { name: "QFZP/Exempt Status Planning", description: "Qualifying free zone person status planning" },
+      { name: "Tax Structuring & Optimization", description: "Tax planning and optimization strategies" }
+    ]
+  },
+  {
+    title: "Payroll & HR Compliance",
+    icon: Users,
+    color: "text-purple-600",
+    bgColor: "bg-purple-50",
+    services: [
+      { name: "Payroll Processing & Payslip Generation", description: "Complete payroll management services" },
+      { name: "WPS Compliance & Reporting", description: "Wage Protection System compliance" },
+      { name: "Employee Expense Management", description: "Employee expense tracking and management" },
+      { name: "HR Policy & Leave Tracking Systems", description: "HR policy development and leave management" }
+    ]
+  },
+  {
+    title: "Audit & Assurance",
+    icon: Scale,
+    color: "text-red-600",
+    bgColor: "bg-red-50",
+    services: [
+      { name: "External Audit Coordination", description: "External audit coordination and support" },
+      { name: "Internal Audit & Risk Reviews", description: "Internal audit and risk assessment services" },
+      { name: "Statutory Compliance Reviews", description: "Regulatory compliance audits" },
+      { name: "Agreed-Upon Procedures (AUP)", description: "Agreed-upon procedures engagements" }
+    ]
+  },
+  {
+    title: "Regulatory Compliance & Filings",
+    icon: FileText,
+    color: "text-indigo-600",
+    bgColor: "bg-indigo-50",
+    services: [
+      { name: "ESR, UBO & AML Reporting", description: "Economic substance, beneficial ownership, and anti-money laundering reporting" },
+      { name: "Economic Substance Notifications & Reports", description: "Economic substance regulation compliance" },
+      { name: "Corporate Governance Support", description: "Corporate governance advisory and support" },
+      { name: "Annual License Renewal Support", description: "License renewal coordination and support" }
+    ]
+  },
+  {
+    title: "Advisory & Strategic Consulting",
+    icon: Lightbulb,
+    color: "text-yellow-600",
+    bgColor: "bg-yellow-50",
+    services: [
+      { name: "Cross-Border Tax Advisory", description: "International tax planning and advisory" },
+      { name: "Transfer Pricing Support", description: "Transfer pricing documentation and compliance" },
+      { name: "M&A Due Diligence & Valuation", description: "Mergers and acquisitions due diligence" },
+      { name: "CFO & Virtual Finance Office Services", description: "Outsourced CFO and finance office services" }
+    ]
+  },
+  {
+    title: "Other Support Services",
+    icon: Briefcase,
+    color: "text-gray-600",
+    bgColor: "bg-gray-50",
+    services: [
+      { name: "Typing Center Services", description: "Document typing and processing services" },
+      { name: "Courier Coordination for Documents", description: "Document delivery and courier services" },
+      { name: "Assistance with Fines, Penalties & Dispute Resolution", description: "Fine resolution and dispute handling" },
+      { name: "Vehicle Registration & Renewal", description: "Vehicle registration and renewal services" },
+      { name: "Tenancy Contract Registration (Ejari)", description: "Tenancy contract registration services" },
+      { name: "Bank Account Opening Support", description: "Bank account opening assistance" },
+      { name: "Health Insurance Registration", description: "Health insurance registration support" }
     ]
   }
 ];
@@ -140,14 +192,18 @@ const Services = () => {
 
   const handleCategoryClick = (categoryTitle: string) => {
     const categoryMap: { [key: string]: string } = {
-      "Company Formation": "company-formation",
-      "Licensing Services": "licensing-services",
-      "Visa & Immigration": "visa-immigration",
-      "Legal & Compliance": "legal-compliance",
-      "Tax & Accounting": "tax-accounting",
-      "Office Solutions": "office-solutions",
-      "PRO Services": "pro-services",
-      "Bank Account Opening": "bank-account-opening"
+      "Company Formation & Licensing": "company-formation-licensing",
+      "Immigration & Visa Services": "immigration-visa-services",
+      "Government Liaison & Approvals": "government-liaison-approvals",
+      "Attestation & Legalization": "attestation-legalization",
+      "Corporate Compliance": "corporate-compliance",
+      "Accounting & Bookkeeping": "accounting-bookkeeping",
+      "Taxation Services": "taxation-services",
+      "Payroll & HR Compliance": "payroll-hr-compliance",
+      "Audit & Assurance": "audit-assurance",
+      "Regulatory Compliance & Filings": "regulatory-compliance-filings",
+      "Advisory & Strategic Consulting": "advisory-strategic-consulting",
+      "Other Support Services": "other-support-services"
     };
     
     const categoryId = categoryMap[categoryTitle];

@@ -12,11 +12,23 @@ import BottomNavigation from "@/components/BottomNavigation";
 import { useBusinessCosts } from "@/hooks/useBusinessCosts";
 
 const applicationSteps = {
-  "company-formation": {
-    title: "Company Formation Application",
+  "company-formation-licensing": {
+    title: "Company Formation & Licensing Application",
     steps: [
       {
-        title: "Select Business Activity",
+        title: "Service Type",
+        field: "serviceType",
+        type: "select",
+        options: ["Trade License Application & Renewals", "Name Reservation & Initial Approvals", "Drafting & Notarization of MOA/LSA Agreements", "Chamber of Commerce Registration", "DED & Free Zone License Processes"]
+      },
+      {
+        title: "License Type",
+        field: "licenseType",
+        type: "select",
+        options: ["Trade License", "Professional License", "Industrial License", "Tourism License"]
+      },
+      {
+        title: "Business Activity",
         field: "businessActivity",
         type: "select",
         options: ["Trading", "Consulting", "IT Services", "Healthcare", "Real Estate", "Manufacturing", "Other"]
@@ -33,48 +45,18 @@ const applicationSteps = {
         type: "number",
         min: 1,
         max: 5
-      },
-      {
-        title: "Number of Visas Required",
-        field: "visas",
-        type: "number",
-        min: 0,
-        max: 10
       }
     ]
   },
-  "licensing-services": {
-    title: "Licensing Services Application",
+  "immigration-visa-services": {
+    title: "Immigration & Visa Services Application",
     steps: [
       {
-        title: "License Type",
-        field: "licenseType",
+        title: "Service Type",
+        field: "serviceType",
         type: "select",
-        options: ["Trade License", "Professional License", "Industrial License", "Tourism License"]
+        options: ["Establishment Card Application/Renewal", "Investor/Partner Visa Processing", "Employment Visa Processing", "Family Visa (Dependent) Applications", "Visa Cancellation & Status Change", "Emirates ID Application & Renewal", "Medical Test Appointment & Follow-Up", "Labour Contract Preparation & Submission"]
       },
-      {
-        title: "Validity Period",
-        field: "validityPeriod",
-        type: "select",
-        options: ["1 Year", "2 Years", "3 Years"]
-      },
-      {
-        title: "Renewal Status",
-        field: "renewalStatus",
-        type: "select",
-        options: ["New License", "Renewal", "Amendment"]
-      },
-      {
-        title: "Business Activity",
-        field: "businessActivity",
-        type: "textarea",
-        placeholder: "Describe your business activities..."
-      }
-    ]
-  },
-  "visa-immigration": {
-    title: "Visa & Immigration Application",
-    steps: [
       {
         title: "Visa Type",
         field: "visaType",
@@ -102,20 +84,73 @@ const applicationSteps = {
       }
     ]
   },
-  "legal-compliance": {
-    title: "Legal & Compliance Application",
+  "government-liaison-approvals": {
+    title: "Government Liaison & Approvals Application",
     steps: [
       {
         title: "Service Type",
         field: "serviceType",
         type: "select",
-        options: ["Legal Consultation", "Contract Drafting", "Compliance Review", "Dispute Resolution", "Corporate Governance"]
+        options: ["Coordination with MOHRE, GDRFA, DED, MOFA", "Document Clearance with Government Departments", "Municipality Approvals & Permits", "Health Authority Licensing (DHA/DOH/MOH)"]
+      },
+      {
+        title: "Department",
+        field: "department",
+        type: "select",
+        options: ["MOHRE", "GDRFA", "DED", "MOFA", "Municipality", "DHA", "DOH", "MOH"]
+      },
+      {
+        title: "Document Type",
+        field: "documentType",
+        type: "select",
+        options: ["License", "Permit", "Approval", "Clearance", "Certificate"]
       },
       {
         title: "Urgency Level",
         field: "urgencyLevel",
         type: "select",
         options: ["Standard", "Urgent", "Emergency"]
+      }
+    ]
+  },
+  "attestation-legalization": {
+    title: "Attestation & Legalization Application",
+    steps: [
+      {
+        title: "Service Type",
+        field: "serviceType",
+        type: "select",
+        options: ["Attestation of Educational, Commercial & POA Documents", "MOFA Attestation", "Consulate/Embassy Legalization", "Legal Translation & Notarization Support"]
+      },
+      {
+        title: "Document Type",
+        field: "documentType",
+        type: "select",
+        options: ["Educational Certificate", "Commercial Document", "Power of Attorney", "Birth Certificate", "Marriage Certificate", "Other Personal Document"]
+      },
+      {
+        title: "Country of Origin",
+        field: "countryOfOrigin",
+        type: "text",
+        placeholder: "Enter country where document was issued"
+      },
+      {
+        title: "Number of Documents",
+        field: "numberOfDocuments",
+        type: "number",
+        min: 1,
+        max: 20
+      }
+    ]
+  },
+  "corporate-compliance": {
+    title: "Corporate Compliance Application",
+    steps: [
+      {
+        title: "Service Type",
+        field: "serviceType",
+        type: "select",
+        options: ["Labour Card & WPS Setup", "Company Immigration & Labour File Opening", "GOSI Registration (if applicable)", "Renewal Reminders & Compliance Tracking", "E-Signature Card Application"]
       },
       {
         title: "Company Size",
@@ -124,21 +159,28 @@ const applicationSteps = {
         options: ["Small (1-10 employees)", "Medium (11-50 employees)", "Large (50+ employees)"]
       },
       {
-        title: "Description",
-        field: "description",
-        type: "textarea",
-        placeholder: "Describe your legal requirements..."
+        title: "Number of Employees",
+        field: "numberOfEmployees",
+        type: "number",
+        min: 1,
+        max: 100
+      },
+      {
+        title: "Compliance Priority",
+        field: "compliancePriority",
+        type: "select",
+        options: ["Labour Compliance", "Immigration Compliance", "Social Insurance", "Digital Compliance"]
       }
     ]
   },
-  "tax-accounting": {
-    title: "Tax & Accounting Application",
+  "accounting-bookkeeping": {
+    title: "Accounting & Bookkeeping Application",
     steps: [
       {
         title: "Service Type",
         field: "serviceType",
         type: "select",
-        options: ["VAT Registration", "Corporate Tax", "Bookkeeping", "Audit Services", "Tax Consultation"]
+        options: ["Monthly & Quarterly Bookkeeping", "Financial Statement Preparation", "Management Reporting", "IFRS-Compliant Accounting"]
       },
       {
         title: "Accounting Period",
@@ -153,98 +195,185 @@ const applicationSteps = {
         options: ["Below AED 375,000", "AED 375,000 - 1,875,000", "Above AED 1,875,000"]
       },
       {
-        title: "Previous Tax Registration",
-        field: "previousRegistration",
+        title: "Accounting Software",
+        field: "accountingSoftware",
         type: "select",
-        options: ["Yes", "No"]
+        options: ["QuickBooks", "Xero", "SAP", "Oracle", "Manual", "Other"]
       }
     ]
   },
-  "office-solutions": {
-    title: "Office Solutions Application",
-    steps: [
-      {
-        title: "Office Type",
-        field: "officeType",
-        type: "select",
-        options: ["Physical Office", "Virtual Office", "Co-working Space", "Meeting Rooms"]
-      },
-      {
-        title: "Number of Seats",
-        field: "seats",
-        type: "number",
-        min: 1,
-        max: 50
-      },
-      {
-        title: "Duration",
-        field: "duration",
-        type: "select",
-        options: ["Monthly", "3 Months", "6 Months", "1 Year", "2 Years"]
-      },
-      {
-        title: "Location Preference",
-        field: "location",
-        type: "text",
-        placeholder: "Preferred location in UAE"
-      }
-    ]
-  },
-  "pro-services": {
-    title: "PRO Services Application",
+  "taxation-services": {
+    title: "Taxation Services Application",
     steps: [
       {
         title: "Service Type",
         field: "serviceType",
         type: "select",
-        options: ["Government Liaison", "Ministry Approvals", "Municipality Services", "Immigration Services", "Document Clearing"]
+        options: ["VAT Registration & Deregistration", "VAT Return Filing & Compliance", "VAT Advisory & Health Checks", "Corporate Tax Registration", "CT Return Filing & Advisory", "QFZP/Exempt Status Planning", "Tax Structuring & Optimization"]
       },
       {
-        title: "Document Type",
-        field: "documentType",
+        title: "Tax Type",
+        field: "taxType",
         type: "select",
-        options: ["Visa Processing", "License Renewal", "Attestation", "Translation", "Other"]
+        options: ["VAT", "Corporate Tax", "Excise Tax", "Transfer Pricing"]
       },
       {
-        title: "Urgency",
-        field: "urgency",
+        title: "Annual Turnover",
+        field: "annualTurnover",
+        type: "select",
+        options: ["Below AED 375,000", "AED 375,000 - 1,875,000", "Above AED 1,875,000"]
+      },
+      {
+        title: "Current Registration Status",
+        field: "registrationStatus",
+        type: "select",
+        options: ["Not Registered", "Registered", "Need to Register", "Need Deregistration"]
+      }
+    ]
+  },
+  "payroll-hr-compliance": {
+    title: "Payroll & HR Compliance Application",
+    steps: [
+      {
+        title: "Service Type",
+        field: "serviceType",
+        type: "select",
+        options: ["Payroll Processing & Payslip Generation", "WPS Compliance & Reporting", "Employee Expense Management", "HR Policy & Leave Tracking Systems"]
+      },
+      {
+        title: "Number of Employees",
+        field: "numberOfEmployees",
+        type: "number",
+        min: 1,
+        max: 500
+      },
+      {
+        title: "Payroll Frequency",
+        field: "payrollFrequency",
+        type: "select",
+        options: ["Monthly", "Bi-weekly", "Weekly"]
+      },
+      {
+        title: "Current HR System",
+        field: "currentHRSystem",
+        type: "select",
+        options: ["Manual", "Excel", "HR Software", "None"]
+      }
+    ]
+  },
+  "audit-assurance": {
+    title: "Audit & Assurance Application",
+    steps: [
+      {
+        title: "Service Type",
+        field: "serviceType",
+        type: "select",
+        options: ["External Audit Coordination", "Internal Audit & Risk Reviews", "Statutory Compliance Reviews", "Agreed-Upon Procedures (AUP)"]
+      },
+      {
+        title: "Audit Type",
+        field: "auditType",
+        type: "select",
+        options: ["Financial Audit", "Compliance Audit", "Operational Audit", "IT Audit"]
+      },
+      {
+        title: "Company Size",
+        field: "companySize",
+        type: "select",
+        options: ["SME", "Medium Enterprise", "Large Enterprise", "Listed Company"]
+      },
+      {
+        title: "Financial Year End",
+        field: "financialYearEnd",
+        type: "select",
+        options: ["December", "March", "June", "September", "Other"]
+      }
+    ]
+  },
+  "regulatory-compliance-filings": {
+    title: "Regulatory Compliance & Filings Application",
+    steps: [
+      {
+        title: "Service Type",
+        field: "serviceType",
+        type: "select",
+        options: ["ESR, UBO & AML Reporting", "Economic Substance Notifications & Reports", "Corporate Governance Support", "Annual License Renewal Support"]
+      },
+      {
+        title: "Compliance Type",
+        field: "complianceType",
+        type: "select",
+        options: ["Economic Substance Regulation", "Ultimate Beneficial Ownership", "Anti-Money Laundering", "Corporate Governance"]
+      },
+      {
+        title: "Entity Type",
+        field: "entityType",
+        type: "select",
+        options: ["UAE Company", "Free Zone Entity", "Branch Office", "Representative Office"]
+      },
+      {
+        title: "Annual Revenue",
+        field: "annualRevenue",
+        type: "select",
+        options: ["Below AED 750,000", "Above AED 750,000", "Prefer not to disclose"]
+      }
+    ]
+  },
+  "advisory-strategic-consulting": {
+    title: "Advisory & Strategic Consulting Application",
+    steps: [
+      {
+        title: "Service Type",
+        field: "serviceType",
+        type: "select",
+        options: ["Cross-Border Tax Advisory", "Transfer Pricing Support", "M&A Due Diligence & Valuation", "CFO & Virtual Finance Office Services"]
+      },
+      {
+        title: "Consulting Area",
+        field: "consultingArea",
+        type: "select",
+        options: ["Tax Planning", "Transfer Pricing", "Mergers & Acquisitions", "Financial Management", "Strategic Planning"]
+      },
+      {
+        title: "Project Duration",
+        field: "projectDuration",
+        type: "select",
+        options: ["1-3 months", "3-6 months", "6-12 months", "12+ months", "Ongoing"]
+      },
+      {
+        title: "Industry Sector",
+        field: "industrySector",
+        type: "select",
+        options: ["Technology", "Healthcare", "Real Estate", "Manufacturing", "Financial Services", "Retail", "Other"]
+      }
+    ]
+  },
+  "other-support-services": {
+    title: "Other Support Services Application",
+    steps: [
+      {
+        title: "Service Type",
+        field: "serviceType",
+        type: "select",
+        options: ["Typing Center Services", "Courier Coordination for Documents", "Assistance with Fines, Penalties & Dispute Resolution", "Vehicle Registration & Renewal", "Tenancy Contract Registration (Ejari)", "Bank Account Opening Support", "Health Insurance Registration"]
+      },
+      {
+        title: "Support Category",
+        field: "supportCategory",
+        type: "select",
+        options: ["Document Services", "Transportation", "Legal Support", "Registration Services", "Insurance Services"]
+      },
+      {
+        title: "Urgency Level",
+        field: "urgencyLevel",
         type: "select",
         options: ["Standard", "Urgent", "Same Day"]
       },
       {
-        title: "Special Requirements",
-        field: "requirements",
+        title: "Additional Requirements",
+        field: "additionalRequirements",
         type: "textarea",
-        placeholder: "Any special requirements or instructions..."
-      }
-    ]
-  },
-  "bank-account-opening": {
-    title: "Bank Account Opening Application",
-    steps: [
-      {
-        title: "Account Type",
-        field: "accountType",
-        type: "select",
-        options: ["Corporate Account", "Personal Account", "Investment Account", "Multi-Currency Account"]
-      },
-      {
-        title: "Preferred Bank",
-        field: "bank",
-        type: "select",
-        options: ["ADCB", "Emirates NBD", "FAB", "HSBC", "Standard Chartered", "CBD", "Other"]
-      },
-      {
-        title: "Initial Deposit",
-        field: "initialDeposit",
-        type: "select",
-        options: ["AED 10,000 - 50,000", "AED 50,000 - 100,000", "AED 100,000 - 500,000", "Above AED 500,000"]
-      },
-      {
-        title: "Nationality",
-        field: "nationality",
-        type: "text",
-        placeholder: "Account holder nationality"
+        placeholder: "Describe any additional requirements or special instructions..."
       }
     ]
   }
@@ -258,7 +387,7 @@ const ApplicationProcess = () => {
   
   const { calculateFreezoneTotal, isLoading: costsLoading } = useBusinessCosts();
   
-  const costData = categoryId === "company-formation" ? calculateFreezoneTotal(
+  const costData = categoryId === "company-formation-licensing" ? calculateFreezoneTotal(
     [formData.businessActivity || "Trading"],
     formData.entityType?.toLowerCase().replace(/\s+/g, "_") || "llc",
     parseInt(formData.shareholders) || 1,
@@ -357,7 +486,7 @@ const ApplicationProcess = () => {
     }
   };
 
-  if (showCosts && categoryId === "company-formation") {
+  if (showCosts && categoryId === "company-formation-licensing") {
     return (
       <div className="min-h-screen bg-gradient-to-b from-background to-muted/20 pb-20">
         <div className="bg-white border-b border-border p-4">
