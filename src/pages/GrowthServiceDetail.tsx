@@ -9,25 +9,25 @@ import BottomNavigation from "@/components/BottomNavigation";
 const serviceDetails = {
   "business-consultancy": {
     title: "Business Consultancy",
-    description: "Expert business strategy and planning to accelerate your company's growth",
+    description: "Unlock expert business strategy and planning tailored to your industry. Our consultants help refine your goals, optimize processes, and build actionable roadmaps for success.",
     rating: 4.8,
     price: "Starting from AED 1,500",
     duration: "2-4 weeks",
     clients: "500+",
     features: [
-      "Business Strategy Development",
-      "Market Analysis & Research", 
+      "Strategic Growth Planning",
+      "Market Expansion Guidance", 
+      "Business Model Optimization",
       "Financial Planning & Forecasting",
       "Operational Optimization",
-      "Growth Strategy Planning",
       "Risk Assessment & Mitigation"
     ],
     benefits: [
+      "Strategic Growth Planning",
+      "Market Expansion Guidance",
+      "Business Model Optimization",
       "Increase revenue by 20-40%",
-      "Streamline operations",
-      "Reduce operational costs",
-      "Access to expert advisors",
-      "Customized growth plans"
+      "Access to expert advisors"
     ],
     packages: [
       {
@@ -62,25 +62,25 @@ const serviceDetails = {
   },
   "digital-marketing": {
     title: "Digital Marketing",
-    description: "Complete digital marketing solutions to boost your online presence and drive sales",
+    description: "Maximize your online presence with our comprehensive digital marketing services. From social media to SEO, we craft campaigns that drive traffic, leads, and conversions.",
     rating: 4.9,
     price: "Starting from AED 2,000",
     duration: "3-6 months",
     clients: "300+",
     features: [
-      "Social Media Management",
-      "Google Ads & PPC",
+      "Social Media Campaigns",
       "SEO Optimization",
+      "Performance Analytics",
+      "Google Ads & PPC",
       "Content Marketing",
-      "Email Marketing Campaigns",
-      "Analytics & Reporting"
+      "Email Marketing Campaigns"
     ],
     benefits: [
+      "Social Media Campaigns",
+      "SEO Optimization", 
+      "Performance Analytics",
       "Increase online visibility by 300%",
-      "Generate qualified leads",
-      "Improve brand awareness",
-      "Higher conversion rates",
-      "Detailed performance tracking"
+      "Higher conversion rates"
     ],
     packages: [
       {
@@ -110,6 +110,218 @@ const serviceDetails = {
       {
         question: "Do you work with all industries?",
         answer: "Yes, we have experience across various industries and tailor strategies accordingly."
+      }
+    ]
+  },
+  "website-development": {
+    title: "Website Development",
+    description: "Build a powerful digital foundation with custom website and e-commerce solutions. Whether you're launching a brand or scaling up, we create user-friendly, mobile-responsive sites.",
+    rating: 4.7,
+    price: "Starting from AED 3,000",
+    duration: "4-8 weeks",
+    clients: "200+",
+    features: [
+      "Custom Website Design",
+      "E-commerce Integrations", 
+      "Fast & Secure Platforms",
+      "Mobile-Responsive Design",
+      "SEO-Optimized Structure",
+      "Content Management System"
+    ],
+    benefits: [
+      "Custom Website Design",
+      "E-commerce Integrations",
+      "Fast & Secure Platforms",
+      "Professional online presence",
+      "Mobile-responsive design"
+    ],
+    packages: [
+      {
+        name: "Basic",
+        price: "AED 3,000",
+        duration: "4 weeks",
+        features: ["5-page website", "Mobile responsive", "Basic SEO setup"]
+      },
+      {
+        name: "Professional",
+        price: "AED 6,500",
+        duration: "6 weeks", 
+        features: ["10-page website", "E-commerce ready", "Advanced SEO", "Contact forms"]
+      },
+      {
+        name: "Enterprise",
+        price: "AED 12,000",
+        duration: "8 weeks",
+        features: ["Unlimited pages", "Full e-commerce", "Custom features", "Ongoing maintenance"]
+      }
+    ],
+    faqs: [
+      {
+        question: "Do you provide ongoing maintenance?",
+        answer: "Yes, we offer maintenance packages to keep your website secure and updated."
+      },
+      {
+        question: "Can you integrate with my existing systems?",
+        answer: "Absolutely, we can integrate with most CRM, payment, and business management systems."
+      }
+    ]
+  },
+  "business-networking": {
+    title: "Business Networking",
+    description: "Connect with industry leaders and peers through our exclusive networking events and platforms. Expand your business connections and explore partnerships.",
+    rating: 4.6,
+    price: "Starting from AED 500",
+    duration: "Ongoing",
+    clients: "1000+",
+    features: [
+      "Access to Business Communities",
+      "Event Invitations",
+      "Collaboration Opportunities",
+      "Industry Meetups",
+      "Partner Introductions",
+      "Exclusive Business Events"
+    ],
+    benefits: [
+      "Access to Business Communities",
+      "Event Invitations", 
+      "Collaboration Opportunities",
+      "Expand professional network",
+      "Access to exclusive events"
+    ],
+    packages: [
+      {
+        name: "Basic",
+        price: "AED 500/month",
+        duration: "Monthly",
+        features: ["Access to networking events", "Basic member directory", "Monthly meetups"]
+      },
+      {
+        name: "Premium",
+        price: "AED 1,200/month",
+        duration: "Monthly",
+        features: ["All basic features", "VIP event access", "One-on-one introductions", "Industry reports"]
+      },
+      {
+        name: "Executive",
+        price: "AED 2,500/month", 
+        duration: "Monthly",
+        features: ["All premium features", "Executive roundtables", "Private events", "Personal networking consultant"]
+      }
+    ],
+    faqs: [
+      {
+        question: "What types of events do you organize?",
+        answer: "We organize industry meetups, business mixers, workshops, and exclusive executive roundtables."
+      },
+      {
+        question: "How do you match business partners?",
+        answer: "Our team uses industry expertise and member profiles to facilitate relevant introductions."
+      }
+    ]
+  },
+  "investor-assistance": {
+    title: "Investor Assistance", 
+    description: "Gain access to funding and investment opportunities through expert advisory and network connections. We assist in investor matchmaking, pitch deck development, and more.",
+    rating: 4.8,
+    price: "Starting from AED 2,500",
+    duration: "3-6 months",
+    clients: "150+",
+    features: [
+      "Investment Readiness Support",
+      "Investor Introductions",
+      "Funding Strategy Guidance",
+      "Pitch Deck Development",
+      "Financial Modeling",
+      "Due Diligence Preparation"
+    ],
+    benefits: [
+      "Investment Readiness Support",
+      "Investor Introductions",
+      "Funding Strategy Guidance", 
+      "Access to investor network",
+      "Professional pitch preparation"
+    ],
+    packages: [
+      {
+        name: "Starter",
+        price: "AED 2,500",
+        duration: "6 weeks",
+        features: ["Pitch deck review", "Investment readiness assessment", "Basic guidance"]
+      },
+      {
+        name: "Growth",
+        price: "AED 7,500", 
+        duration: "3 months",
+        features: ["Complete pitch deck development", "Investor introductions", "Financial modeling", "Ongoing support"]
+      },
+      {
+        name: "Scale",
+        price: "AED 15,000",
+        duration: "6 months",
+        features: ["Full funding strategy", "Multiple investor rounds", "Due diligence support", "Dedicated advisor"]
+      }
+    ],
+    faqs: [
+      {
+        question: "What types of investors do you work with?",
+        answer: "We work with angel investors, VCs, private equity firms, and family offices across various industries."
+      },
+      {
+        question: "What is your success rate?",
+        answer: "Over 75% of our clients secure funding within 6 months of completing our program."
+      }
+    ]
+  },
+  "business-training": {
+    title: "Business Training",
+    description: "Empower your team and yourself with specialized workshops and training programs. Learn essential business, marketing, and leadership skills from industry experts.",
+    rating: 4.5,
+    price: "Starting from AED 800",
+    duration: "1-4 weeks",
+    clients: "800+",
+    features: [
+      "Skill Development Workshops",
+      "Customized Training Programs", 
+      "Certified Trainers & Consultants",
+      "Leadership Development",
+      "Team Building Programs",
+      "Digital Skills Training"
+    ],
+    benefits: [
+      "Skill Development Workshops",
+      "Customized Training Programs",
+      "Certified Trainers & Consultants",
+      "Improved team productivity",
+      "Enhanced business skills"
+    ],
+    packages: [
+      {
+        name: "Workshop",
+        price: "AED 800",
+        duration: "1 day",
+        features: ["Single workshop session", "Training materials", "Certificate of completion"]
+      },
+      {
+        name: "Program",
+        price: "AED 2,500",
+        duration: "1 week",
+        features: ["5-day intensive program", "Practical exercises", "Follow-up session", "Resource kit"]
+      },
+      {
+        name: "Custom",
+        price: "AED 6,000",
+        duration: "4 weeks",
+        features: ["Tailored curriculum", "On-site training", "Ongoing coaching", "Performance tracking"]
+      }
+    ],
+    faqs: [
+      {
+        question: "Do you offer custom training programs?",
+        answer: "Yes, we design custom training programs based on your specific business needs and goals."
+      },
+      {
+        question: "Are the trainers certified?",
+        answer: "All our trainers are industry-certified professionals with extensive practical experience."
       }
     ]
   }

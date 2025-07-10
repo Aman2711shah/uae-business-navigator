@@ -4,6 +4,7 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import BottomNavigation from "@/components/BottomNavigation";
+import BusinessGrowthAdvisor from "@/components/BusinessGrowthAdvisor";
 
 const serviceCategoryDetails = {
   "company-formation": {
@@ -321,6 +322,14 @@ const ServiceCategoryDetail = () => {
             </CardContent>
           </Card>
         </div>
+
+        {/* AI Business Growth Advisor */}
+        <BusinessGrowthAdvisor 
+          currentService={category.title}
+          businessType="General Business"
+          companySize="Medium"
+          serviceCategory={categoryId}
+        />
 
         {/* CTA Button */}
         <Card className="border-primary/20 bg-primary/5">
