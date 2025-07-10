@@ -192,5 +192,235 @@ export const serviceCategoryDetails: Record<string, ServiceCategory> = {
     ],
     timeline: "3-10 business days",
     jurisdictions: ["UAE-wide"]
+  },
+  "government-liaison-approvals": {
+    title: "Government Liaison & Approvals",
+    description: "Government relations and approval coordination services",
+    overview: "Navigate UAE government procedures efficiently with our professional government liaison services. We coordinate with MOHRE, GDRFA, DED, MOFA and other authorities for all your approval needs.",
+    benefits: [
+      "Direct coordination with government departments",
+      "Faster approval processes",
+      "Expert knowledge of procedures",
+      "Compliance with regulations",
+      "Time and cost efficiency",
+      "Professional documentation"
+    ],
+    requirements: [
+      "Company registration documents",
+      "Relevant application forms",
+      "Supporting documentation",
+      "Power of attorney",
+      "Processing fees",
+      "Identification documents"
+    ],
+    timeline: "3-10 business days",
+    jurisdictions: ["UAE-wide"]
+  },
+  "attestation-legalization": {
+    title: "Attestation & Legalization",
+    description: "Document attestation and legalization services",
+    overview: "Professional document attestation and legalization services for educational, commercial, and personal documents through MOFA, consulates, and embassies.",
+    benefits: [
+      "MOFA attestation services",
+      "Embassy legalization support",
+      "Educational certificate attestation",
+      "Commercial document processing",
+      "Legal translation services",
+      "End-to-end documentation"
+    ],
+    requirements: [
+      "Original documents",
+      "Document translations",
+      "Application forms",
+      "Processing fees",
+      "Identification copies",
+      "Supporting certificates"
+    ],
+    timeline: "5-15 business days",
+    jurisdictions: ["UAE-wide"]
+  },
+  "corporate-compliance": {
+    title: "Corporate Compliance",
+    description: "Corporate compliance and regulatory services",
+    overview: "Ensure your company meets all regulatory requirements with our comprehensive corporate compliance services including labour compliance, immigration files, and GOSI registration.",
+    benefits: [
+      "Labour card processing",
+      "WPS system setup",
+      "Immigration file management",
+      "GOSI registration support",
+      "Compliance monitoring",
+      "Regulatory updates"
+    ],
+    requirements: [
+      "Company trade license",
+      "Employee documentation",
+      "Labour contracts",
+      "Insurance certificates",
+      "Salary certificates",
+      "Company bank details"
+    ],
+    timeline: "5-12 business days",
+    jurisdictions: ["UAE-wide"]
+  },
+  "accounting-bookkeeping": {
+    title: "Accounting & Bookkeeping",
+    description: "Professional accounting and bookkeeping services",
+    overview: "Maintain accurate financial records with our professional accounting and bookkeeping services. IFRS-compliant reporting and comprehensive financial management.",
+    benefits: [
+      "Monthly bookkeeping services",
+      "Financial statement preparation",
+      "IFRS-compliant reporting",
+      "Management reporting",
+      "Tax preparation support",
+      "Financial analysis"
+    ],
+    requirements: [
+      "Financial documents",
+      "Bank statements",
+      "Invoice records",
+      "Expense receipts",
+      "Previous financial statements",
+      "Chart of accounts"
+    ],
+    timeline: "Ongoing monthly service",
+    jurisdictions: ["UAE-wide"]
+  },
+  "taxation-services": {
+    title: "Taxation Services",
+    description: "Comprehensive tax advisory and compliance services",
+    overview: "Expert tax advisory services including VAT registration, corporate tax compliance, and tax optimization strategies for UAE businesses.",
+    benefits: [
+      "VAT registration and filing",
+      "Corporate tax advisory",
+      "Tax health checks",
+      "Compliance monitoring",
+      "Tax optimization strategies",
+      "Penalty avoidance"
+    ],
+    requirements: [
+      "Business license",
+      "Financial statements",
+      "Previous tax returns",
+      "Business activity details",
+      "Revenue documentation",
+      "Expense records"
+    ],
+    timeline: "3-7 business days",
+    jurisdictions: ["UAE-wide"]
+  },
+  "payroll-hr-compliance": {
+    title: "Payroll & HR Compliance",
+    description: "Payroll processing and HR compliance services",
+    overview: "Comprehensive payroll processing and HR compliance services including WPS compliance, employee management, and HR policy development.",
+    benefits: [
+      "Automated payroll processing",
+      "WPS compliance management",
+      "Employee expense tracking",
+      "HR policy development",
+      "Leave management systems",
+      "Compliance reporting"
+    ],
+    requirements: [
+      "Employee records",
+      "Salary structures",
+      "Labour contracts",
+      "Bank account details",
+      "Insurance documentation",
+      "Leave policies"
+    ],
+    timeline: "Ongoing monthly service",
+    jurisdictions: ["UAE-wide"]
+  },
+  "audit-assurance": {
+    title: "Audit & Assurance",
+    description: "External audit and assurance services",
+    overview: "Professional audit and assurance services including external audits, internal reviews, and statutory compliance audits for UAE companies.",
+    benefits: [
+      "External audit coordination",
+      "Internal audit reviews",
+      "Risk assessments",
+      "Compliance audits",
+      "Financial assurance",
+      "Regulatory compliance"
+    ],
+    requirements: [
+      "Financial statements",
+      "Accounting records",
+      "Internal controls documentation",
+      "Management accounts",
+      "Previous audit reports",
+      "Board resolutions"
+    ],
+    timeline: "4-8 weeks",
+    jurisdictions: ["UAE-wide"]
+  },
+  "regulatory-compliance-filings": {
+    title: "Regulatory Compliance & Filings",
+    description: "Regulatory compliance and filing services",
+    overview: "Stay compliant with UAE regulatory requirements including ESR reporting, UBO disclosures, and corporate governance filings.",
+    benefits: [
+      "ESR compliance reporting",
+      "UBO disclosure filings",
+      "AML compliance support",
+      "Corporate governance guidance",
+      "Regulatory updates",
+      "Penalty avoidance"
+    ],
+    requirements: [
+      "Corporate structure documents",
+      "Beneficial ownership details",
+      "Financial information",
+      "Business activity documentation",
+      "Previous compliance reports",
+      "Entity registration details"
+    ],
+    timeline: "5-10 business days",
+    jurisdictions: ["UAE-wide"]
+  },
+  "advisory-strategic-consulting": {
+    title: "Advisory & Strategic Consulting",
+    description: "Strategic business advisory and consulting services",
+    overview: "Expert strategic consulting services including cross-border tax advisory, M&A support, and CFO services for growing businesses.",
+    benefits: [
+      "Strategic business planning",
+      "Cross-border tax advisory",
+      "M&A due diligence support",
+      "CFO and finance services",
+      "Business restructuring",
+      "Investment advisory"
+    ],
+    requirements: [
+      "Business information",
+      "Financial statements",
+      "Strategic objectives",
+      "Market analysis data",
+      "Operational documentation",
+      "Growth plans"
+    ],
+    timeline: "Project-based",
+    jurisdictions: ["UAE-wide"]
+  },
+  "other-support-services": {
+    title: "Other Support Services",
+    description: "Additional business support and administrative services",
+    overview: "Comprehensive support services including typing center services, document courier, vehicle registration, and various administrative assistance.",
+    benefits: [
+      "Typing center services",
+      "Document courier coordination",
+      "Administrative support",
+      "Vehicle registration assistance",
+      "Insurance coordination",
+      "Utility setup support"
+    ],
+    requirements: [
+      "Service-specific documents",
+      "Identification copies",
+      "Application forms",
+      "Processing fees",
+      "Supporting documentation",
+      "Authorization letters"
+    ],
+    timeline: "1-5 business days",
+    jurisdictions: ["UAE-wide"]
   }
 };
