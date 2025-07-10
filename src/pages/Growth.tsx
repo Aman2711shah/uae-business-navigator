@@ -5,6 +5,7 @@ import { Badge } from "@/components/ui/badge";
 import { Input } from "@/components/ui/input";
 import BottomNavigation from "@/components/BottomNavigation";
 import { useState } from "react";
+import { useNavigate } from "react-router-dom";
 
 const growthServices = [
   {
@@ -113,6 +114,7 @@ const upcomingWorkshops = [
 ];
 
 const Growth = () => {
+  const navigate = useNavigate();
   const [searchTerm, setSearchTerm] = useState("");
   const [bookmarkedServices, setBookmarkedServices] = useState<string[]>([]);
 
@@ -128,6 +130,30 @@ const Growth = () => {
     service.title.toLowerCase().includes(searchTerm.toLowerCase()) ||
     service.description.toLowerCase().includes(searchTerm.toLowerCase())
   );
+
+  const getServiceId = (serviceTitle: string) => {
+    return serviceTitle.toLowerCase().replace(/\s+/g, '-');
+  };
+
+  const handleLearnMore = (serviceTitle: string) => {
+    const serviceId = getServiceId(serviceTitle);
+    navigate(`/growth/service/${serviceId}`);
+  };
+
+  const handleBookConsultation = (serviceTitle: string) => {
+    const serviceId = getServiceId(serviceTitle);
+    navigate(`/growth/booking/${serviceId}`);
+  };
+
+  const handleWorkshopRegister = (workshopTitle: string) => {
+    const workshopId = workshopTitle.toLowerCase().replace(/\s+/g, '-');
+    navigate(`/growth/workshop/${workshopId}/register`);
+  };
+
+  const handleSuccessStoryClick = (companyName: string) => {
+    const storyId = companyName.toLowerCase().replace(/\s+/g, '-');
+    navigate(`/growth/success-story/${storyId}`);
+  };
 
   return (
     <div className="min-h-screen bg-gradient-to-b from-background to-muted/20 pb-20">
@@ -164,7 +190,7 @@ const Growth = () => {
                   Limited Time: 30% OFF
                 </Badge>
               </div>
-              <Button variant="orange-outline" className="bg-white text-brand-orange">
+              <Button variant="orange-outline" className="bg-white text-brand-orange" onClick={() => navigate('/growth/package')}>
                 Learn More
               </Button>
             </div>
@@ -214,10 +240,19 @@ const Growth = () => {
                         </Button>
                       </div>
                       <div className="flex gap-2">
-                        <Button size="sm" variant="orange" className="flex-1">
+                        <Button 
+                          size="sm" 
+                          variant="orange" 
+                          className="flex-1"
+                          onClick={() => handleBookConsultation(service.title)}
+                        >
                           Book Consultation
                         </Button>
-                        <Button size="sm" variant="outline">
+                        <Button 
+                          size="sm" 
+                          variant="outline"
+                          onClick={() => handleLearnMore(service.title)}
+                        >
                           Learn More
                         </Button>
                       </div>
@@ -236,7 +271,10 @@ const Growth = () => {
             {successStories.map((story, index) => (
               <Card key={index} className="border-none shadow-sm">
                 <CardContent className="p-4">
-                  <div className="flex items-start gap-3">
+                  <div 
+                    className="flex items-start gap-3 cursor-pointer"
+                    onClick={() => handleSuccessStoryClick(story.company)}
+                  >
                     <div className="w-12 h-12 bg-muted rounded-lg flex items-center justify-center">
                       <Award className="h-6 w-6 text-brand-orange" />
                     </div>
@@ -284,7 +322,11 @@ const Growth = () => {
                             {workshop.price}
                           </span>
                         </div>
-                        <Button size="sm" variant="orange">
+                        <Button 
+                          size="sm" 
+                          variant="orange"
+                          onClick={() => handleWorkshopRegister(workshop.title)}
+                        >
                           Register
                         </Button>
                       </div>

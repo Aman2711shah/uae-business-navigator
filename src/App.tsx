@@ -14,6 +14,8 @@ import Growth from "./pages/Growth";
 import More from "./pages/More";
 import NotFound from "./pages/NotFound";
 import BusinessSetupFlow from "./pages/BusinessSetupFlow";
+import GrowthServiceDetail from "./pages/GrowthServiceDetail";
+import GrowthBooking from "./pages/GrowthBooking";
 
 const queryClient = new QueryClient();
 
@@ -34,6 +36,8 @@ const App = () => (
           <Route path="/growth" element={<Growth />} />
           <Route path="/more" element={<More />} />
           <Route path="/business-setup" element={<BusinessSetupFlow />} />
+          <Route path="/growth/service/:serviceId" element={<GrowthServiceDetail />} />
+          <Route path="/growth/booking/:serviceId" element={<GrowthBooking />} />
           {/* ADD ALL CUSTOM ROUTES ABOVE THE CATCH-ALL "*" ROUTE */}
           <Route path="*" element={<NotFound />} />
         </Routes>
