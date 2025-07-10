@@ -6,6 +6,8 @@ import { BrowserRouter, Routes, Route } from "react-router-dom";
 import Index from "./pages/Index";
 import Services from "./pages/Services";
 import ServiceDetail from "./pages/ServiceDetail";
+import ServiceCategoryDetail from "./pages/ServiceCategoryDetail";
+import ApplicationProcess from "./pages/ApplicationProcess";
 import CompanyFormationProcess from "./pages/CompanyFormationProcess";
 import Community from "./pages/Community";
 import Growth from "./pages/Growth";
@@ -25,6 +27,8 @@ const App = () => (
           <Route path="/" element={<Index />} />
           <Route path="/services" element={<Services />} />
           <Route path="/service/:serviceId" element={<ServiceDetail />} />
+          <Route path="/service-category/:categoryId" element={<ServiceCategoryDetail />} />
+          <Route path="/application-process/:categoryId" element={<ApplicationProcess />} />
           <Route path="/company-formation/:serviceId" element={<CompanyFormationProcess />} />
           <Route path="/community" element={<Community />} />
           <Route path="/growth" element={<Growth />} />

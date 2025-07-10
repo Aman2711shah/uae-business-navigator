@@ -138,6 +138,24 @@ const Services = () => {
     }
   };
 
+  const handleCategoryClick = (categoryTitle: string) => {
+    const categoryMap: { [key: string]: string } = {
+      "Company Formation": "company-formation",
+      "Licensing Services": "licensing-services",
+      "Visa & Immigration": "visa-immigration",
+      "Legal & Compliance": "legal-compliance",
+      "Tax & Accounting": "tax-accounting",
+      "Office Solutions": "office-solutions",
+      "PRO Services": "pro-services",
+      "Bank Account Opening": "bank-account-opening"
+    };
+    
+    const categoryId = categoryMap[categoryTitle];
+    if (categoryId) {
+      navigate(`/service-category/${categoryId}`);
+    }
+  };
+
   const filteredCategories = serviceCategories.filter(category =>
     category.title.toLowerCase().includes(searchTerm.toLowerCase()) ||
     category.services.some(service => 
@@ -175,9 +193,7 @@ const Services = () => {
               {/* Category Header */}
               <div 
                 className="p-4 cursor-pointer"
-                onClick={() => setSelectedCategory(
-                  selectedCategory === category.title ? null : category.title
-                )}
+                onClick={() => handleCategoryClick(category.title)}
               >
                 <div className="flex items-center justify-between">
                   <div className="flex items-center gap-3">
