@@ -192,8 +192,8 @@ const Services = () => {
 
   const handleCategoryClick = (categoryTitle: string) => {
     const categoryMap: { [key: string]: string } = {
-      "Company Formation & Licensing": "company-formation-licensing",
-      "Immigration & Visa Services": "immigration-visa-services",
+      "Company Formation & Licensing": "company-formation",
+      "Immigration & Visa Services": "visa-immigration", 
       "Government Liaison & Approvals": "government-liaison-approvals",
       "Attestation & Legalization": "attestation-legalization",
       "Corporate Compliance": "corporate-compliance",
