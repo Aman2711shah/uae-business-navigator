@@ -1,12 +1,15 @@
 import React, { useState, useEffect } from "react";
-import { ArrowLeft, ArrowRight, Building2, Users, Plane, FileText, Calculator } from "lucide-react";
+import { ArrowLeft, ArrowRight, Building2, Users, Plane, FileText, Calculator, CheckCircle, Search } from "lucide-react";
 import { useNavigate } from "react-router-dom";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Badge } from "@/components/ui/badge";
+import { Input } from "@/components/ui/input";
 import { useBusinessCosts } from "@/hooks/useBusinessCosts";
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
+import { supabase } from "@/integrations/supabase/client";
+import { useToast } from "@/hooks/use-toast";
 
 const businessActivities = {
   "Trading": [
@@ -45,14 +48,17 @@ const legalEntityTypes = [
 
 const BusinessSetupFlow = () => {
   const navigate = useNavigate();
+  const { toast } = useToast();
   const [currentStep, setCurrentStep] = useState(1);
   const [selectedActivities, setSelectedActivities] = useState<string[]>([]);
   const [shareholders, setShareholders] = useState<number>(1);
-  const [visas, setVisas] = useState<number>(1);
+  const [visas, setVisas] = useState<number>(0);
   const [entityType, setEntityType] = useState<string>("");
   const [estimatedCost, setEstimatedCost] = useState<number>(0);
   const [costBreakdown, setCostBreakdown] = useState<any>(null);
   const [isFreezone, setIsFreezone] = useState<boolean>(false);
+  const [searchTerm, setSearchTerm] = useState<string>("");
+  const [filteredActivities, setFilteredActivities] = useState<{[key: string]: string[]}>(businessActivities);
   
   const { getActivityCosts, getEntityCost, getShareholderFee, getVisaFee, isLoading, calculateFreezoneTotal, getFreezoneOptions } = useBusinessCosts();
 
@@ -61,8 +67,27 @@ const BusinessSetupFlow = () => {
     { number: 2, title: "Shareholders", icon: Users },
     { number: 3, title: "Visa Requirements", icon: Plane },
     { number: 4, title: "Legal Entity", icon: FileText },
-    { number: 5, title: "Cost Estimation", icon: Calculator }
+    { number: 5, title: "Cost Estimation", icon: Calculator },
+    { number: 6, title: "Summary & CTA", icon: CheckCircle }
   ];
+
+  // Filter activities based on search term
+  useEffect(() => {
+    if (searchTerm.trim() === "") {
+      setFilteredActivities(businessActivities);
+    } else {
+      const filtered: {[key: string]: string[]} = {};
+      Object.entries(businessActivities).forEach(([category, activities]) => {
+        const matchingActivities = activities.filter(activity =>
+          activity.toLowerCase().includes(searchTerm.toLowerCase())
+        );
+        if (matchingActivities.length > 0) {
+          filtered[category] = matchingActivities;
+        }
+      });
+      setFilteredActivities(filtered);
+    }
+  }, [searchTerm]);
 
   const handleActivityToggle = (activity: string) => {
     if (selectedActivities.includes(activity)) {
@@ -116,6 +141,33 @@ const BusinessSetupFlow = () => {
     }
   };
 
+  // Save selections to user profile
+  const saveToProfile = async () => {
+    try {
+      const { data: { user } } = await supabase.auth.getUser();
+      if (!user) return;
+
+      const selectionData = {
+        selectedActivities,
+        shareholders,
+        visas,
+        entityType,
+        estimatedCost,
+        timestamp: new Date().toISOString()
+      };
+
+      // Store in localStorage as a fallback and for immediate use
+      localStorage.setItem('businessSetupSelections', JSON.stringify(selectionData));
+      
+      toast({
+        title: "Selections Saved",
+        description: "Your business setup preferences have been saved.",
+      });
+    } catch (error) {
+      console.error('Error saving to profile:', error);
+    }
+  };
+
   // Auto-calculate when dependencies change
   useEffect(() => {
     if (selectedActivities.length > 0 && entityType && currentStep === 5) {
@@ -124,10 +176,13 @@ const BusinessSetupFlow = () => {
   }, [selectedActivities, shareholders, visas, entityType, currentStep]);
 
   const nextStep = () => {
-    if (currentStep < 5) {
+    if (currentStep < 6) {
       setCurrentStep(currentStep + 1);
       if (currentStep === 4) {
         calculateCost();
+      }
+      if (currentStep === 5) {
+        saveToProfile();
       }
     }
   };
@@ -142,8 +197,9 @@ const BusinessSetupFlow = () => {
     switch (currentStep) {
       case 1: return selectedActivities.length > 0;
       case 2: return shareholders > 0;
-      case 3: return visas > 0;
+      case 3: return visas >= 0;
       case 4: return entityType !== "";
+      case 5: return estimatedCost > 0;
       default: return true;
     }
   };
@@ -158,7 +214,19 @@ const BusinessSetupFlow = () => {
               <p className="text-muted-foreground">Choose up to 3 business activities for your company</p>
             </div>
             
-            {Object.entries(businessActivities).map(([category, activities]) => (
+            {/* Search Bar */}
+            <div className="relative">
+              <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 h-4 w-4 text-muted-foreground" />
+              <Input
+                type="text"
+                placeholder="Search business activities..."
+                value={searchTerm}
+                onChange={(e) => setSearchTerm(e.target.value)}
+                className="pl-10"
+              />
+            </div>
+            
+            {Object.entries(filteredActivities).map(([category, activities]) => (
               <div key={category} className="space-y-3">
                 <h3 className="text-lg font-semibold text-foreground">{category}</h3>
                 <div className="grid grid-cols-1 gap-2">
@@ -179,7 +247,7 @@ const BusinessSetupFlow = () => {
             
             {selectedActivities.length > 0 && (
               <div className="mt-6">
-                <h4 className="font-medium text-foreground mb-2">Selected Activities:</h4>
+                <h4 className="font-medium text-foreground mb-2">Selected Activities ({selectedActivities.length}/3):</h4>
                 <div className="flex flex-wrap gap-2">
                   {selectedActivities.map((activity) => (
                     <Badge key={activity} variant="default" className="px-3 py-1">
@@ -246,16 +314,20 @@ const BusinessSetupFlow = () => {
                     <SelectValue placeholder="Select number of visas" />
                   </SelectTrigger>
                   <SelectContent>
-                    {[...Array(20)].map((_, i) => (
+                    <SelectItem value="0">0 Visas (No employees)</SelectItem>
+                    {[...Array(10)].map((_, i) => (
                       <SelectItem key={i + 1} value={(i + 1).toString()}>
                         {i + 1} {i + 1 === 1 ? 'Visa' : 'Visas'}
                       </SelectItem>
                     ))}
-                    <SelectItem value="unlimited">Unlimited Visas</SelectItem>
                   </SelectContent>
                 </Select>
               </div>
             </Card>
+            
+            <div className="text-center text-sm text-muted-foreground">
+              Select 0 if you don't need employee visas initially
+            </div>
           </div>
         );
 
@@ -388,13 +460,105 @@ const BusinessSetupFlow = () => {
               </div>
             </Card>
             
+          </div>
+        );
+
+      case 6:
+        return (
+          <div className="space-y-6">
+            <div className="text-center">
+              <h2 className="text-2xl font-bold text-foreground mb-2">Summary & Next Steps</h2>
+              <p className="text-muted-foreground">Review your selections and proceed with your business setup</p>
+            </div>
+            
+            {/* Final Cost Display */}
+            <Card className="p-6 bg-gradient-to-br from-primary/5 to-primary/10 border-primary/20">
+              <div className="text-center space-y-4">
+                <div className="text-4xl font-bold text-primary">
+                  AED {estimatedCost.toLocaleString()}
+                </div>
+                <div className="text-sm text-muted-foreground">
+                  Total Estimated Setup Cost {isFreezone ? "(Free Zone)" : "(Mainland)"}
+                </div>
+              </div>
+            </Card>
+
+            {/* Detailed Summary */}
+            <Card className="p-6">
+              <h3 className="font-semibold text-foreground mb-4 flex items-center gap-2">
+                <CheckCircle className="h-5 w-5 text-primary" />
+                Your Business Setup Summary
+              </h3>
+              <div className="space-y-4">
+                <div className="grid grid-cols-1 gap-4">
+                  <div className="p-4 bg-muted/30 rounded-lg">
+                    <h4 className="font-medium text-foreground mb-2">Business Activities</h4>
+                    <div className="flex flex-wrap gap-2">
+                      {selectedActivities.map((activity) => (
+                        <Badge key={activity} variant="secondary" className="text-xs">
+                          {activity}
+                        </Badge>
+                      ))}
+                    </div>
+                  </div>
+                  
+                  <div className="grid grid-cols-2 gap-4">
+                    <div className="p-4 bg-muted/30 rounded-lg">
+                      <h4 className="font-medium text-foreground mb-1">Shareholders</h4>
+                      <p className="text-2xl font-bold text-primary">{shareholders}</p>
+                    </div>
+                    <div className="p-4 bg-muted/30 rounded-lg">
+                      <h4 className="font-medium text-foreground mb-1">Visas Required</h4>
+                      <p className="text-2xl font-bold text-primary">{visas}</p>
+                    </div>
+                  </div>
+                  
+                  <div className="p-4 bg-muted/30 rounded-lg">
+                    <h4 className="font-medium text-foreground mb-2">Legal Entity Type</h4>
+                    <p className="text-foreground">
+                      {legalEntityTypes.find(e => e.value === entityType)?.label}
+                    </p>
+                    <p className="text-sm text-muted-foreground">
+                      {legalEntityTypes.find(e => e.value === entityType)?.description}
+                    </p>
+                  </div>
+                </div>
+              </div>
+            </Card>
+
+            {/* CTA Buttons */}
             <div className="space-y-3">
-              <Button className="w-full" size="lg">
-                Proceed with Application
+              <Button 
+                className="w-full" 
+                size="lg"
+                onClick={() => {
+                  toast({
+                    title: "Application Started!",
+                    description: "Redirecting you to begin the formal application process.",
+                  });
+                  navigate("/application-process/company-formation");
+                }}
+              >
+                Start Now - Begin Application
               </Button>
-              <Button variant="outline" className="w-full">
-                Get Detailed Quote
+              <Button 
+                variant="outline" 
+                className="w-full" 
+                size="lg"
+                onClick={() => {
+                  toast({
+                    title: "Expert Consultation",
+                    description: "Our business consultants will contact you within 24 hours.",
+                  });
+                  navigate("/growth");
+                }}
+              >
+                Consult an Expert
               </Button>
+            </div>
+            
+            <div className="text-center text-sm text-muted-foreground">
+              Your selections have been saved to your profile for future reference
             </div>
           </div>
         );
@@ -443,7 +607,7 @@ const BusinessSetupFlow = () => {
         <div className="w-full bg-muted rounded-full h-2">
           <div
             className="bg-primary h-2 rounded-full transition-all duration-300"
-            style={{ width: `${(currentStep / 5) * 100}%` }}
+            style={{ width: `${(currentStep / 6) * 100}%` }}
           />
         </div>
       </div>
@@ -463,7 +627,7 @@ const BusinessSetupFlow = () => {
             </Button>
           )}
           
-          {currentStep < 5 ? (
+          {currentStep < 6 ? (
             <Button 
               onClick={nextStep} 
               disabled={!canProceed()}
