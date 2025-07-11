@@ -13,12 +13,12 @@ import VisaRequirementsStep from "@/components/business-setup/VisaRequirementsSt
 import LegalEntityStep from "@/components/business-setup/LegalEntityStep";
 import CostEstimationStep from "@/components/business-setup/CostEstimationStep";
 import SummaryStep from "@/components/business-setup/SummaryStep";
-
 const BusinessSetupFlow = () => {
   const navigate = useNavigate();
-  const { toast } = useToast();
+  const {
+    toast
+  } = useToast();
   const [currentStep, setCurrentStep] = useState(1);
-  
   const [state, setState] = useState<BusinessSetupState>({
     selectedActivities: [],
     shareholders: 1,
@@ -31,41 +31,48 @@ const BusinessSetupFlow = () => {
     searchTerm: "",
     filteredActivities: businessActivities
   });
-
-  const { getActivityCosts, getEntityCost, getShareholderFee, getVisaFee, isLoading, calculateFreezoneTotal } = useBusinessCosts();
+  const {
+    getActivityCosts,
+    getEntityCost,
+    getShareholderFee,
+    getVisaFee,
+    isLoading,
+    calculateFreezoneTotal
+  } = useBusinessCosts();
 
   // Filter activities based on search term
   useEffect(() => {
     if (state.searchTerm.trim() === "") {
-      setState(prev => ({ ...prev, filteredActivities: businessActivities }));
+      setState(prev => ({
+        ...prev,
+        filteredActivities: businessActivities
+      }));
     } else {
-      const filtered: {[key: string]: string[]} = {};
+      const filtered: {
+        [key: string]: string[];
+      } = {};
       Object.entries(businessActivities).forEach(([category, activities]) => {
-        const matchingActivities = activities.filter(activity =>
-          activity.toLowerCase().includes(state.searchTerm.toLowerCase())
-        );
+        const matchingActivities = activities.filter(activity => activity.toLowerCase().includes(state.searchTerm.toLowerCase()));
         if (matchingActivities.length > 0) {
           filtered[category] = matchingActivities;
         }
       });
-      setState(prev => ({ ...prev, filteredActivities: filtered }));
+      setState(prev => ({
+        ...prev,
+        filteredActivities: filtered
+      }));
     }
   }, [state.searchTerm]);
-
   const calculateCost = () => {
     // Determine if it's a freezone entity
     const isFreezoneBusiness = state.entityType === "fzc" || state.entityType === "branch";
     const totalVisas = state.investorVisas + state.employeeVisas;
-    
     if (isFreezoneBusiness) {
       // Use new freezone cost calculation
-      const { totalCost, breakdown } = calculateFreezoneTotal(
-        state.selectedActivities, 
-        state.entityType, 
-        state.shareholders, 
-        totalVisas
-      );
-      
+      const {
+        totalCost,
+        breakdown
+      } = calculateFreezoneTotal(state.selectedActivities, state.entityType, state.shareholders, totalVisas);
       setState(prev => ({
         ...prev,
         estimatedCost: totalCost,
@@ -76,13 +83,10 @@ const BusinessSetupFlow = () => {
       // Use legacy mainland cost calculation
       const activityCosts = getActivityCosts(state.selectedActivities, false);
       const totalLicenseFee = activityCosts.reduce((sum, item) => sum + item.fee, 0);
-      
       const legalEntityFee = getEntityCost(state.entityType, false);
       const shareholderFee = getShareholderFee() * Math.max(0, state.shareholders - 1);
       const visaFee = getVisaFee() * totalVisas;
-      
       const totalCost = totalLicenseFee + legalEntityFee + shareholderFee + visaFee;
-      
       const breakdown = {
         activities: activityCosts,
         totalLicenseFee,
@@ -94,7 +98,6 @@ const BusinessSetupFlow = () => {
         entityType: state.entityType,
         isFreezone: false
       };
-      
       setState(prev => ({
         ...prev,
         estimatedCost: totalCost,
@@ -107,9 +110,12 @@ const BusinessSetupFlow = () => {
   // Save selections to user profile
   const saveToProfile = async () => {
     try {
-      const { data: { user } } = await supabase.auth.getUser();
+      const {
+        data: {
+          user
+        }
+      } = await supabase.auth.getUser();
       if (!user) return;
-
       const selectionData = {
         selectedActivities: state.selectedActivities,
         shareholders: state.shareholders,
@@ -122,10 +128,9 @@ const BusinessSetupFlow = () => {
 
       // Store in localStorage as a fallback and for immediate use
       localStorage.setItem('businessSetupSelections', JSON.stringify(selectionData));
-      
       toast({
         title: "Selections Saved",
-        description: "Your business setup preferences have been saved.",
+        description: "Your business setup preferences have been saved."
       });
     } catch (error) {
       console.error('Error saving to profile:', error);
@@ -138,7 +143,6 @@ const BusinessSetupFlow = () => {
       calculateCost();
     }
   }, [state.selectedActivities, state.shareholders, state.investorVisas, state.employeeVisas, state.entityType, currentStep]);
-
   const nextStep = () => {
     if (currentStep < 6) {
       setCurrentStep(currentStep + 1);
@@ -150,28 +154,33 @@ const BusinessSetupFlow = () => {
       }
     }
   };
-
   const prevStep = () => {
     if (currentStep > 1) {
       setCurrentStep(currentStep - 1);
     }
   };
-
   const canProceed = () => {
     switch (currentStep) {
-      case 1: return state.selectedActivities.length > 0;
-      case 2: return state.shareholders > 0;
-      case 3: return state.investorVisas >= 0 && state.employeeVisas >= 0;
-      case 4: return state.entityType !== "";
-      case 5: return state.estimatedCost > 0;
-      default: return true;
+      case 1:
+        return state.selectedActivities.length > 0;
+      case 2:
+        return state.shareholders > 0;
+      case 3:
+        return state.investorVisas >= 0 && state.employeeVisas >= 0;
+      case 4:
+        return state.entityType !== "";
+      case 5:
+        return state.estimatedCost > 0;
+      default:
+        return true;
     }
   };
-
   const updateState = (updates: Partial<BusinessSetupState>) => {
-    setState(prev => ({ ...prev, ...updates }));
+    setState(prev => ({
+      ...prev,
+      ...updates
+    }));
   };
-
   const renderStepContent = () => {
     const stepProps = {
       state,
@@ -179,20 +188,24 @@ const BusinessSetupFlow = () => {
       onNext: nextStep,
       onBack: prevStep
     };
-
     switch (currentStep) {
-      case 1: return <BusinessActivityStep {...stepProps} />;
-      case 2: return <ShareholdersStep {...stepProps} />;
-      case 3: return <VisaRequirementsStep {...stepProps} />;
-      case 4: return <LegalEntityStep {...stepProps} />;
-      case 5: return <CostEstimationStep {...stepProps} />;
-      case 6: return <SummaryStep {...stepProps} />;
-      default: return null;
+      case 1:
+        return <BusinessActivityStep {...stepProps} />;
+      case 2:
+        return <ShareholdersStep {...stepProps} />;
+      case 3:
+        return <VisaRequirementsStep {...stepProps} />;
+      case 4:
+        return <LegalEntityStep {...stepProps} />;
+      case 5:
+        return <CostEstimationStep {...stepProps} />;
+      case 6:
+        return <SummaryStep {...stepProps} />;
+      default:
+        return null;
     }
   };
-
-  return (
-    <div className="min-h-screen bg-gradient-to-b from-background to-muted/20">
+  return <div className="min-h-screen bg-gradient-to-b from-background to-muted/20">
       {/* Header */}
       <div className="bg-white shadow-sm border-b sticky top-0 z-10">
         <div className="flex items-center justify-between p-4">
@@ -207,31 +220,15 @@ const BusinessSetupFlow = () => {
       {/* Progress Indicator */}
       <div className="bg-white border-b p-4">
         <div className="flex items-center justify-between mb-2">
-          {businessSetupSteps.map((step) => (
-            <div
-              key={step.number}
-              className={`flex flex-col items-center space-y-1 ${
-                step.number <= currentStep ? 'text-primary' : 'text-muted-foreground'
-              }`}
-            >
-              <div
-                className={`w-8 h-8 rounded-full flex items-center justify-center text-xs font-medium ${
-                  step.number <= currentStep 
-                    ? 'bg-primary text-primary-foreground' 
-                    : 'bg-muted text-muted-foreground'
-                }`}
-              >
-                {step.number < currentStep ? '✓' : step.number}
-              </div>
+          {businessSetupSteps.map(step => <div key={step.number} className={`flex flex-col items-center space-y-1 ${step.number <= currentStep ? 'text-primary' : 'text-muted-foreground'}`}>
+              
               <span className="text-xs font-medium">{step.title}</span>
-            </div>
-          ))}
+            </div>)}
         </div>
         <div className="w-full bg-muted rounded-full h-2">
-          <div
-            className="bg-primary h-2 rounded-full transition-all duration-300"
-            style={{ width: `${(currentStep / 6) * 100}%` }}
-          />
+          <div className="bg-primary h-2 rounded-full transition-all duration-300" style={{
+          width: `${currentStep / 6 * 100}%`
+        }} />
         </div>
       </div>
 
@@ -243,31 +240,19 @@ const BusinessSetupFlow = () => {
       {/* Navigation */}
       <div className="fixed bottom-0 left-0 right-0 bg-white border-t p-4">
         <div className="flex space-x-3">
-          {currentStep > 1 && (
-            <Button variant="outline" onClick={prevStep} className="flex-1">
+          {currentStep > 1 && <Button variant="outline" onClick={prevStep} className="flex-1">
               <ArrowLeft className="w-4 h-4 mr-2" />
               Back
-            </Button>
-          )}
+            </Button>}
           
-          {currentStep < 6 ? (
-            <Button 
-              onClick={nextStep} 
-              disabled={!canProceed()}
-              className="flex-1"
-            >
+          {currentStep < 6 ? <Button onClick={nextStep} disabled={!canProceed()} className="flex-1">
               Next
               <ArrowRight className="w-4 h-4 ml-2" />
-            </Button>
-          ) : (
-            <Button onClick={() => navigate("/")} className="flex-1">
+            </Button> : <Button onClick={() => navigate("/")} className="flex-1">
               Complete Setup
-            </Button>
-          )}
+            </Button>}
         </div>
       </div>
-    </div>
-  );
+    </div>;
 };
-
 export default BusinessSetupFlow;
