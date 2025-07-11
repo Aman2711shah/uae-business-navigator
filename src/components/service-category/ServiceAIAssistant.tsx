@@ -1,6 +1,6 @@
 import { CheckCircle } from "lucide-react";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-import BusinessServicesAssistant from "@/components/BusinessServicesAssistant";
+import ServiceDetailAssistant from "@/components/ServiceDetailAssistant";
 import { ServiceCategory } from "@/data/serviceCategoryData";
 
 interface ServiceAIAssistantProps {
@@ -17,7 +17,7 @@ const ServiceAIAssistant = ({ category }: ServiceAIAssistantProps) => {
         </CardTitle>
       </CardHeader>
       <CardContent>
-        <BusinessServicesAssistant 
+        <ServiceDetailAssistant 
           inputs={{
             selectedCategory: category.title,
             selectedService: category.title,
