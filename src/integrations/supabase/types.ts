@@ -21,7 +21,7 @@ export type Database = {
           freezone_fee: number | null
           id: number
           item_name: string | null
-          mainland_fee: number | null
+          License_fee: number | null
         }
         Insert: {
           category: string
@@ -29,7 +29,7 @@ export type Database = {
           freezone_fee?: number | null
           id: number
           item_name?: string | null
-          mainland_fee?: number | null
+          License_fee?: number | null
         }
         Update: {
           category?: string
@@ -37,7 +37,7 @@ export type Database = {
           freezone_fee?: number | null
           id?: number
           item_name?: string | null
-          mainland_fee?: number | null
+          License_fee?: number | null
         }
         Relationships: []
       }
