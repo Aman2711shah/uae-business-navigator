@@ -52,7 +52,8 @@ const BusinessSetupFlow = () => {
   const [currentStep, setCurrentStep] = useState(1);
   const [selectedActivities, setSelectedActivities] = useState<string[]>([]);
   const [shareholders, setShareholders] = useState<number>(1);
-  const [visas, setVisas] = useState<number>(0);
+  const [investorVisas, setInvestorVisas] = useState<number>(0);
+  const [employeeVisas, setEmployeeVisas] = useState<number>(0);
   const [entityType, setEntityType] = useState<string>("");
   const [estimatedCost, setEstimatedCost] = useState<number>(0);
   const [costBreakdown, setCostBreakdown] = useState<any>(null);
@@ -104,11 +105,12 @@ const BusinessSetupFlow = () => {
     
     if (isFreezoneBusiness) {
       // Use new freezone cost calculation
+      const totalVisas = investorVisas + employeeVisas;
       const { totalCost, breakdown } = calculateFreezoneTotal(
         selectedActivities, 
         entityType, 
         shareholders, 
-        visas
+        totalVisas
       );
       
       setEstimatedCost(totalCost);
@@ -120,7 +122,8 @@ const BusinessSetupFlow = () => {
       
       const legalEntityFee = getEntityCost(entityType, false);
       const shareholderFee = getShareholderFee() * Math.max(0, shareholders - 1);
-      const visaFee = getVisaFee() * visas;
+      const totalVisas = investorVisas + employeeVisas;
+      const visaFee = getVisaFee() * totalVisas;
       
       const totalCost = totalLicenseFee + legalEntityFee + shareholderFee + visaFee;
       
@@ -131,7 +134,7 @@ const BusinessSetupFlow = () => {
         shareholderFee,
         visaFee,
         shareholders: shareholders - 1,
-        visaCount: visas,
+        visaCount: totalVisas,
         entityType: legalEntityTypes.find(e => e.value === entityType)?.label || entityType,
         isFreezone: false
       };
@@ -150,7 +153,8 @@ const BusinessSetupFlow = () => {
       const selectionData = {
         selectedActivities,
         shareholders,
-        visas,
+        investorVisas,
+        employeeVisas,
         entityType,
         estimatedCost,
         timestamp: new Date().toISOString()
@@ -173,7 +177,7 @@ const BusinessSetupFlow = () => {
     if (selectedActivities.length > 0 && entityType && currentStep === 5) {
       calculateCost();
     }
-  }, [selectedActivities, shareholders, visas, entityType, currentStep]);
+  }, [selectedActivities, shareholders, investorVisas, employeeVisas, entityType, currentStep]);
 
   const nextStep = () => {
     if (currentStep < 6) {
@@ -197,7 +201,7 @@ const BusinessSetupFlow = () => {
     switch (currentStep) {
       case 1: return selectedActivities.length > 0;
       case 2: return shareholders > 0;
-      case 3: return visas >= 0;
+      case 3: return investorVisas >= 0 && employeeVisas >= 0;
       case 4: return entityType !== "";
       case 5: return estimatedCost > 0;
       default: return true;
@@ -307,23 +311,43 @@ const BusinessSetupFlow = () => {
               <p className="text-muted-foreground">How many visas do you need for your company?</p>
             </div>
             
-            <Card className="p-6">
-              <div className="space-y-4">
-                <Select value={visas.toString()} onValueChange={(value) => setVisas(parseInt(value))}>
-                  <SelectTrigger>
-                    <SelectValue placeholder="Select number of visas" />
-                  </SelectTrigger>
-                  <SelectContent>
-                    <SelectItem value="0">0 Visas (No employees)</SelectItem>
-                    {[...Array(10)].map((_, i) => (
-                      <SelectItem key={i + 1} value={(i + 1).toString()}>
-                        {i + 1} {i + 1 === 1 ? 'Visa' : 'Visas'}
-                      </SelectItem>
-                    ))}
-                  </SelectContent>
-                </Select>
-              </div>
-            </Card>
+            <div className="space-y-4">
+              <Card className="p-6">
+                <div className="space-y-4">
+                  <div>
+                    <label className="text-sm font-medium text-foreground mb-2 block">Investor Visas</label>
+                    <Select value={investorVisas.toString()} onValueChange={(value) => setInvestorVisas(parseInt(value))}>
+                      <SelectTrigger>
+                        <SelectValue placeholder="Select investor visas" />
+                      </SelectTrigger>
+                      <SelectContent>
+                        {[...Array(6)].map((_, i) => (
+                          <SelectItem key={i} value={i.toString()}>
+                            {i} {i === 1 ? 'Investor Visa' : 'Investor Visas'}
+                          </SelectItem>
+                        ))}
+                      </SelectContent>
+                    </Select>
+                  </div>
+                  
+                  <div>
+                    <label className="text-sm font-medium text-foreground mb-2 block">Employee Visas</label>
+                    <Select value={employeeVisas.toString()} onValueChange={(value) => setEmployeeVisas(parseInt(value))}>
+                      <SelectTrigger>
+                        <SelectValue placeholder="Select employee visas" />
+                      </SelectTrigger>
+                      <SelectContent>
+                        {[...Array(11)].map((_, i) => (
+                          <SelectItem key={i} value={i.toString()}>
+                            {i} {i === 1 ? 'Employee Visa' : 'Employee Visas'}
+                          </SelectItem>
+                        ))}
+                      </SelectContent>
+                    </Select>
+                  </div>
+                </div>
+              </Card>
+            </div>
             
             <div className="text-center text-sm text-muted-foreground">
               Select 0 if you don't need employee visas initially
@@ -438,8 +462,12 @@ const BusinessSetupFlow = () => {
                   <span className="text-foreground">{shareholders}</span>
                 </div>
                 <div className="flex justify-between">
-                  <span className="text-muted-foreground">Visas Required:</span>
-                  <span className="text-foreground">{visas}</span>
+                  <span className="text-muted-foreground">Investor Visas:</span>
+                  <span className="text-foreground">{investorVisas}</span>
+                </div>
+                <div className="flex justify-between">
+                  <span className="text-muted-foreground">Employee Visas:</span>
+                  <span className="text-foreground">{employeeVisas}</span>
                 </div>
                 <div className="flex justify-between">
                   <span className="text-muted-foreground">Entity Type:</span>
@@ -508,8 +536,9 @@ const BusinessSetupFlow = () => {
                       <p className="text-2xl font-bold text-primary">{shareholders}</p>
                     </div>
                     <div className="p-4 bg-muted/30 rounded-lg">
-                      <h4 className="font-medium text-foreground mb-1">Visas Required</h4>
-                      <p className="text-2xl font-bold text-primary">{visas}</p>
+                      <h4 className="font-medium text-foreground mb-1">Total Visas</h4>
+                      <p className="text-2xl font-bold text-primary">{investorVisas + employeeVisas}</p>
+                      <p className="text-xs text-muted-foreground">{investorVisas} Investor + {employeeVisas} Employee</p>
                     </div>
                   </div>
                   
