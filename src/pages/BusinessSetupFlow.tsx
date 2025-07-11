@@ -1,128 +1,84 @@
 import React, { useState, useEffect } from "react";
-import { ArrowLeft, ArrowRight, Building2, Users, Plane, FileText, Calculator, CheckCircle, Search } from "lucide-react";
+import { ArrowLeft, ArrowRight } from "lucide-react";
 import { useNavigate } from "react-router-dom";
 import { Button } from "@/components/ui/button";
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
-import { Badge } from "@/components/ui/badge";
-import { Input } from "@/components/ui/input";
 import { useBusinessCosts } from "@/hooks/useBusinessCosts";
-import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
 import { supabase } from "@/integrations/supabase/client";
 import { useToast } from "@/hooks/use-toast";
-
-const businessActivities = {
-  "Trading": [
-    "General Trading", "Import/Export", "Wholesale Trading", "Retail Trading", 
-    "E-commerce Trading", "Food Trading", "Electronics Trading", "Textile Trading"
-  ],
-  "Services": [
-    "Consulting Services", "IT Services", "Marketing Services", "Legal Services",
-    "Accounting Services", "HR Services", "Real Estate Services", "Tourism Services"
-  ],
-  "Manufacturing": [
-    "Food Manufacturing", "Textile Manufacturing", "Electronics Manufacturing",
-    "Chemical Manufacturing", "Plastic Manufacturing", "Metal Manufacturing"
-  ],
-  "Construction": [
-    "General Construction", "Civil Engineering", "Interior Design", "Architecture",
-    "Project Management", "MEP Services"
-  ],
-  "Healthcare": [
-    "Medical Services", "Dental Services", "Pharmacy", "Medical Equipment",
-    "Health Consulting", "Wellness Services"
-  ],
-  "Education": [
-    "Training Services", "Educational Consulting", "Language Training",
-    "Professional Development", "Online Education"
-  ]
-};
-
-const legalEntityTypes = [
-  { value: "sole", label: "Sole Establishment", description: "Single owner business" },
-  { value: "llc", label: "Limited Liability Company (LLC)", description: "Multiple shareholders" },
-  { value: "fzc", label: "Free Zone Company (FZC/FZE)", description: "Free zone establishment" },
-  { value: "branch", label: "Branch Office", description: "Extension of foreign company" },
-  { value: "offshore", label: "Offshore Company", description: "International business" }
-];
+import { businessActivities, businessSetupSteps } from "@/data/businessSetupData";
+import { BusinessSetupState } from "@/types/businessSetup";
+import BusinessActivityStep from "@/components/business-setup/BusinessActivityStep";
+import ShareholdersStep from "@/components/business-setup/ShareholdersStep";
+import VisaRequirementsStep from "@/components/business-setup/VisaRequirementsStep";
+import LegalEntityStep from "@/components/business-setup/LegalEntityStep";
+import CostEstimationStep from "@/components/business-setup/CostEstimationStep";
+import SummaryStep from "@/components/business-setup/SummaryStep";
 
 const BusinessSetupFlow = () => {
   const navigate = useNavigate();
   const { toast } = useToast();
   const [currentStep, setCurrentStep] = useState(1);
-  const [selectedActivities, setSelectedActivities] = useState<string[]>([]);
-  const [shareholders, setShareholders] = useState<number>(1);
-  const [investorVisas, setInvestorVisas] = useState<number>(0);
-  const [employeeVisas, setEmployeeVisas] = useState<number>(0);
-  const [entityType, setEntityType] = useState<string>("");
-  const [estimatedCost, setEstimatedCost] = useState<number>(0);
-  const [costBreakdown, setCostBreakdown] = useState<any>(null);
-  const [isFreezone, setIsFreezone] = useState<boolean>(false);
-  const [searchTerm, setSearchTerm] = useState<string>("");
-  const [filteredActivities, setFilteredActivities] = useState<{[key: string]: string[]}>(businessActivities);
   
-  const { getActivityCosts, getEntityCost, getShareholderFee, getVisaFee, isLoading, calculateFreezoneTotal, getFreezoneOptions } = useBusinessCosts();
+  const [state, setState] = useState<BusinessSetupState>({
+    selectedActivities: [],
+    shareholders: 1,
+    investorVisas: 0,
+    employeeVisas: 0,
+    entityType: "",
+    estimatedCost: 0,
+    costBreakdown: null,
+    isFreezone: false,
+    searchTerm: "",
+    filteredActivities: businessActivities
+  });
 
-  const steps = [
-    { number: 1, title: "Business Activities", icon: Building2 },
-    { number: 2, title: "Shareholders", icon: Users },
-    { number: 3, title: "Visa Requirements", icon: Plane },
-    { number: 4, title: "Legal Entity", icon: FileText },
-    { number: 5, title: "Cost Estimation", icon: Calculator },
-    { number: 6, title: "Summary & CTA", icon: CheckCircle }
-  ];
+  const { getActivityCosts, getEntityCost, getShareholderFee, getVisaFee, isLoading, calculateFreezoneTotal } = useBusinessCosts();
 
   // Filter activities based on search term
   useEffect(() => {
-    if (searchTerm.trim() === "") {
-      setFilteredActivities(businessActivities);
+    if (state.searchTerm.trim() === "") {
+      setState(prev => ({ ...prev, filteredActivities: businessActivities }));
     } else {
       const filtered: {[key: string]: string[]} = {};
       Object.entries(businessActivities).forEach(([category, activities]) => {
         const matchingActivities = activities.filter(activity =>
-          activity.toLowerCase().includes(searchTerm.toLowerCase())
+          activity.toLowerCase().includes(state.searchTerm.toLowerCase())
         );
         if (matchingActivities.length > 0) {
           filtered[category] = matchingActivities;
         }
       });
-      setFilteredActivities(filtered);
+      setState(prev => ({ ...prev, filteredActivities: filtered }));
     }
-  }, [searchTerm]);
-
-  const handleActivityToggle = (activity: string) => {
-    if (selectedActivities.includes(activity)) {
-      setSelectedActivities(selectedActivities.filter(a => a !== activity));
-    } else if (selectedActivities.length < 3) {
-      setSelectedActivities([...selectedActivities, activity]);
-    }
-  };
+  }, [state.searchTerm]);
 
   const calculateCost = () => {
     // Determine if it's a freezone entity
-    const isFreezoneBusiness = entityType === "fzc" || entityType === "branch";
-    setIsFreezone(isFreezoneBusiness);
+    const isFreezoneBusiness = state.entityType === "fzc" || state.entityType === "branch";
+    const totalVisas = state.investorVisas + state.employeeVisas;
     
     if (isFreezoneBusiness) {
       // Use new freezone cost calculation
-      const totalVisas = investorVisas + employeeVisas;
       const { totalCost, breakdown } = calculateFreezoneTotal(
-        selectedActivities, 
-        entityType, 
-        shareholders, 
+        state.selectedActivities, 
+        state.entityType, 
+        state.shareholders, 
         totalVisas
       );
       
-      setEstimatedCost(totalCost);
-      setCostBreakdown(breakdown);
+      setState(prev => ({
+        ...prev,
+        estimatedCost: totalCost,
+        costBreakdown: breakdown,
+        isFreezone: true
+      }));
     } else {
       // Use legacy mainland cost calculation
-      const activityCosts = getActivityCosts(selectedActivities, false);
+      const activityCosts = getActivityCosts(state.selectedActivities, false);
       const totalLicenseFee = activityCosts.reduce((sum, item) => sum + item.fee, 0);
       
-      const legalEntityFee = getEntityCost(entityType, false);
-      const shareholderFee = getShareholderFee() * Math.max(0, shareholders - 1);
-      const totalVisas = investorVisas + employeeVisas;
+      const legalEntityFee = getEntityCost(state.entityType, false);
+      const shareholderFee = getShareholderFee() * Math.max(0, state.shareholders - 1);
       const visaFee = getVisaFee() * totalVisas;
       
       const totalCost = totalLicenseFee + legalEntityFee + shareholderFee + visaFee;
@@ -133,14 +89,18 @@ const BusinessSetupFlow = () => {
         legalEntityFee,
         shareholderFee,
         visaFee,
-        shareholders: shareholders - 1,
+        shareholders: state.shareholders - 1,
         visaCount: totalVisas,
-        entityType: legalEntityTypes.find(e => e.value === entityType)?.label || entityType,
+        entityType: state.entityType,
         isFreezone: false
       };
       
-      setCostBreakdown(breakdown);
-      setEstimatedCost(totalCost);
+      setState(prev => ({
+        ...prev,
+        estimatedCost: totalCost,
+        costBreakdown: breakdown,
+        isFreezone: false
+      }));
     }
   };
 
@@ -151,12 +111,12 @@ const BusinessSetupFlow = () => {
       if (!user) return;
 
       const selectionData = {
-        selectedActivities,
-        shareholders,
-        investorVisas,
-        employeeVisas,
-        entityType,
-        estimatedCost,
+        selectedActivities: state.selectedActivities,
+        shareholders: state.shareholders,
+        investorVisas: state.investorVisas,
+        employeeVisas: state.employeeVisas,
+        entityType: state.entityType,
+        estimatedCost: state.estimatedCost,
         timestamp: new Date().toISOString()
       };
 
@@ -174,10 +134,10 @@ const BusinessSetupFlow = () => {
 
   // Auto-calculate when dependencies change
   useEffect(() => {
-    if (selectedActivities.length > 0 && entityType && currentStep === 5) {
+    if (state.selectedActivities.length > 0 && state.entityType && currentStep === 5) {
       calculateCost();
     }
-  }, [selectedActivities, shareholders, investorVisas, employeeVisas, entityType, currentStep]);
+  }, [state.selectedActivities, state.shareholders, state.investorVisas, state.employeeVisas, state.entityType, currentStep]);
 
   const nextStep = () => {
     if (currentStep < 6) {
@@ -199,401 +159,35 @@ const BusinessSetupFlow = () => {
 
   const canProceed = () => {
     switch (currentStep) {
-      case 1: return selectedActivities.length > 0;
-      case 2: return shareholders > 0;
-      case 3: return investorVisas >= 0 && employeeVisas >= 0;
-      case 4: return entityType !== "";
-      case 5: return estimatedCost > 0;
+      case 1: return state.selectedActivities.length > 0;
+      case 2: return state.shareholders > 0;
+      case 3: return state.investorVisas >= 0 && state.employeeVisas >= 0;
+      case 4: return state.entityType !== "";
+      case 5: return state.estimatedCost > 0;
       default: return true;
     }
   };
 
+  const updateState = (updates: Partial<BusinessSetupState>) => {
+    setState(prev => ({ ...prev, ...updates }));
+  };
+
   const renderStepContent = () => {
+    const stepProps = {
+      state,
+      setState: updateState,
+      onNext: nextStep,
+      onBack: prevStep
+    };
+
     switch (currentStep) {
-      case 1:
-        return (
-          <div className="space-y-6">
-            <div className="text-center">
-              <h2 className="text-2xl font-bold text-foreground mb-2">Select Business Activities</h2>
-              <p className="text-muted-foreground">Choose up to 3 business activities for your company</p>
-            </div>
-            
-            {/* Search Bar */}
-            <div className="relative">
-              <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 h-4 w-4 text-muted-foreground" />
-              <Input
-                type="text"
-                placeholder="Search business activities..."
-                value={searchTerm}
-                onChange={(e) => setSearchTerm(e.target.value)}
-                className="pl-10"
-              />
-            </div>
-            
-            {Object.entries(filteredActivities).map(([category, activities]) => (
-              <div key={category} className="space-y-3">
-                <h3 className="text-lg font-semibold text-foreground">{category}</h3>
-                <div className="grid grid-cols-1 gap-2">
-                  {activities.map((activity) => (
-                    <Button
-                      key={activity}
-                      variant={selectedActivities.includes(activity) ? "default" : "outline"}
-                      className="justify-start h-auto p-3 text-left"
-                      onClick={() => handleActivityToggle(activity)}
-                      disabled={!selectedActivities.includes(activity) && selectedActivities.length >= 3}
-                    >
-                      {activity}
-                    </Button>
-                  ))}
-                </div>
-              </div>
-            ))}
-            
-            {selectedActivities.length > 0 && (
-              <div className="mt-6">
-                <h4 className="font-medium text-foreground mb-2">Selected Activities ({selectedActivities.length}/3):</h4>
-                <div className="flex flex-wrap gap-2">
-                  {selectedActivities.map((activity) => (
-                    <Badge key={activity} variant="default" className="px-3 py-1">
-                      {activity}
-                    </Badge>
-                  ))}
-                </div>
-              </div>
-            )}
-          </div>
-        );
-
-      case 2:
-        return (
-          <div className="space-y-6">
-            <div className="text-center">
-              <h2 className="text-2xl font-bold text-foreground mb-2">Number of Shareholders</h2>
-              <p className="text-muted-foreground">Select the number of shareholders for your company</p>
-            </div>
-            
-            <Card className="p-6">
-              <div className="flex items-center justify-center space-x-4">
-                <Button
-                  variant="outline"
-                  size="icon"
-                  onClick={() => setShareholders(Math.max(1, shareholders - 1))}
-                  disabled={shareholders <= 1}
-                >
-                  -
-                </Button>
-                <div className="text-center">
-                  <div className="text-3xl font-bold text-foreground">{shareholders}</div>
-                  <div className="text-sm text-muted-foreground">Shareholders</div>
-                </div>
-                <Button
-                  variant="outline"
-                  size="icon"
-                  onClick={() => setShareholders(Math.min(5, shareholders + 1))}
-                  disabled={shareholders >= 5}
-                >
-                  +
-                </Button>
-              </div>
-            </Card>
-            
-            <div className="text-center text-sm text-muted-foreground">
-              Maximum 5 shareholders allowed
-            </div>
-          </div>
-        );
-
-      case 3:
-        return (
-          <div className="space-y-6">
-            <div className="text-center">
-              <h2 className="text-2xl font-bold text-foreground mb-2">Visa Requirements</h2>
-              <p className="text-muted-foreground">How many visas do you need for your company?</p>
-            </div>
-            
-            <div className="space-y-4">
-              <Card className="p-6">
-                <div className="space-y-4">
-                  <div>
-                    <label className="text-sm font-medium text-foreground mb-2 block">Investor Visas</label>
-                    <Select value={investorVisas.toString()} onValueChange={(value) => setInvestorVisas(parseInt(value))}>
-                      <SelectTrigger>
-                        <SelectValue placeholder="Select investor visas" />
-                      </SelectTrigger>
-                      <SelectContent>
-                        {[...Array(6)].map((_, i) => (
-                          <SelectItem key={i} value={i.toString()}>
-                            {i} {i === 1 ? 'Investor Visa' : 'Investor Visas'}
-                          </SelectItem>
-                        ))}
-                      </SelectContent>
-                    </Select>
-                  </div>
-                  
-                  <div>
-                    <label className="text-sm font-medium text-foreground mb-2 block">Employee Visas</label>
-                    <Select value={employeeVisas.toString()} onValueChange={(value) => setEmployeeVisas(parseInt(value))}>
-                      <SelectTrigger>
-                        <SelectValue placeholder="Select employee visas" />
-                      </SelectTrigger>
-                      <SelectContent>
-                        {[...Array(11)].map((_, i) => (
-                          <SelectItem key={i} value={i.toString()}>
-                            {i} {i === 1 ? 'Employee Visa' : 'Employee Visas'}
-                          </SelectItem>
-                        ))}
-                      </SelectContent>
-                    </Select>
-                  </div>
-                </div>
-              </Card>
-            </div>
-            
-            <div className="text-center text-sm text-muted-foreground">
-              Select 0 if you don't need employee visas initially
-            </div>
-          </div>
-        );
-
-      case 4:
-        return (
-          <div className="space-y-6">
-            <div className="text-center">
-              <h2 className="text-2xl font-bold text-foreground mb-2">Legal Entity Type</h2>
-              <p className="text-muted-foreground">Choose the legal structure for your business</p>
-            </div>
-            
-            <div className="space-y-3">
-              {legalEntityTypes.map((entity) => (
-                <Card
-                  key={entity.value}
-                  className={`cursor-pointer transition-all ${
-                    entityType === entity.value ? 'ring-2 ring-primary bg-primary/5' : 'hover:shadow-md'
-                  }`}
-                  onClick={() => setEntityType(entity.value)}
-                >
-                  <CardContent className="p-4">
-                    <div className="flex justify-between items-start">
-                      <div>
-                        <h3 className="font-semibold text-foreground">{entity.label}</h3>
-                        <p className="text-sm text-muted-foreground">{entity.description}</p>
-                      </div>
-                      <div className={`w-4 h-4 rounded-full border-2 ${
-                        entityType === entity.value ? 'bg-primary border-primary' : 'border-muted-foreground'
-                      }`} />
-                    </div>
-                  </CardContent>
-                </Card>
-              ))}
-            </div>
-          </div>
-        );
-
-      case 5:
-        return (
-          <div className="space-y-6">
-            <div className="text-center">
-              <h2 className="text-2xl font-bold text-foreground mb-2">Cost Estimation</h2>
-              <p className="text-muted-foreground">Based on your selections, here's the estimated cost</p>
-            </div>
-            
-            <Card className="p-6 bg-gradient-to-br from-primary/5 to-primary/10">
-              <div className="text-center space-y-4">
-                <div className="text-4xl font-bold text-primary">
-                  AED {estimatedCost.toLocaleString()}
-                </div>
-                <div className="text-sm text-muted-foreground">
-                  Estimated Setup Cost {isFreezone ? "(Free Zone)" : "(Mainland)"}
-                </div>
-              </div>
-            </Card>
-
-            {costBreakdown && (
-              <Card className="p-6">
-                <h3 className="font-semibold text-foreground mb-4">Detailed Cost Breakdown</h3>
-                <Table>
-                  <TableHeader>
-                    <TableRow>
-                      <TableHead>Service</TableHead>
-                      <TableHead className="text-right">Cost (AED)</TableHead>
-                    </TableRow>
-                  </TableHeader>
-                  <TableBody>
-                    {costBreakdown.activities.map((activity: any, index: number) => (
-                      <TableRow key={index}>
-                        <TableCell>{activity.activity}</TableCell>
-                        <TableCell className="text-right">{activity.fee.toLocaleString()}</TableCell>
-                      </TableRow>
-                    ))}
-                    <TableRow>
-                      <TableCell className="font-medium">Legal Entity ({costBreakdown.entityType})</TableCell>
-                      <TableCell className="text-right">{costBreakdown.legalEntityFee.toLocaleString()}</TableCell>
-                    </TableRow>
-                    {costBreakdown.shareholders > 0 && (
-                      <TableRow>
-                        <TableCell>Additional Shareholders ({costBreakdown.shareholders})</TableCell>
-                        <TableCell className="text-right">{costBreakdown.shareholderFee.toLocaleString()}</TableCell>
-                      </TableRow>
-                    )}
-                    <TableRow>
-                      <TableCell>Employment Visas ({costBreakdown.visaCount})</TableCell>
-                      <TableCell className="text-right">{costBreakdown.visaFee.toLocaleString()}</TableCell>
-                    </TableRow>
-                    <TableRow className="border-t-2">
-                      <TableCell className="font-bold">Total Cost</TableCell>
-                      <TableCell className="text-right font-bold text-primary">
-                        AED {estimatedCost.toLocaleString()}
-                      </TableCell>
-                    </TableRow>
-                  </TableBody>
-                </Table>
-              </Card>
-            )}
-            
-            <Card className="p-6">
-              <h3 className="font-semibold text-foreground mb-4">Your Selection Summary:</h3>
-              <div className="space-y-3 text-sm">
-                <div className="flex justify-between">
-                  <span className="text-muted-foreground">Business Activities:</span>
-                  <span className="text-foreground">{selectedActivities.join(", ")}</span>
-                </div>
-                <div className="flex justify-between">
-                  <span className="text-muted-foreground">Shareholders:</span>
-                  <span className="text-foreground">{shareholders}</span>
-                </div>
-                <div className="flex justify-between">
-                  <span className="text-muted-foreground">Investor Visas:</span>
-                  <span className="text-foreground">{investorVisas}</span>
-                </div>
-                <div className="flex justify-between">
-                  <span className="text-muted-foreground">Employee Visas:</span>
-                  <span className="text-foreground">{employeeVisas}</span>
-                </div>
-                <div className="flex justify-between">
-                  <span className="text-muted-foreground">Entity Type:</span>
-                  <span className="text-foreground">
-                    {legalEntityTypes.find(e => e.value === entityType)?.label}
-                  </span>
-                </div>
-                <div className="flex justify-between">
-                  <span className="text-muted-foreground">Zone Type:</span>
-                  <span className="text-foreground">{isFreezone ? "Free Zone" : "Mainland"}</span>
-                </div>
-                {costBreakdown?.freezoneName && (
-                  <div className="flex justify-between">
-                    <span className="text-muted-foreground">Free Zone:</span>
-                    <span className="text-foreground">{costBreakdown.freezoneName}</span>
-                  </div>
-                )}
-              </div>
-            </Card>
-            
-          </div>
-        );
-
-      case 6:
-        return (
-          <div className="space-y-6">
-            <div className="text-center">
-              <h2 className="text-2xl font-bold text-foreground mb-2">Summary & Next Steps</h2>
-              <p className="text-muted-foreground">Review your selections and proceed with your business setup</p>
-            </div>
-            
-            {/* Final Cost Display */}
-            <Card className="p-6 bg-gradient-to-br from-primary/5 to-primary/10 border-primary/20">
-              <div className="text-center space-y-4">
-                <div className="text-4xl font-bold text-primary">
-                  AED {estimatedCost.toLocaleString()}
-                </div>
-                <div className="text-sm text-muted-foreground">
-                  Total Estimated Setup Cost {isFreezone ? "(Free Zone)" : "(Mainland)"}
-                </div>
-              </div>
-            </Card>
-
-            {/* Detailed Summary */}
-            <Card className="p-6">
-              <h3 className="font-semibold text-foreground mb-4 flex items-center gap-2">
-                <CheckCircle className="h-5 w-5 text-primary" />
-                Your Business Setup Summary
-              </h3>
-              <div className="space-y-4">
-                <div className="grid grid-cols-1 gap-4">
-                  <div className="p-4 bg-muted/30 rounded-lg">
-                    <h4 className="font-medium text-foreground mb-2">Business Activities</h4>
-                    <div className="flex flex-wrap gap-2">
-                      {selectedActivities.map((activity) => (
-                        <Badge key={activity} variant="secondary" className="text-xs">
-                          {activity}
-                        </Badge>
-                      ))}
-                    </div>
-                  </div>
-                  
-                  <div className="grid grid-cols-2 gap-4">
-                    <div className="p-4 bg-muted/30 rounded-lg">
-                      <h4 className="font-medium text-foreground mb-1">Shareholders</h4>
-                      <p className="text-2xl font-bold text-primary">{shareholders}</p>
-                    </div>
-                    <div className="p-4 bg-muted/30 rounded-lg">
-                      <h4 className="font-medium text-foreground mb-1">Total Visas</h4>
-                      <p className="text-2xl font-bold text-primary">{investorVisas + employeeVisas}</p>
-                      <p className="text-xs text-muted-foreground">{investorVisas} Investor + {employeeVisas} Employee</p>
-                    </div>
-                  </div>
-                  
-                  <div className="p-4 bg-muted/30 rounded-lg">
-                    <h4 className="font-medium text-foreground mb-2">Legal Entity Type</h4>
-                    <p className="text-foreground">
-                      {legalEntityTypes.find(e => e.value === entityType)?.label}
-                    </p>
-                    <p className="text-sm text-muted-foreground">
-                      {legalEntityTypes.find(e => e.value === entityType)?.description}
-                    </p>
-                  </div>
-                </div>
-              </div>
-            </Card>
-
-            {/* CTA Buttons */}
-            <div className="space-y-3">
-              <Button 
-                className="w-full" 
-                size="lg"
-                onClick={() => {
-                  toast({
-                    title: "Application Started!",
-                    description: "Redirecting you to begin the formal application process.",
-                  });
-                  navigate("/application-process/company-formation");
-                }}
-              >
-                Start Now - Begin Application
-              </Button>
-              <Button 
-                variant="outline" 
-                className="w-full" 
-                size="lg"
-                onClick={() => {
-                  toast({
-                    title: "Expert Consultation",
-                    description: "Our business consultants will contact you within 24 hours.",
-                  });
-                  navigate("/growth");
-                }}
-              >
-                Consult an Expert
-              </Button>
-            </div>
-            
-            <div className="text-center text-sm text-muted-foreground">
-              Your selections have been saved to your profile for future reference
-            </div>
-          </div>
-        );
-
-      default:
-        return null;
+      case 1: return <BusinessActivityStep {...stepProps} />;
+      case 2: return <ShareholdersStep {...stepProps} />;
+      case 3: return <VisaRequirementsStep {...stepProps} />;
+      case 4: return <LegalEntityStep {...stepProps} />;
+      case 5: return <CostEstimationStep {...stepProps} />;
+      case 6: return <SummaryStep {...stepProps} />;
+      default: return null;
     }
   };
 
@@ -613,7 +207,7 @@ const BusinessSetupFlow = () => {
       {/* Progress Indicator */}
       <div className="bg-white border-b p-4">
         <div className="flex items-center justify-between mb-2">
-          {steps.map((step) => (
+          {businessSetupSteps.map((step) => (
             <div
               key={step.number}
               className={`flex flex-col items-center space-y-1 ${
