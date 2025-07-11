@@ -6,18 +6,44 @@ import { Button } from '@/components/ui/button';
 import { useToast } from '@/hooks/use-toast';
 import { Shield, Users, Database, AlertTriangle } from 'lucide-react';
 import { Navigate } from 'react-router-dom';
+import { AdminBootstrap } from '@/components/admin/AdminBootstrap';
 
 export default function Admin() {
   const { isAdmin, loading } = useUserRole();
   const [businessCosts, setBusinessCosts] = useState<any[]>([]);
   const [totalUsers, setTotalUsers] = useState(0);
+  const [hasAdminUsers, setHasAdminUsers] = useState<boolean | null>(null);
   const { toast } = useToast();
 
   useEffect(() => {
-    if (isAdmin) {
+    checkAdminUsers();
+  }, []);
+
+  useEffect(() => {
+    if (isAdmin && hasAdminUsers) {
       fetchAdminData();
     }
-  }, [isAdmin]);
+  }, [isAdmin, hasAdminUsers]);
+
+  const checkAdminUsers = async () => {
+    try {
+      const { data, error } = await supabase
+        .from('user_roles')
+        .select('id')
+        .eq('role', 'admin')
+        .limit(1);
+
+      if (error) {
+        console.error('Error checking admin users:', error);
+        setHasAdminUsers(false);
+      } else {
+        setHasAdminUsers(data && data.length > 0);
+      }
+    } catch (error) {
+      console.error('Error checking admin users:', error);
+      setHasAdminUsers(false);
+    }
+  };
 
   const fetchAdminData = async () => {
     try {
@@ -53,10 +79,19 @@ export default function Admin() {
     }
   };
 
-  if (loading) {
+  if (loading || hasAdminUsers === null) {
     return (
       <div className="flex items-center justify-center min-h-screen">
         <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-primary"></div>
+      </div>
+    );
+  }
+
+  // Show admin bootstrap if no admin users exist
+  if (hasAdminUsers === false) {
+    return (
+      <div className="container mx-auto px-4 py-8">
+        <AdminBootstrap />
       </div>
     );
   }
