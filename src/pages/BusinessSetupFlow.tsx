@@ -10,6 +10,7 @@ import { BusinessSetupState } from "@/types/businessSetup";
 import BusinessActivityStep from "@/components/business-setup/BusinessActivityStep";
 import ShareholdersStep from "@/components/business-setup/ShareholdersStep";
 import VisaRequirementsStep from "@/components/business-setup/VisaRequirementsStep";
+import TenureStep from "@/components/business-setup/TenureStep";
 import LegalEntityStep from "@/components/business-setup/LegalEntityStep";
 import CostEstimationStep from "@/components/business-setup/CostEstimationStep";
 import SummaryStep from "@/components/business-setup/SummaryStep";
@@ -22,12 +23,14 @@ const BusinessSetupFlow = () => {
   const [state, setState] = useState<BusinessSetupState>({
     selectedActivities: [],
     shareholders: 1,
-    investorVisas: 0,
-    employeeVisas: 0,
+    totalVisas: 0,
+    tenure: 1,
     entityType: "",
     estimatedCost: 0,
     costBreakdown: null,
-    isFreezone: false,
+    recommendedPackage: null,
+    alternativePackages: [],
+    isFreezone: true,
     searchTerm: "",
     filteredActivities: businessActivities
   });
@@ -63,47 +66,81 @@ const BusinessSetupFlow = () => {
       }));
     }
   }, [state.searchTerm]);
-  const calculateCost = () => {
-    // Determine if it's a freezone entity
-    const isFreezoneBusiness = state.entityType === "fzc" || state.entityType === "branch";
-    const totalVisas = state.investorVisas + state.employeeVisas;
-    if (isFreezoneBusiness) {
-      // Use new freezone cost calculation
-      const {
-        totalCost,
-        breakdown
-      } = calculateFreezoneTotal(state.selectedActivities, state.entityType, state.shareholders, totalVisas);
-      setState(prev => ({
-        ...prev,
-        estimatedCost: totalCost,
-        costBreakdown: breakdown,
-        isFreezone: true
-      }));
-    } else {
-      // Use legacy mainland cost calculation
-      const activityCosts = getActivityCosts(state.selectedActivities, false);
-      const totalLicenseFee = activityCosts.reduce((sum, item) => sum + item.fee, 0);
-      const legalEntityFee = getEntityCost(state.entityType, false);
-      const shareholderFee = getShareholderFee() * Math.max(0, state.shareholders - 1);
-      const visaFee = getVisaFee() * totalVisas;
-      const totalCost = totalLicenseFee + legalEntityFee + shareholderFee + visaFee;
-      const breakdown = {
-        activities: activityCosts,
-        totalLicenseFee,
-        legalEntityFee,
-        shareholderFee,
-        visaFee,
-        shareholders: state.shareholders - 1,
-        visaCount: totalVisas,
-        entityType: state.entityType,
-        isFreezone: false
-      };
-      setState(prev => ({
-        ...prev,
-        estimatedCost: totalCost,
-        costBreakdown: breakdown,
-        isFreezone: false
-      }));
+  const calculateCost = async () => {
+    try {
+      // Fetch packages from Supabase
+      const { data: packages, error } = await supabase
+        .from('packages')
+        .select('*')
+        .gte('max_visas', state.totalVisas)
+        .gte('shareholders_allowed', state.shareholders)
+        .gte('activities_allowed', state.selectedActivities.length)
+        .eq('tenure_years', state.tenure);
+
+      if (error) throw error;
+
+      if (packages && packages.length > 0) {
+        // Calculate actual costs for each package
+        const calculatedPackages = packages.map(pkg => {
+          const baseCost = pkg.base_cost;
+          const visaCost = state.totalVisas * (pkg.per_visa_cost || 0);
+          const totalCost = baseCost + visaCost;
+          
+          return {
+            ...pkg,
+            calculatedCost: totalCost
+          };
+        });
+
+        // Sort by price and get recommended + alternatives
+        calculatedPackages.sort((a, b) => a.calculatedCost - b.calculatedCost);
+        const recommended = calculatedPackages[0];
+        const alternatives = calculatedPackages.slice(1, 3);
+
+        setState(prev => ({
+          ...prev,
+          estimatedCost: recommended.calculatedCost,
+          recommendedPackage: recommended,
+          alternativePackages: alternatives,
+          costBreakdown: {
+            packageName: recommended.package_name,
+            freezoneName: recommended.freezone_name,
+            baseCost: recommended.base_cost,
+            visaCost: state.totalVisas * (recommended.per_visa_cost || 0),
+            totalCost: recommended.calculatedCost,
+            includedServices: recommended.included_services,
+            isFreezone: true
+          },
+          isFreezone: true
+        }));
+      } else {
+        // Fallback to legacy calculation if no packages found
+        const activityCosts = getActivityCosts(state.selectedActivities, false);
+        const totalLicenseFee = activityCosts.reduce((sum, item) => sum + item.fee, 0);
+        const legalEntityFee = getEntityCost(state.entityType, false);
+        const shareholderFee = getShareholderFee() * Math.max(0, state.shareholders - 1);
+        const visaFee = getVisaFee() * state.totalVisas;
+        const totalCost = totalLicenseFee + legalEntityFee + shareholderFee + visaFee;
+        
+        setState(prev => ({
+          ...prev,
+          estimatedCost: totalCost,
+          costBreakdown: {
+            activities: activityCosts,
+            totalLicenseFee,
+            legalEntityFee,
+            shareholderFee,
+            visaFee,
+            shareholders: state.shareholders - 1,
+            visaCount: state.totalVisas,
+            entityType: state.entityType,
+            isFreezone: false
+          },
+          isFreezone: false
+        }));
+      }
+    } catch (error) {
+      console.error('Error calculating costs:', error);
     }
   };
 
@@ -119,10 +156,11 @@ const BusinessSetupFlow = () => {
       const selectionData = {
         selectedActivities: state.selectedActivities,
         shareholders: state.shareholders,
-        investorVisas: state.investorVisas,
-        employeeVisas: state.employeeVisas,
+        totalVisas: state.totalVisas,
+        tenure: state.tenure,
         entityType: state.entityType,
         estimatedCost: state.estimatedCost,
+        recommendedPackage: state.recommendedPackage,
         timestamp: new Date().toISOString()
       };
 
@@ -139,17 +177,17 @@ const BusinessSetupFlow = () => {
 
   // Auto-calculate when dependencies change
   useEffect(() => {
-    if (state.selectedActivities.length > 0 && state.entityType && currentStep === 5) {
+    if (state.selectedActivities.length > 0 && currentStep === 6) {
       calculateCost();
     }
-  }, [state.selectedActivities, state.shareholders, state.investorVisas, state.employeeVisas, state.entityType, currentStep]);
+  }, [state.selectedActivities, state.shareholders, state.totalVisas, state.tenure, currentStep]);
   const nextStep = () => {
-    if (currentStep < 6) {
+    if (currentStep < 7) {
       setCurrentStep(currentStep + 1);
-      if (currentStep === 4) {
+      if (currentStep === 5) {
         calculateCost();
       }
-      if (currentStep === 5) {
+      if (currentStep === 6) {
         saveToProfile();
       }
     }
@@ -162,14 +200,16 @@ const BusinessSetupFlow = () => {
   const canProceed = () => {
     switch (currentStep) {
       case 1:
-        return state.selectedActivities.length > 0;
+        return state.selectedActivities.length > 0 && state.selectedActivities.length <= 5;
       case 2:
-        return state.shareholders > 0;
+        return state.shareholders > 0 && state.shareholders <= 5;
       case 3:
-        return state.investorVisas >= 0 && state.employeeVisas >= 0;
+        return state.totalVisas >= 0 && state.totalVisas <= 5;
       case 4:
-        return state.entityType !== "";
+        return state.tenure > 0;
       case 5:
+        return state.entityType !== "";
+      case 6:
         return state.estimatedCost > 0;
       default:
         return true;
@@ -196,10 +236,12 @@ const BusinessSetupFlow = () => {
       case 3:
         return <VisaRequirementsStep {...stepProps} />;
       case 4:
-        return <LegalEntityStep {...stepProps} />;
+        return <TenureStep {...stepProps} />;
       case 5:
-        return <CostEstimationStep {...stepProps} />;
+        return <LegalEntityStep {...stepProps} />;
       case 6:
+        return <CostEstimationStep {...stepProps} />;
+      case 7:
         return <SummaryStep {...stepProps} />;
       default:
         return null;
@@ -227,7 +269,7 @@ const BusinessSetupFlow = () => {
         </div>
         <div className="w-full bg-muted rounded-full h-2">
           <div className="bg-primary h-2 rounded-full transition-all duration-300" style={{
-          width: `${currentStep / 6 * 100}%`
+          width: `${currentStep / 7 * 100}%`
         }} />
         </div>
       </div>
@@ -245,7 +287,7 @@ const BusinessSetupFlow = () => {
               Back
             </Button>}
           
-          {currentStep < 6 ? <Button onClick={nextStep} disabled={!canProceed()} className="flex-1">
+          {currentStep < 7 ? <Button onClick={nextStep} disabled={!canProceed()} className="flex-1">
               Next
               <ArrowRight className="w-4 h-4 ml-2" />
             </Button> : <Button onClick={() => navigate("/")} className="flex-1">

@@ -80,6 +80,57 @@ export type Database = {
         }
         Relationships: []
       }
+      packages: {
+        Row: {
+          activities_allowed: number
+          base_cost: number
+          created_at: string | null
+          freezone_name: string
+          id: number
+          included_services: string | null
+          max_visas: number
+          package_name: string
+          package_type: string
+          per_visa_cost: number | null
+          price_aed: number
+          shareholders_allowed: number
+          tenure_years: number
+          updated_at: string | null
+        }
+        Insert: {
+          activities_allowed?: number
+          base_cost: number
+          created_at?: string | null
+          freezone_name: string
+          id?: number
+          included_services?: string | null
+          max_visas?: number
+          package_name: string
+          package_type: string
+          per_visa_cost?: number | null
+          price_aed: number
+          shareholders_allowed?: number
+          tenure_years?: number
+          updated_at?: string | null
+        }
+        Update: {
+          activities_allowed?: number
+          base_cost?: number
+          created_at?: string | null
+          freezone_name?: string
+          id?: number
+          included_services?: string | null
+          max_visas?: number
+          package_name?: string
+          package_type?: string
+          per_visa_cost?: number | null
+          price_aed?: number
+          shareholders_allowed?: number
+          tenure_years?: number
+          updated_at?: string | null
+        }
+        Relationships: []
+      }
       profiles: {
         Row: {
           avatar_url: string | null

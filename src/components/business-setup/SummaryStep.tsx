@@ -57,8 +57,8 @@ const SummaryStep: React.FC<StepProps> = ({ state }) => {
               </div>
               <div className="p-4 bg-muted/30 rounded-lg">
                 <h4 className="font-medium text-foreground mb-1">Total Visas</h4>
-                <p className="text-2xl font-bold text-primary">{state.investorVisas + state.employeeVisas}</p>
-                <p className="text-xs text-muted-foreground">{state.investorVisas} Investor + {state.employeeVisas} Employee</p>
+                <p className="text-2xl font-bold text-primary">{state.totalVisas}</p>
+                <p className="text-xs text-muted-foreground">Employment Visas</p>
               </div>
             </div>
             

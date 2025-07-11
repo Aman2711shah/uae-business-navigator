@@ -8,55 +8,38 @@ const VisaRequirementsStep: React.FC<StepProps> = ({ state, setState }) => {
     <div className="space-y-6">
       <div className="text-center">
         <h2 className="text-2xl font-bold text-foreground mb-2">Visa Requirements</h2>
-        <p className="text-muted-foreground">How many visas do you need for your company?</p>
+        <p className="text-muted-foreground">How many total visas do you need? (Maximum 5)</p>
       </div>
       
-      <div className="space-y-4">
-        <Card className="p-6">
-          <div className="space-y-4">
-            <div>
-              <label className="text-sm font-medium text-foreground mb-2 block">Investor Visas</label>
-              <Select 
-                value={state.investorVisas.toString()} 
-                onValueChange={(value) => setState({ investorVisas: parseInt(value) })}
-              >
-                <SelectTrigger>
-                  <SelectValue placeholder="Select investor visas" />
-                </SelectTrigger>
-                <SelectContent>
-                  {[...Array(6)].map((_, i) => (
-                    <SelectItem key={i} value={i.toString()}>
-                      {i} {i === 1 ? 'Investor Visa' : 'Investor Visas'}
-                    </SelectItem>
-                  ))}
-                </SelectContent>
-              </Select>
-            </div>
-            
-            <div>
-              <label className="text-sm font-medium text-foreground mb-2 block">Employee Visas</label>
-              <Select 
-                value={state.employeeVisas.toString()} 
-                onValueChange={(value) => setState({ employeeVisas: parseInt(value) })}
-              >
-                <SelectTrigger>
-                  <SelectValue placeholder="Select employee visas" />
-                </SelectTrigger>
-                <SelectContent>
-                  {[...Array(11)].map((_, i) => (
-                    <SelectItem key={i} value={i.toString()}>
-                      {i} {i === 1 ? 'Employee Visa' : 'Employee Visas'}
-                    </SelectItem>
-                  ))}
-                </SelectContent>
-              </Select>
-            </div>
-          </div>
-        </Card>
-      </div>
+      <Card className="p-6">
+        <div className="space-y-4">
+          <label className="text-sm font-medium text-foreground mb-2 block">Total Visas</label>
+          <Select 
+            value={state.totalVisas.toString()} 
+            onValueChange={(value) => setState({ totalVisas: parseInt(value) })}
+          >
+            <SelectTrigger>
+              <SelectValue placeholder="Select total visas" />
+            </SelectTrigger>
+            <SelectContent>
+              {[...Array(6)].map((_, i) => (
+                <SelectItem key={i} value={i.toString()}>
+                  {i} {i === 1 ? 'Visa' : 'Visas'}
+                </SelectItem>
+              ))}
+            </SelectContent>
+          </Select>
+        </div>
+      </Card>
       
-      <div className="text-center text-sm text-muted-foreground">
-        Select 0 if you don't need any visas initially
+      <div className="bg-green-50 border border-green-200 rounded-lg p-4">
+        <h3 className="font-medium text-green-900 mb-2">📋 Visa Information</h3>
+        <ul className="text-sm text-green-800 space-y-1">
+          <li>• Visas can be for investors, partners, or employees</li>
+          <li>• Each visa allows one person to live and work in the UAE</li>
+          <li>• You can add more visas later if needed</li>
+          <li>• Select 0 if you don't need any visas initially</li>
+        </ul>
       </div>
     </div>
   );
