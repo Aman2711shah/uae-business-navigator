@@ -3,7 +3,11 @@ import { Toaster as Sonner } from "@/components/ui/sonner";
 import { TooltipProvider } from "@/components/ui/tooltip";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { BrowserRouter, Routes, Route } from "react-router-dom";
+import { AuthProvider } from "@/contexts/AuthContext";
+import { ProtectedRoute } from "@/components/auth/ProtectedRoute";
 import Index from "./pages/Index";
+import Auth from "./pages/Auth";
+import Admin from "./pages/Admin";
 import Services from "./pages/Services";
 import ServiceDetail from "./pages/ServiceDetail";
 import ServiceCategoryDetail from "./pages/ServiceCategoryDetail";
@@ -21,28 +25,32 @@ const queryClient = new QueryClient();
 
 const App = () => (
   <QueryClientProvider client={queryClient}>
-    <TooltipProvider>
-      <Toaster />
-      <Sonner />
-      <BrowserRouter>
-        <Routes>
-          <Route path="/" element={<Index />} />
-          <Route path="/services" element={<Services />} />
-          <Route path="/service/:serviceId" element={<ServiceDetail />} />
-          <Route path="/service-category/:categoryId" element={<ServiceCategoryDetail />} />
-          <Route path="/application-process/:categoryId" element={<ApplicationProcess />} />
-          <Route path="/company-formation/:serviceId" element={<CompanyFormationProcess />} />
-          <Route path="/community" element={<Community />} />
-          <Route path="/growth" element={<Growth />} />
-          <Route path="/more" element={<More />} />
-          <Route path="/business-setup" element={<BusinessSetupFlow />} />
-          <Route path="/growth/service/:serviceId" element={<GrowthServiceDetail />} />
-          <Route path="/growth/booking/:serviceId" element={<GrowthBooking />} />
-          {/* ADD ALL CUSTOM ROUTES ABOVE THE CATCH-ALL "*" ROUTE */}
-          <Route path="*" element={<NotFound />} />
-        </Routes>
-      </BrowserRouter>
-    </TooltipProvider>
+    <AuthProvider>
+      <TooltipProvider>
+        <Toaster />
+        <Sonner />
+        <BrowserRouter>
+          <Routes>
+            <Route path="/auth" element={<Auth />} />
+            <Route path="/" element={<ProtectedRoute><Index /></ProtectedRoute>} />
+            <Route path="/admin" element={<ProtectedRoute><Admin /></ProtectedRoute>} />
+            <Route path="/services" element={<ProtectedRoute><Services /></ProtectedRoute>} />
+            <Route path="/service/:serviceId" element={<ProtectedRoute><ServiceDetail /></ProtectedRoute>} />
+            <Route path="/service-category/:categoryId" element={<ProtectedRoute><ServiceCategoryDetail /></ProtectedRoute>} />
+            <Route path="/application-process/:categoryId" element={<ProtectedRoute><ApplicationProcess /></ProtectedRoute>} />
+            <Route path="/company-formation/:serviceId" element={<ProtectedRoute><CompanyFormationProcess /></ProtectedRoute>} />
+            <Route path="/community" element={<ProtectedRoute><Community /></ProtectedRoute>} />
+            <Route path="/growth" element={<ProtectedRoute><Growth /></ProtectedRoute>} />
+            <Route path="/more" element={<ProtectedRoute><More /></ProtectedRoute>} />
+            <Route path="/business-setup" element={<ProtectedRoute><BusinessSetupFlow /></ProtectedRoute>} />
+            <Route path="/growth/service/:serviceId" element={<ProtectedRoute><GrowthServiceDetail /></ProtectedRoute>} />
+            <Route path="/growth/booking/:serviceId" element={<ProtectedRoute><GrowthBooking /></ProtectedRoute>} />
+            {/* ADD ALL CUSTOM ROUTES ABOVE THE CATCH-ALL "*" ROUTE */}
+            <Route path="*" element={<NotFound />} />
+          </Routes>
+        </BrowserRouter>
+      </TooltipProvider>
+    </AuthProvider>
   </QueryClientProvider>
 );
 

@@ -74,25 +74,43 @@ const ChartStyle = ({ id, config }: { id: string; config: ChartConfig }) => {
     return null
   }
 
-  return (
-    <style
-      dangerouslySetInnerHTML={{
-        __html: Object.entries(THEMES)
-          .map(
-            ([theme, prefix]) => `
-${prefix} [data-chart=${id}] {
+  // Sanitize and validate CSS content to prevent XSS
+  const sanitizeCSS = (css: string): string => {
+    // Remove potential XSS vectors while preserving valid CSS
+    return css
+      .replace(/[<>]/g, '') // Remove angle brackets
+      .replace(/javascript:/gi, '') // Remove javascript: protocols
+      .replace(/expression\s*\(/gi, '') // Remove CSS expressions
+      .replace(/url\s*\(/gi, 'url(') // Normalize URL function
+  }
+
+  const cssContent = sanitizeCSS(
+    Object.entries(THEMES)
+      .map(
+        ([theme, prefix]) => `
+${prefix} [data-chart=${CSS.escape(id)}] {
 ${colorConfig
   .map(([key, itemConfig]) => {
     const color =
       itemConfig.theme?.[theme as keyof typeof itemConfig.theme] ||
       itemConfig.color
-    return color ? `  --color-${key}: ${color};` : null
+    // Validate color format and sanitize
+    if (!color || typeof color !== 'string') return null
+    const sanitizedColor = color.replace(/[<>]/g, '').slice(0, 50)
+    const sanitizedKey = key.replace(/[^a-zA-Z0-9-_]/g, '').slice(0, 20)
+    return sanitizedColor ? `  --color-${sanitizedKey}: ${sanitizedColor};` : null
   })
   .join("\n")}
 }
 `
-          )
-          .join("\n"),
+      )
+      .join("\n")
+  )
+
+  return (
+    <style
+      dangerouslySetInnerHTML={{
+        __html: cssContent,
       }}
     />
   )
