@@ -6,7 +6,7 @@ import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Badge } from "@/components/ui/badge";
 import BottomNavigation from "@/components/BottomNavigation";
 import { VirtualAssistant } from "@/components/VirtualAssistant";
-import { SupportAssistant } from "@/components/SupportAssistant";
+import { ProfileAssistant } from "@/components/ProfileAssistant";
 
 const menuSections = [
   {
@@ -59,7 +59,7 @@ const quickStats = [
 ];
 
 const More = () => {
-  const [selectedSection, setSelectedSection] = useState<'Support' | 'Legal' | null>(null);
+  const [selectedSection, setSelectedSection] = useState<'Account' | 'Preferences' | 'Support' | 'Legal' | null>(null);
   const [selectedOption, setSelectedOption] = useState<string | null>(null);
 
   const userData = {
@@ -74,14 +74,24 @@ const More = () => {
     language_preference: "English"
   };
 
+  const profileData = {
+    user_full_name: userInfo.name,
+    email: userInfo.email,
+    phone_number: "+971-50-123-4567",
+    bookings_count: 3,
+    invoices_count: 8,
+    documents_count: 5,
+    language_preference: "English"
+  };
+
   const handleActionClick = (action: string) => {
     console.log(`Action clicked: ${action}`);
     // Handle action routing here
   };
 
   const handleItemClick = (sectionTitle: string, itemLabel: string) => {
-    if (sectionTitle === "Support" || sectionTitle === "Legal") {
-      setSelectedSection(sectionTitle as 'Support' | 'Legal');
+    if (sectionTitle === "Account" || sectionTitle === "Preferences" || sectionTitle === "Support" || sectionTitle === "Legal") {
+      setSelectedSection(sectionTitle as 'Account' | 'Preferences' | 'Support' | 'Legal');
       setSelectedOption(itemLabel);
     } else {
       console.log(`Clicked: ${sectionTitle} - ${itemLabel}`);
@@ -94,15 +104,15 @@ const More = () => {
     setSelectedOption(null);
   };
 
-  // Show support assistant if option is selected
+  // Show profile assistant if option is selected
   if (selectedSection && selectedOption) {
     return (
       <div className="min-h-screen bg-gradient-to-b from-background to-muted/20 pb-20">
         <div className="p-4">
-          <SupportAssistant
+          <ProfileAssistant
             selectedSection={selectedSection}
             selectedOption={selectedOption}
-            languagePreference={userData.language_preference}
+            userData={profileData}
             onBack={handleBackToMenu}
           />
         </div>

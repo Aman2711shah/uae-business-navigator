@@ -1,25 +1,49 @@
 import { useState } from "react";
-import { ArrowLeft, Phone, MessageCircle, Star, Shield, FileText, Info, ExternalLink } from "lucide-react";
+import { 
+  ArrowLeft, Phone, MessageCircle, Star, Shield, FileText, Info, ExternalLink, 
+  User, Calendar, CreditCard, Upload, Bell, Bookmark, Globe, Edit, Eye,
+  CheckCircle, Clock, AlertCircle
+} from "lucide-react";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/ui/dialog";
+import { Input } from "@/components/ui/input";
+import { Label } from "@/components/ui/label";
+import { Switch } from "@/components/ui/switch";
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 
-interface SupportAssistantProps {
-  selectedSection: 'Support' | 'Legal' | null;
+interface UserData {
+  user_full_name: string;
+  email: string;
+  phone_number: string;
+  bookings_count: number;
+  invoices_count: number;
+  documents_count: number;
+  language_preference: string;
+}
+
+interface ProfileAssistantProps {
+  selectedSection: 'Account' | 'Preferences' | 'Support' | 'Legal' | null;
   selectedOption: string | null;
-  languagePreference: string;
+  userData: UserData;
   onBack: () => void;
 }
 
-export const SupportAssistant = ({ 
+export const ProfileAssistant = ({ 
   selectedSection, 
   selectedOption, 
-  languagePreference, 
+  userData, 
   onBack 
-}: SupportAssistantProps) => {
+}: ProfileAssistantProps) => {
   const [showRatingDialog, setShowRatingDialog] = useState(false);
   const [selectedRating, setSelectedRating] = useState(0);
+  const [editMode, setEditMode] = useState(false);
+  const [notifications, setNotifications] = useState({
+    pushNotifications: true,
+    emailUpdates: false,
+    smsAlerts: true
+  });
 
   if (!selectedSection || !selectedOption) {
     return null;
@@ -27,6 +51,210 @@ export const SupportAssistant = ({
 
   const renderContent = () => {
     switch (selectedOption) {
+      // Account Section
+      case 'Profile Settings':
+        return (
+          <div className="space-y-4">
+            <div className="flex items-center gap-3 mb-4">
+              <User className="h-6 w-6 text-primary" />
+              <h3 className="font-semibold text-foreground">Profile Settings</h3>
+            </div>
+            <div className="space-y-4">
+              <div className="space-y-2">
+                <Label className="text-sm text-muted-foreground">Full Name</Label>
+                <div className="p-3 bg-muted/50 rounded-lg">
+                  <p className="font-medium text-foreground">{userData.user_full_name}</p>
+                </div>
+              </div>
+              <div className="space-y-2">
+                <Label className="text-sm text-muted-foreground">Email Address</Label>
+                <div className="p-3 bg-muted/50 rounded-lg">
+                  <p className="font-medium text-foreground">{userData.email}</p>
+                </div>
+              </div>
+              <div className="space-y-2">
+                <Label className="text-sm text-muted-foreground">Phone Number</Label>
+                <div className="p-3 bg-muted/50 rounded-lg">
+                  <p className="font-medium text-foreground">{userData.phone_number}</p>
+                </div>
+              </div>
+            </div>
+            <Button className="w-full">
+              <Edit className="h-4 w-4 mr-2" />
+              Edit Profile
+            </Button>
+          </div>
+        );
+
+      case 'My Bookings':
+        return (
+          <div className="space-y-4 text-center">
+            <div className="w-16 h-16 bg-blue-100 rounded-full flex items-center justify-center mx-auto">
+              <Calendar className="h-8 w-8 text-blue-600" />
+            </div>
+            <div>
+              <h3 className="font-semibold text-foreground mb-2">My Bookings</h3>
+              <p className="text-2xl font-bold text-blue-600 mb-2">{userData.bookings_count}</p>
+              <p className="text-sm text-muted-foreground mb-4">
+                You currently have {userData.bookings_count} booking{userData.bookings_count !== 1 ? 's' : ''}.
+              </p>
+            </div>
+            <Button className="w-full">
+              <Eye className="h-4 w-4 mr-2" />
+              View Booking History
+            </Button>
+          </div>
+        );
+
+      case 'Invoices & Payments':
+        return (
+          <div className="space-y-4 text-center">
+            <div className="w-16 h-16 bg-green-100 rounded-full flex items-center justify-center mx-auto">
+              <CreditCard className="h-8 w-8 text-green-600" />
+            </div>
+            <div>
+              <h3 className="font-semibold text-foreground mb-2">Invoices & Payments</h3>
+              <p className="text-2xl font-bold text-green-600 mb-2">{userData.invoices_count}</p>
+              <p className="text-sm text-muted-foreground mb-4">
+                You have {userData.invoices_count} invoice{userData.invoices_count !== 1 ? 's' : ''} in your account.
+              </p>
+            </div>
+            <Button className="w-full">
+              <Eye className="h-4 w-4 mr-2" />
+              View Payment History
+            </Button>
+          </div>
+        );
+
+      case 'My Documents':
+        return (
+          <div className="space-y-4 text-center">
+            <div className="w-16 h-16 bg-purple-100 rounded-full flex items-center justify-center mx-auto">
+              <FileText className="h-8 w-8 text-purple-600" />
+            </div>
+            <div>
+              <h3 className="font-semibold text-foreground mb-2">My Documents</h3>
+              <p className="text-2xl font-bold text-purple-600 mb-2">{userData.documents_count}</p>
+              <p className="text-sm text-muted-foreground mb-4">
+                You have uploaded {userData.documents_count} document{userData.documents_count !== 1 ? 's' : ''}.
+              </p>
+            </div>
+            <div className="space-y-2">
+              <Button className="w-full">
+                <Eye className="h-4 w-4 mr-2" />
+                View Documents
+              </Button>
+              <Button className="w-full" variant="outline">
+                <Upload className="h-4 w-4 mr-2" />
+                Upload New Document
+              </Button>
+            </div>
+          </div>
+        );
+
+      // Preferences Section
+      case 'Notifications':
+        return (
+          <div className="space-y-4">
+            <div className="flex items-center gap-3 mb-4">
+              <Bell className="h-6 w-6 text-primary" />
+              <h3 className="font-semibold text-foreground">Notification Settings</h3>
+            </div>
+            <div className="space-y-4">
+              <div className="flex items-center justify-between p-3 bg-muted/50 rounded-lg">
+                <div>
+                  <p className="font-medium text-foreground">Push Notifications</p>
+                  <p className="text-sm text-muted-foreground">Receive notifications on your device</p>
+                </div>
+                <Switch 
+                  checked={notifications.pushNotifications}
+                  onCheckedChange={(checked) => setNotifications(prev => ({...prev, pushNotifications: checked}))}
+                />
+              </div>
+              <div className="flex items-center justify-between p-3 bg-muted/50 rounded-lg">
+                <div>
+                  <p className="font-medium text-foreground">Email Updates</p>
+                  <p className="text-sm text-muted-foreground">Get updates via email</p>
+                </div>
+                <Switch 
+                  checked={notifications.emailUpdates}
+                  onCheckedChange={(checked) => setNotifications(prev => ({...prev, emailUpdates: checked}))}
+                />
+              </div>
+              <div className="flex items-center justify-between p-3 bg-muted/50 rounded-lg">
+                <div>
+                  <p className="font-medium text-foreground">SMS Alerts</p>
+                  <p className="text-sm text-muted-foreground">Urgent updates via SMS</p>
+                </div>
+                <Switch 
+                  checked={notifications.smsAlerts}
+                  onCheckedChange={(checked) => setNotifications(prev => ({...prev, smsAlerts: checked}))}
+                />
+              </div>
+            </div>
+            <Button className="w-full">Save Preferences</Button>
+          </div>
+        );
+
+      case 'Saved Services':
+        return (
+          <div className="space-y-4 text-center">
+            <div className="w-16 h-16 bg-yellow-100 rounded-full flex items-center justify-center mx-auto">
+              <Bookmark className="h-8 w-8 text-yellow-600" />
+            </div>
+            <div>
+              <h3 className="font-semibold text-foreground mb-2">Saved Services</h3>
+              <p className="text-sm text-muted-foreground mb-4">
+                Manage your bookmarked services for quick access.
+              </p>
+            </div>
+            <div className="space-y-2">
+              <Button className="w-full">
+                <Eye className="h-4 w-4 mr-2" />
+                View Saved Services
+              </Button>
+              <Button className="w-full" variant="outline">
+                <Edit className="h-4 w-4 mr-2" />
+                Manage Bookmarks
+              </Button>
+            </div>
+          </div>
+        );
+
+      case 'Language Settings':
+        return (
+          <div className="space-y-4">
+            <div className="flex items-center gap-3 mb-4">
+              <Globe className="h-6 w-6 text-primary" />
+              <h3 className="font-semibold text-foreground">Language Settings</h3>
+            </div>
+            <div className="space-y-4">
+              <div className="space-y-2">
+                <Label className="text-sm text-muted-foreground">Current Language</Label>
+                <Select defaultValue={userData.language_preference.toLowerCase()}>
+                  <SelectTrigger>
+                    <SelectValue />
+                  </SelectTrigger>
+                  <SelectContent>
+                    <SelectItem value="english">🇺🇸 English</SelectItem>
+                    <SelectItem value="arabic">🇦🇪 العربية</SelectItem>
+                    <SelectItem value="hindi">🇮🇳 हिंदी</SelectItem>
+                    <SelectItem value="urdu">🇵🇰 اردو</SelectItem>
+                  </SelectContent>
+                </Select>
+              </div>
+              <div className="p-3 bg-blue-50 border border-blue-200 rounded-lg">
+                <p className="text-sm text-blue-700">
+                  <AlertCircle className="h-4 w-4 inline mr-1" />
+                  Language changes will take effect after restarting the app.
+                </p>
+              </div>
+            </div>
+            <Button className="w-full">Apply Language Change</Button>
+          </div>
+        );
+
+      // Support Section (existing cases)
       case 'Help & FAQs':
         return (
           <div className="space-y-4">
@@ -95,6 +323,7 @@ export const SupportAssistant = ({
           </div>
         );
 
+      // Legal Section (existing cases)
       case 'Privacy Policy':
         return (
           <div className="space-y-4">
@@ -102,6 +331,9 @@ export const SupportAssistant = ({
               <Shield className="h-6 w-6 text-primary" />
               <h3 className="font-semibold text-foreground">Privacy Policy</h3>
             </div>
+            <p className="text-sm text-muted-foreground mb-4">
+              We take your data privacy seriously. Learn how we collect, use, and protect your personal information.
+            </p>
             <div className="space-y-3">
               <div className="p-3 bg-blue-50 border border-blue-200 rounded-lg">
                 <h4 className="font-medium text-blue-800 mb-2">Data Protection</h4>
@@ -124,7 +356,7 @@ export const SupportAssistant = ({
             </div>
             <Button className="w-full" variant="outline">
               <ExternalLink className="h-4 w-4 mr-2" />
-              Read Full Privacy Policy
+              View Full Privacy Policy
             </Button>
           </div>
         );
@@ -136,6 +368,9 @@ export const SupportAssistant = ({
               <FileText className="h-6 w-6 text-primary" />
               <h3 className="font-semibold text-foreground">Terms & Conditions</h3>
             </div>
+            <p className="text-sm text-muted-foreground mb-4">
+              Display brief app terms summary with key points.
+            </p>
             <div className="space-y-3">
               <div className="p-3 bg-muted/50 rounded-lg">
                 <h4 className="font-medium text-foreground mb-2">Service Usage</h4>
@@ -215,7 +450,7 @@ export const SupportAssistant = ({
             <div className="space-y-2">
               <Button className="w-full bg-red-600 hover:bg-red-700">
                 <Phone className="h-4 w-4 mr-2" />
-                Call Emergency Support
+                Call Now
               </Button>
               <p className="text-xs text-red-600">
                 +971-XX-XXX-XXXX
@@ -242,6 +477,18 @@ export const SupportAssistant = ({
         </CardHeader>
         <CardContent>
           {renderContent()}
+          
+          {/* Back to More button */}
+          <div className="mt-6 pt-4 border-t">
+            <Button 
+              variant="outline" 
+              onClick={onBack}
+              className="w-full justify-center"
+            >
+              <ArrowLeft className="h-4 w-4 mr-2" />
+              Back to More
+            </Button>
+          </div>
         </CardContent>
       </Card>
 
