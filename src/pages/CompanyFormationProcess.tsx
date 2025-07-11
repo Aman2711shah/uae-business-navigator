@@ -1,6 +1,6 @@
 import { useState, useEffect } from "react";
 import { useParams, useLocation, Link } from "react-router-dom";
-import { ArrowLeft, ArrowRight, Calculator, FileText, Users, Briefcase, MapPin, Save, Send } from "lucide-react";
+import { ArrowLeft, ArrowRight, Calculator, FileText, Users, Briefcase, MapPin, Save, Send, Building2, Search, CheckCircle } from "lucide-react";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
@@ -53,6 +53,8 @@ const CompanyFormationProcess = () => {
     entityType: "",
     jurisdiction: "",
     selectedFreezone: "",
+    businessType: "",
+    selectedJurisdiction: "",
     contactInfo: {
       name: "",
       email: "",
@@ -159,7 +161,7 @@ const CompanyFormationProcess = () => {
   const canProceed = () => {
     switch (currentStep) {
       case 1:
-        return formData.companyName && formData.selectedActivities.length > 0;
+        return formData.businessType && formData.selectedJurisdiction;
       case 2:
         return true;
       case 3:
@@ -238,47 +240,146 @@ const CompanyFormationProcess = () => {
           <CardContent className="space-y-6">
             {/* Step 1: Business Details */}
             {currentStep === 1 && (
-              <div className="space-y-4">
+              <div className="space-y-6">
+                {/* Business Type Selection */}
                 <div>
-                  <Label htmlFor="companyName">Company Name</Label>
-                  <Input
-                    id="companyName"
-                    placeholder="Enter your company name"
-                    value={formData.companyName}
-                    onChange={(e) => setFormData(prev => ({ ...prev, companyName: e.target.value }))}
-                  />
-                </div>
-                
-                <div>
-                  <Label>Select Business Activities (Choose multiple)</Label>
-                  <div className="grid grid-cols-2 gap-2 mt-2">
-                    {businessActivities.map((activity) => (
-                      <div
-                        key={activity}
-                        onClick={() => handleActivityChange(activity)}
-                        className={`p-3 rounded-lg border cursor-pointer transition-colors ${
-                          formData.selectedActivities.includes(activity)
-                            ? 'border-primary bg-primary/10 text-primary'
-                            : 'border-border hover:border-primary/50'
-                        }`}
-                      >
-                        <span className="text-sm font-medium">{activity}</span>
-                      </div>
-                    ))}
+                  <Label className="text-lg font-semibold">Choose Your Business Setup Type</Label>
+                  <p className="text-sm text-muted-foreground mb-4">
+                    Select whether you want to establish in a Free Zone or Mainland
+                  </p>
+                  <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                    <Card
+                      className={`cursor-pointer transition-all hover:shadow-md ${
+                        formData.businessType === 'freezone' ? 'ring-2 ring-primary bg-primary/5' : ''
+                      }`}
+                      onClick={() => setFormData(prev => ({ ...prev, businessType: 'freezone' }))}
+                    >
+                      <CardContent className="p-6 text-center">
+                        <Building2 className="h-12 w-12 mx-auto mb-3 text-primary" />
+                        <h3 className="font-semibold mb-2">Free Zone</h3>
+                        <p className="text-sm text-muted-foreground">
+                          100% ownership, tax benefits, easy setup
+                        </p>
+                        <div className="mt-3 flex flex-wrap gap-1 justify-center">
+                          <Badge variant="secondary" className="text-xs">Tax Free</Badge>
+                          <Badge variant="secondary" className="text-xs">100% Ownership</Badge>
+                        </div>
+                      </CardContent>
+                    </Card>
+                    
+                    <Card
+                      className={`cursor-pointer transition-all hover:shadow-md ${
+                        formData.businessType === 'mainland' ? 'ring-2 ring-primary bg-primary/5' : ''
+                      }`}
+                      onClick={() => setFormData(prev => ({ ...prev, businessType: 'mainland' }))}
+                    >
+                      <CardContent className="p-6 text-center">
+                        <MapPin className="h-12 w-12 mx-auto mb-3 text-primary" />
+                        <h3 className="font-semibold mb-2">Mainland</h3>
+                        <p className="text-sm text-muted-foreground">
+                          UAE market access, local sponsorship
+                        </p>
+                        <div className="mt-3 flex flex-wrap gap-1 justify-center">
+                          <Badge variant="secondary" className="text-xs">Market Access</Badge>
+                          <Badge variant="secondary" className="text-xs">Gov Contracts</Badge>
+                        </div>
+                      </CardContent>
+                    </Card>
                   </div>
-                  {formData.selectedActivities.length > 0 && (
-                    <div className="mt-3">
-                      <p className="text-sm text-muted-foreground mb-2">Selected activities:</p>
-                      <div className="flex flex-wrap gap-2">
-                        {formData.selectedActivities.map((activity) => (
-                          <Badge key={activity} variant="secondary">
-                            {activity}
-                          </Badge>
-                        ))}
+                </div>
+
+                {/* Jurisdiction Selection */}
+                {formData.businessType && (
+                  <div>
+                    <Label className="text-lg font-semibold">
+                      Select Your {formData.businessType === 'freezone' ? 'Free Zone' : 'Mainland'} Jurisdiction
+                    </Label>
+                    <p className="text-sm text-muted-foreground mb-4">
+                      Choose your preferred jurisdiction for business setup
+                    </p>
+                    
+                    {/* Search and Filters */}
+                    <div className="space-y-3 mb-4">
+                      <div className="relative">
+                        <Search className="absolute left-3 top-3 h-4 w-4 text-muted-foreground" />
+                        <Input
+                          placeholder={`Search ${formData.businessType === 'freezone' ? 'free zones' : 'mainland options'}...`}
+                          className="pl-9"
+                        />
+                      </div>
+                      <div className="flex gap-2">
+                        <Select>
+                          <SelectTrigger className="w-[180px]">
+                            <SelectValue placeholder="All Emirates" />
+                          </SelectTrigger>
+                          <SelectContent>
+                            <SelectItem value="dubai">Dubai</SelectItem>
+                            <SelectItem value="abudhabi">Abu Dhabi</SelectItem>
+                            <SelectItem value="sharjah">Sharjah</SelectItem>
+                            <SelectItem value="ajman">Ajman</SelectItem>
+                          </SelectContent>
+                        </Select>
+                        <Select>
+                          <SelectTrigger className="w-[180px]">
+                            <SelectValue placeholder="Activity Type" />
+                          </SelectTrigger>
+                          <SelectContent>
+                            <SelectItem value="trading">Trading</SelectItem>
+                            <SelectItem value="consulting">Consulting</SelectItem>
+                            <SelectItem value="technology">Technology</SelectItem>
+                            <SelectItem value="media">Media</SelectItem>
+                          </SelectContent>
+                        </Select>
                       </div>
                     </div>
-                  )}
-                </div>
+
+                    {/* Jurisdiction Options */}
+                    <div className="grid gap-3 max-h-60 overflow-y-auto">
+                      {(formData.businessType === 'freezone' ? [
+                        { name: 'Dubai Multi Commodities Centre (DMCC)', location: 'Dubai', benefits: ['Trading Hub', 'Gold & Commodities'] },
+                        { name: 'Dubai International Financial Centre (DIFC)', location: 'Dubai', benefits: ['Financial Services', 'Global Gateway'] },
+                        { name: 'Abu Dhabi Global Market (ADGM)', location: 'Abu Dhabi', benefits: ['Financial Centre', 'AI & Innovation'] },
+                        { name: 'Sharjah Airport International Free Zone (SAIF)', location: 'Sharjah', benefits: ['Logistics', 'Manufacturing'] },
+                        { name: 'Ras Al Khaimah Economic Zone (RAKEZ)', location: 'RAK', benefits: ['Cost Effective', 'Business Friendly'] }
+                      ] : [
+                        { name: 'Dubai Economic Department (DED)', location: 'Dubai', benefits: ['Market Leader', 'Business Hub'] },
+                        { name: 'Abu Dhabi Department of Economic Development', location: 'Abu Dhabi', benefits: ['Capital City', 'Government'] },
+                        { name: 'Sharjah Economic Development Department', location: 'Sharjah', benefits: ['Cultural Capital', 'Manufacturing'] },
+                        { name: 'Ajman Department of Economic Development', location: 'Ajman', benefits: ['Cost Effective', 'Growing Market'] }
+                      ]).map((jurisdiction) => (
+                        <Card
+                          key={jurisdiction.name}
+                          className={`cursor-pointer transition-all hover:shadow-md ${
+                            formData.selectedJurisdiction === jurisdiction.name ? 'ring-2 ring-primary bg-primary/5' : ''
+                          }`}
+                          onClick={() => setFormData(prev => ({ ...prev, selectedJurisdiction: jurisdiction.name }))}
+                        >
+                          <CardContent className="p-4">
+                            <div className="flex justify-between items-start">
+                              <div className="flex-1">
+                                <h4 className="font-semibold">{jurisdiction.name}</h4>
+                                <div className="flex items-center gap-1 mt-1 text-sm text-muted-foreground">
+                                  <MapPin className="h-3 w-3" />
+                                  {jurisdiction.location}
+                                </div>
+                                <div className="flex flex-wrap gap-1 mt-2">
+                                  {jurisdiction.benefits.map((benefit, index) => (
+                                    <Badge key={index} variant="outline" className="text-xs">
+                                      {benefit}
+                                    </Badge>
+                                  ))}
+                                </div>
+                              </div>
+                              {formData.selectedJurisdiction === jurisdiction.name && (
+                                <CheckCircle className="h-5 w-5 text-primary flex-shrink-0" />
+                              )}
+                            </div>
+                          </CardContent>
+                        </Card>
+                      ))}
+                    </div>
+                  </div>
+                )}
               </div>
             )}
 
