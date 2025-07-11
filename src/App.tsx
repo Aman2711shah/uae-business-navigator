@@ -13,7 +13,6 @@ import Services from "./pages/Services";
 import ServiceDetail from "./pages/ServiceDetail";
 import ServiceCategoryDetail from "./pages/ServiceCategoryDetail";
 import ApplicationProcess from "./pages/ApplicationProcess";
-import CompanyFormationProcess from "./pages/CompanyFormationProcess";
 import Community from "./pages/Community";
 import Growth from "./pages/Growth";
 import More from "./pages/More";
@@ -23,6 +22,7 @@ import GrowthServiceDetail from "./pages/GrowthServiceDetail";
 import GrowthBooking from "./pages/GrowthBooking";
 import TradeLicenseApplication from "./pages/TradeLicenseApplication";
 import TradeApplicationFlow from "./pages/TradeApplicationFlow";
+import CompanyFormationProcess from "./pages/CompanyFormationProcess";
 
 const queryClient = new QueryClient();
 
@@ -80,6 +80,7 @@ const App = () => {
               <Route path="/business-setup" element={<ProtectedRoute><BusinessSetupFlow /></ProtectedRoute>} />
               <Route path="/trade-license" element={<ProtectedRoute><TradeLicenseApplication /></ProtectedRoute>} />
               <Route path="/trade-application" element={<ProtectedRoute><TradeApplicationFlow /></ProtectedRoute>} />
+              <Route path="/company-formation" element={<ProtectedRoute><CompanyFormationProcess /></ProtectedRoute>} />
               <Route path="/growth/service/:serviceId" element={<ProtectedRoute><GrowthServiceDetail /></ProtectedRoute>} />
               <Route path="/growth/booking/:serviceId" element={<ProtectedRoute><GrowthBooking /></ProtectedRoute>} />
               {/* ADD ALL CUSTOM ROUTES ABOVE THE CATCH-ALL "*" ROUTE */}
