@@ -39,6 +39,8 @@ const QuickActions = () => {
   const handleActionClick = (index: number) => {
     if (index === 0) { // Start New Company
       navigate("/business-setup");
+    } else if (index === 1) { // Apply for Trade License
+      navigate("/trade-license");
     }
     // Add more navigation logic for other actions as needed
   };

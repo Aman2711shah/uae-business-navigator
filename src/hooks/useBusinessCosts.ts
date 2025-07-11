@@ -4,7 +4,7 @@ import { useEffect } from "react";
 
 interface BusinessCost {
   id: number;
-  mainland_fee: number | null;
+  License_fee: number | null;
   freezone_fee: number | null;
   extra_fee: number | null;
   category: string;
@@ -167,7 +167,7 @@ export const useBusinessCosts = () => {
         );
         return {
           activity,
-          fee: isFreezone ? cost?.freezone_fee || 0 : cost?.mainland_fee || 0
+          fee: isFreezone ? cost?.freezone_fee || 0 : cost?.License_fee || 0
         };
       })
       .filter(item => item.fee > 0);
@@ -189,7 +189,7 @@ export const useBusinessCosts = () => {
       c.item_name?.includes(entityMap[entityType])
     );
     
-    return isFreezone ? cost?.freezone_fee || 0 : cost?.mainland_fee || 0;
+    return isFreezone ? cost?.freezone_fee || 0 : cost?.License_fee || 0;
   };
 
   const getShareholderFee = () => {
@@ -211,7 +211,7 @@ export const useBusinessCosts = () => {
       c.item_name?.includes("Employment Visa")
     );
     
-    return cost?.mainland_fee || 2000; // fallback to 2000 AED per visa
+    return cost?.License_fee || 2000; // fallback to 2000 AED per visa
   };
 
   return {

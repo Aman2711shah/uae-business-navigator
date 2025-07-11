@@ -21,6 +21,7 @@ import NotFound from "./pages/NotFound";
 import BusinessSetupFlow from "./pages/BusinessSetupFlow";
 import GrowthServiceDetail from "./pages/GrowthServiceDetail";
 import GrowthBooking from "./pages/GrowthBooking";
+import TradeLicenseApplication from "./pages/TradeLicenseApplication";
 
 const queryClient = new QueryClient();
 
@@ -76,6 +77,7 @@ const App = () => {
               <Route path="/growth" element={<ProtectedRoute><Growth /></ProtectedRoute>} />
               <Route path="/more" element={<ProtectedRoute><More /></ProtectedRoute>} />
               <Route path="/business-setup" element={<ProtectedRoute><BusinessSetupFlow /></ProtectedRoute>} />
+              <Route path="/trade-license" element={<ProtectedRoute><TradeLicenseApplication /></ProtectedRoute>} />
               <Route path="/growth/service/:serviceId" element={<ProtectedRoute><GrowthServiceDetail /></ProtectedRoute>} />
               <Route path="/growth/booking/:serviceId" element={<ProtectedRoute><GrowthBooking /></ProtectedRoute>} />
               {/* ADD ALL CUSTOM ROUTES ABOVE THE CATCH-ALL "*" ROUTE */}
