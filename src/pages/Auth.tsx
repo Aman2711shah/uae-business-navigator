@@ -6,16 +6,15 @@ import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
-import { useToast } from '@/hooks/use-toast';
+import { useSecureAuth } from '@/hooks/useSecureAuth';
 
 export default function Auth() {
-  const [isLoading, setIsLoading] = useState(false);
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [fullName, setFullName] = useState('');
-  const { signIn, signUp, user } = useAuth();
+  const { user } = useAuth();
   const navigate = useNavigate();
-  const { toast } = useToast();
+  const { secureSignUp, secureSignIn, isLoading } = useSecureAuth();
 
   useEffect(() => {
     if (user) {
@@ -25,46 +24,12 @@ export default function Auth() {
 
   const handleSignIn = async (e: React.FormEvent) => {
     e.preventDefault();
-    setIsLoading(true);
-
-    const { error } = await signIn(email, password);
-    
-    if (error) {
-      toast({
-        variant: "destructive",
-        title: "Error signing in",
-        description: error.message,
-      });
-    } else {
-      toast({
-        title: "Welcome back!",
-        description: "You have successfully signed in.",
-      });
-    }
-    
-    setIsLoading(false);
+    await secureSignIn(email, password);
   };
 
   const handleSignUp = async (e: React.FormEvent) => {
     e.preventDefault();
-    setIsLoading(true);
-
-    const { error } = await signUp(email, password, fullName);
-    
-    if (error) {
-      toast({
-        variant: "destructive",
-        title: "Error creating account",
-        description: error.message,
-      });
-    } else {
-      toast({
-        title: "Account created!",
-        description: "Please check your email to verify your account.",
-      });
-    }
-    
-    setIsLoading(false);
+    await secureSignUp(email, password, fullName);
   };
 
   return (

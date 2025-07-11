@@ -29,12 +29,45 @@ export const contactSchema = z.object({
   message: z.string().min(10, 'Message must be at least 10 characters'),
 });
 
-// Sanitization functions
+// Enhanced sanitization functions
 export const sanitizeInput = (input: string): string => {
   return input
     .trim()
-    .replace(/[<>]/g, '') // Remove angle brackets to prevent basic XSS
+    // Remove script tags and their content
+    .replace(/<script\b[^<]*(?:(?!<\/script>)<[^<]*)*<\/script>/gi, '')
+    // Remove all HTML tags
+    .replace(/<[^>]*>/g, '')
+    // Remove javascript: and data: protocols
+    .replace(/javascript:/gi, '')
+    .replace(/data:/gi, '')
+    // Remove common XSS vectors
+    .replace(/on\w+\s*=/gi, '') // Remove event handlers like onclick=
+    .replace(/expression\s*\(/gi, '') // Remove CSS expressions
+    .replace(/vbscript:/gi, '') // Remove vbscript
+    // HTML entity encode remaining special characters
+    .replace(/&/g, '&amp;')
+    .replace(/</g, '&lt;')
+    .replace(/>/g, '&gt;')
+    .replace(/"/g, '&quot;')
+    .replace(/'/g, '&#x27;')
+    .replace(/\//g, '&#x2F;')
     .slice(0, 1000); // Limit length
+};
+
+export const sanitizeHtml = (html: string): string => {
+  // More aggressive sanitization for HTML content
+  return html
+    .replace(/<script\b[^<]*(?:(?!<\/script>)<[^<]*)*<\/script>/gi, '')
+    .replace(/<iframe\b[^<]*(?:(?!<\/iframe>)<[^<]*)*<\/iframe>/gi, '')
+    .replace(/<object\b[^<]*(?:(?!<\/object>)<[^<]*)*<\/object>/gi, '')
+    .replace(/<embed[^>]*>/gi, '')
+    .replace(/<link[^>]*>/gi, '')
+    .replace(/<meta[^>]*>/gi, '')
+    .replace(/on\w+\s*=\s*["'][^"']*["']/gi, '')
+    .replace(/javascript:/gi, '')
+    .replace(/vbscript:/gi, '')
+    .replace(/data:/gi, '')
+    .slice(0, 10000);
 };
 
 export const sanitizeEmail = (email: string): string => {

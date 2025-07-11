@@ -10,9 +10,11 @@ import {
 } from '@/components/ui/dropdown-menu';
 import { Avatar, AvatarFallback } from '@/components/ui/avatar';
 import { LogOut, User } from 'lucide-react';
+import { useSecureAuth } from '@/hooks/useSecureAuth';
 
 export const UserMenu: React.FC = () => {
-  const { user, signOut } = useAuth();
+  const { user } = useAuth();
+  const { secureSignOut } = useSecureAuth();
 
   if (!user) return null;
 
@@ -34,7 +36,7 @@ export const UserMenu: React.FC = () => {
           </div>
         </div>
         <DropdownMenuSeparator />
-        <DropdownMenuItem onClick={signOut}>
+        <DropdownMenuItem onClick={secureSignOut}>
           <LogOut className="mr-2 h-4 w-4" />
           <span>Sign out</span>
         </DropdownMenuItem>

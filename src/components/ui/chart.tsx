@@ -74,14 +74,17 @@ const ChartStyle = ({ id, config }: { id: string; config: ChartConfig }) => {
     return null
   }
 
-  // Sanitize and validate CSS content to prevent XSS
+  // Enhanced CSS sanitization to prevent XSS attacks
   const sanitizeCSS = (css: string): string => {
-    // Remove potential XSS vectors while preserving valid CSS
     return css
-      .replace(/[<>]/g, '') // Remove angle brackets
-      .replace(/javascript:/gi, '') // Remove javascript: protocols
+      .replace(/[<>'"]/g, '') // Remove dangerous characters
+      .replace(/javascript:/gi, '') // Remove javascript: protocol
       .replace(/expression\s*\(/gi, '') // Remove CSS expressions
-      .replace(/url\s*\(/gi, 'url(') // Normalize URL function
+      .replace(/url\s*\(/gi, '') // Remove url() functions for security
+      .replace(/import/gi, '') // Remove @import
+      .replace(/@/g, '') // Remove @ symbols
+      .replace(/\\[0-9a-f]{1,6}/gi, '') // Remove hex escapes
+      .trim()
   }
 
   const cssContent = sanitizeCSS(
@@ -94,9 +97,22 @@ ${colorConfig
     const color =
       itemConfig.theme?.[theme as keyof typeof itemConfig.theme] ||
       itemConfig.color
-    // Validate color format and sanitize
+    // Validate color format and sanitize more thoroughly
     if (!color || typeof color !== 'string') return null
-    const sanitizedColor = color.replace(/[<>]/g, '').slice(0, 50)
+    
+    // Sanitize the color value
+    const sanitizedColor = color
+      .replace(/[<>'"]/g, '')
+      .replace(/javascript:/gi, '')
+      .replace(/expression\s*\(/gi, '')
+      .trim()
+      .slice(0, 50)
+    
+    // Validate that it's a proper color format (hex, hsl, rgb, named colors)
+    const colorRegex = /^(#[0-9a-f]{3,8}|rgb\([^)]+\)|rgba\([^)]+\)|hsl\([^)]+\)|hsla\([^)]+\)|[a-z]+)$/i
+    if (!colorRegex.test(sanitizedColor)) return null
+    
+    // Sanitize the key as well
     const sanitizedKey = key.replace(/[^a-zA-Z0-9-_]/g, '').slice(0, 20)
     return sanitizedColor ? `  --color-${sanitizedKey}: ${sanitizedColor};` : null
   })
