@@ -221,7 +221,7 @@ const BusinessSetupFlow = () => {
       <div className="bg-white border-b p-4">
         <div className="flex items-center justify-between mb-2">
           {businessSetupSteps.map(step => <div key={step.number} className={`flex flex-col items-center space-y-1 ${step.number <= currentStep ? 'text-primary' : 'text-muted-foreground'}`}>
-              
+              <step.icon className="w-5 h-5" />
               <span className="text-xs font-medium">{step.title}</span>
             </div>)}
         </div>
