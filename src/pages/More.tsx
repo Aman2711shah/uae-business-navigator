@@ -1,9 +1,12 @@
+import { useState } from "react";
 import { User, Calendar, FileText, CreditCard, Bell, Bookmark, Globe, HelpCircle, MessageCircle, Star, Shield, Info, ChevronRight, Edit, Settings } from "lucide-react";
 import { Card, CardContent } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Badge } from "@/components/ui/badge";
 import BottomNavigation from "@/components/BottomNavigation";
+import { VirtualAssistant } from "@/components/VirtualAssistant";
+import { SupportAssistant } from "@/components/SupportAssistant";
 
 const menuSections = [
   {
@@ -56,6 +59,58 @@ const quickStats = [
 ];
 
 const More = () => {
+  const [selectedSection, setSelectedSection] = useState<'Support' | 'Legal' | null>(null);
+  const [selectedOption, setSelectedOption] = useState<string | null>(null);
+
+  const userData = {
+    user_full_name: userInfo.name,
+    company_name: userInfo.businessName,
+    email: userInfo.email,
+    membership_year: userInfo.memberSince,
+    active_services: 5,
+    completed_services: 12,
+    in_progress_services: 3,
+    bookings: 3,
+    language_preference: "English"
+  };
+
+  const handleActionClick = (action: string) => {
+    console.log(`Action clicked: ${action}`);
+    // Handle action routing here
+  };
+
+  const handleItemClick = (sectionTitle: string, itemLabel: string) => {
+    if (sectionTitle === "Support" || sectionTitle === "Legal") {
+      setSelectedSection(sectionTitle as 'Support' | 'Legal');
+      setSelectedOption(itemLabel);
+    } else {
+      console.log(`Clicked: ${sectionTitle} - ${itemLabel}`);
+      // Handle other menu item clicks
+    }
+  };
+
+  const handleBackToMenu = () => {
+    setSelectedSection(null);
+    setSelectedOption(null);
+  };
+
+  // Show support assistant if option is selected
+  if (selectedSection && selectedOption) {
+    return (
+      <div className="min-h-screen bg-gradient-to-b from-background to-muted/20 pb-20">
+        <div className="p-4">
+          <SupportAssistant
+            selectedSection={selectedSection}
+            selectedOption={selectedOption}
+            languagePreference={userData.language_preference}
+            onBack={handleBackToMenu}
+          />
+        </div>
+        <BottomNavigation />
+      </div>
+    );
+  }
+
   return (
     <div className="min-h-screen bg-gradient-to-b from-background to-muted/20 pb-20">
       {/* Header with User Info */}
@@ -91,6 +146,11 @@ const More = () => {
         </div>
       </div>
 
+      {/* AI Virtual Assistant */}
+      <div className="p-4">
+        <VirtualAssistant userData={userData} onActionClick={handleActionClick} />
+      </div>
+
       {/* Menu Sections */}
       <div className="p-4 space-y-6">
         {menuSections.map((section, sectionIndex) => (
@@ -102,6 +162,7 @@ const More = () => {
                   <div 
                     key={itemIndex}
                     className="flex items-center gap-3 p-4 border-b border-border last:border-b-0 hover:bg-muted/50 cursor-pointer transition-colors"
+                    onClick={() => handleItemClick(section.title, item.label)}
                   >
                     <div className="w-10 h-10 bg-muted rounded-lg flex items-center justify-center">
                       <item.icon className="h-5 w-5 text-muted-foreground" />
