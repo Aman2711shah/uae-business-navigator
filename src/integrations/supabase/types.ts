@@ -14,6 +14,65 @@ export type Database = {
   }
   public: {
     Tables: {
+      applications: {
+        Row: {
+          application_id: string
+          created_at: string
+          freezone_name: string
+          id: string
+          legal_entity_type: string
+          number_of_shareholders: number
+          number_of_visas: number
+          package_id: number | null
+          package_name: string
+          package_type: string
+          status: string
+          submitted_at: string | null
+          updated_at: string
+          user_id: string | null
+        }
+        Insert: {
+          application_id: string
+          created_at?: string
+          freezone_name: string
+          id?: string
+          legal_entity_type: string
+          number_of_shareholders?: number
+          number_of_visas?: number
+          package_id?: number | null
+          package_name: string
+          package_type: string
+          status?: string
+          submitted_at?: string | null
+          updated_at?: string
+          user_id?: string | null
+        }
+        Update: {
+          application_id?: string
+          created_at?: string
+          freezone_name?: string
+          id?: string
+          legal_entity_type?: string
+          number_of_shareholders?: number
+          number_of_visas?: number
+          package_id?: number | null
+          package_name?: string
+          package_type?: string
+          status?: string
+          submitted_at?: string | null
+          updated_at?: string
+          user_id?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "applications_package_id_fkey"
+            columns: ["package_id"]
+            isOneToOne: false
+            referencedRelation: "packages"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       business_setup_costs: {
         Row: {
           category: string
@@ -40,6 +99,93 @@ export type Database = {
           License_fee?: number | null
         }
         Relationships: []
+      }
+      document_requirements: {
+        Row: {
+          created_at: string
+          document_description: string | null
+          document_name: string
+          document_type: string
+          freezone_name: string
+          id: string
+          is_required: boolean
+          legal_entity_type: string
+          template_url: string | null
+        }
+        Insert: {
+          created_at?: string
+          document_description?: string | null
+          document_name: string
+          document_type?: string
+          freezone_name: string
+          id?: string
+          is_required?: boolean
+          legal_entity_type: string
+          template_url?: string | null
+        }
+        Update: {
+          created_at?: string
+          document_description?: string | null
+          document_name?: string
+          document_type?: string
+          freezone_name?: string
+          id?: string
+          is_required?: boolean
+          legal_entity_type?: string
+          template_url?: string | null
+        }
+        Relationships: []
+      }
+      document_uploads: {
+        Row: {
+          application_id: string | null
+          document_requirement_id: string | null
+          file_name: string
+          file_path: string
+          file_size: number | null
+          id: string
+          mime_type: string | null
+          upload_status: string
+          uploaded_at: string
+        }
+        Insert: {
+          application_id?: string | null
+          document_requirement_id?: string | null
+          file_name: string
+          file_path: string
+          file_size?: number | null
+          id?: string
+          mime_type?: string | null
+          upload_status?: string
+          uploaded_at?: string
+        }
+        Update: {
+          application_id?: string | null
+          document_requirement_id?: string | null
+          file_name?: string
+          file_path?: string
+          file_size?: number | null
+          id?: string
+          mime_type?: string | null
+          upload_status?: string
+          uploaded_at?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "document_uploads_application_id_fkey"
+            columns: ["application_id"]
+            isOneToOne: false
+            referencedRelation: "applications"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "document_uploads_document_requirement_id_fkey"
+            columns: ["document_requirement_id"]
+            isOneToOne: false
+            referencedRelation: "document_requirements"
+            referencedColumns: ["id"]
+          },
+        ]
       }
       freezone_costs: {
         Row: {
@@ -77,6 +223,48 @@ export type Database = {
           no_of_activity?: number
           updated_at?: string | null
           visa_cost?: number
+        }
+        Relationships: []
+      }
+      freezone_info: {
+        Row: {
+          contact_email: string | null
+          contact_phone: string | null
+          created_at: string
+          description: string | null
+          faqs: Json | null
+          freezone_name: string
+          id: string
+          key_benefits: string[] | null
+          office_location: string | null
+          updated_at: string
+          website_url: string | null
+        }
+        Insert: {
+          contact_email?: string | null
+          contact_phone?: string | null
+          created_at?: string
+          description?: string | null
+          faqs?: Json | null
+          freezone_name: string
+          id?: string
+          key_benefits?: string[] | null
+          office_location?: string | null
+          updated_at?: string
+          website_url?: string | null
+        }
+        Update: {
+          contact_email?: string | null
+          contact_phone?: string | null
+          created_at?: string
+          description?: string | null
+          faqs?: Json | null
+          freezone_name?: string
+          id?: string
+          key_benefits?: string[] | null
+          office_location?: string | null
+          updated_at?: string
+          website_url?: string | null
         }
         Relationships: []
       }

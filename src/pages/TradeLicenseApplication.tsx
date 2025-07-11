@@ -278,7 +278,7 @@ const TradeLicenseApplication = () => {
                   <div className="flex space-x-2 pt-2">
                     <Button 
                       className="flex-1" 
-                      onClick={() => navigate(`/business-setup?freezone=${pkg.freezone_name}`)}
+                      onClick={() => navigate(`/trade-application?packageId=${pkg.id}&freezone=${encodeURIComponent(pkg.freezone_name)}&packageName=${encodeURIComponent(pkg.package_name)}&packageType=${encodeURIComponent(pkg.package_type)}`)}
                     >
                       Start Application
                     </Button>
