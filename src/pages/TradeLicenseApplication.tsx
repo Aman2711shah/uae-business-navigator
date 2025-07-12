@@ -54,14 +54,31 @@ const TradeLicenseApplication = () => {
   });
 
   const freeZones = [
-    { name: "IFZA", location: "Dubai", specialty: "Business & Trading" },
-    { name: "SHAMS", location: "Sharjah", specialty: "Media & Creative Industries" },
-    { name: "SPC", location: "Sharjah", specialty: "Publishing & Media" },
-    { name: "RAKEZ", location: "Ras Al Khaimah", specialty: "Manufacturing & Trading" },
-    { name: "DMCC", location: "Dubai", specialty: "Commodities & Trading" },
-    { name: "ADGM", location: "Abu Dhabi", specialty: "Financial Services" },
-    { name: "twofour54", location: "Abu Dhabi", specialty: "Media & Entertainment" },
-    { name: "KIZAD", location: "Abu Dhabi", specialty: "Industrial & Manufacturing" }
+    { name: "IFZA", location: "Dubai", specialty: "Affordable packages, fast setup, remote registration" },
+    { name: "DMCC", location: "Dubai", specialty: "Global trading hub, premium location, gold/crypto friendly" },
+    { name: "SHAMS", location: "Sharjah", specialty: "Best for media, tech, and freelancers" },
+    { name: "SPC", location: "Sharjah", specialty: "Fast license + visa setup, allows dual license" },
+    { name: "RAKEZ", location: "Ras Al Khaimah", specialty: "Affordable with warehousing, industrial support" },
+    { name: "Meydan Free Zone", location: "Dubai", specialty: "100% digital, prestigious address, easy setup" },
+    { name: "DTEC", location: "Dubai", specialty: "Best for tech startups, in Silicon Oasis" },
+    { name: "Dubai South", location: "Dubai", specialty: "Proximity to Al Maktoum Airport, logistics-friendly" },
+    { name: "Ajman Free Zone", location: "Ajman", specialty: "Budget-friendly, good for small businesses" },
+    { name: "Fujairah Creative City", location: "Fujairah", specialty: "Media, consulting, and e-commerce friendly" },
+    { name: "KIZAD", location: "Abu Dhabi", specialty: "Industrial & logistics excellence" },
+    { name: "JAFZA", location: "Dubai", specialty: "Ideal for trading, warehousing, shipping access" },
+    { name: "DUQE Free Zone", location: "Dubai", specialty: "New entrant, DIFC-style service, modern & flexible" },
+    { name: "UAQ FTZ", location: "Umm Al Quwain", specialty: "Low-cost, flexible visa plans, remote setup" },
+    { name: "DAFZA", location: "Dubai", specialty: "Proximity to DXB Airport, premium business image" },
+    { name: "HFZA", location: "Sharjah", specialty: "Industrial setup, land lease, low-cost licenses" },
+    { name: "Dubai Internet City", location: "Dubai", specialty: "Tech park, ideal for IT & innovation companies" },
+    { name: "ADGM", location: "Abu Dhabi", specialty: "Financial free zone, international investor access" },
+    { name: "Dubai Silicon Oasis", location: "Dubai", specialty: "Tech-focused, startups, SME-friendly infrastructure" },
+    { name: "Masdar City Free Zone", location: "Abu Dhabi", specialty: "Sustainability startups, green business focus" },
+    { name: "RAK ICC", location: "Ras Al Khaimah", specialty: "Industrial and commercial activities" },
+    { name: "RAK DAO", location: "Ras Al Khaimah", specialty: "Digital assets and blockchain companies" },
+    { name: "RAK OASIS", location: "Ras Al Khaimah", specialty: "Knowledge-based activities and services" },
+    { name: "Ajman New Venture", location: "Ajman", specialty: "Innovative business solutions and startups" },
+    { name: "SRTIP", location: "Sharjah", specialty: "Research, technology and innovation park" }
   ];
 
   const mainlandOptions = [
