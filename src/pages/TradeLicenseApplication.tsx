@@ -471,7 +471,7 @@ const TradeLicenseApplication = () => {
         </div>
       </div>
 
-      <div className="p-4">
+      <div className="p-4 pb-24">
         {/* Progress Indicator */}
         {renderStepIndicator()}
         
@@ -490,12 +490,16 @@ const TradeLicenseApplication = () => {
         {currentStep === 4 && renderStep4()}
         {currentStep === 5 && renderStep5()}
 
-        {/* Navigation Buttons */}
-        <div className="flex justify-between mt-8">
+      </div>
+      
+      {/* Fixed Navigation Buttons */}
+      <div className="fixed bottom-0 left-0 w-full bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/60 p-4 shadow-[0_-2px_8px_rgba(0,0,0,0.1)] z-50 border-t">
+        <div className="flex justify-between">
           <Button 
             variant="outline" 
             onClick={() => setCurrentStep(Math.max(1, currentStep - 1))}
             disabled={currentStep === 1}
+            className="min-w-[100px]"
           >
             Back
           </Button>
@@ -522,6 +526,7 @@ const TradeLicenseApplication = () => {
                 (currentStep === 2 && !applicationData.selectedZone) ||
                 (currentStep === 3 && !applicationData.selectedPackage)
               }
+              className="min-w-[100px]"
             >
               Next
             </Button>
@@ -529,6 +534,7 @@ const TradeLicenseApplication = () => {
             <Button 
               onClick={handleSubmitApplication}
               disabled={loading || !applicationData.fullName || !applicationData.email || !applicationData.contactNumber}
+              className="min-w-[100px]"
             >
               {loading ? "Submitting..." : "Submit Application"}
             </Button>
