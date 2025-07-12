@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from "react";
-import { ArrowLeft, MapPin, Award, DollarSign, Building2, Search, Upload, CheckCircle, Clock, FileText, Users, Calendar } from "lucide-react";
+import { ArrowLeft, MapPin, Award, DollarSign, Building2, Search, Upload, CheckCircle, Clock, FileText, Users, Calendar, Copy, FileSearch } from "lucide-react";
 import { useNavigate } from "react-router-dom";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
@@ -34,6 +34,8 @@ interface ApplicationData {
   email: string;
   contactNumber: string;
   documents: File[];
+  serviceRequestId?: string;
+  isSubmitted?: boolean;
 }
 
 const TradeLicenseApplication = () => {
@@ -50,7 +52,9 @@ const TradeLicenseApplication = () => {
     fullName: '',
     email: '',
     contactNumber: '',
-    documents: []
+    documents: [],
+    serviceRequestId: '',
+    isSubmitted: false
   });
 
   const freeZones = [
@@ -158,16 +162,15 @@ const TradeLicenseApplication = () => {
     try {
       const serviceRequestId = generateServiceRequestId();
       
-      // Here you would typically save to database
-      toast({
-        title: "Application Submitted Successfully!",
-        description: `Your Service Request Number is: ${serviceRequestId}`,
+      // Update application data with service request ID and submission status
+      setApplicationData({
+        ...applicationData,
+        serviceRequestId,
+        isSubmitted: true
       });
-
-      // Reset and show success
-      setTimeout(() => {
-        navigate('/', { state: { serviceRequestId } });
-      }, 2000);
+      
+      // Move to success step (step 6)
+      setCurrentStep(6);
     } catch (error) {
       console.error('Error submitting application:', error);
       toast({
@@ -458,6 +461,76 @@ const TradeLicenseApplication = () => {
     </div>
   );
 
+  const renderStep6 = () => {
+    const copyRequestID = async () => {
+      if (applicationData.serviceRequestId) {
+        try {
+          await navigator.clipboard.writeText(applicationData.serviceRequestId);
+          toast({
+            title: "Copied!",
+            description: "Request ID copied to clipboard",
+          });
+        } catch (err) {
+          console.error('Failed to copy:', err);
+          toast({
+            title: "Copy failed",
+            description: "Please copy the ID manually",
+            variant: "destructive"
+          });
+        }
+      }
+    };
+
+    return (
+      <div className="space-y-6 flex items-center justify-center min-h-[400px]">
+        <div className="bg-blue-50 border border-blue-200 rounded-lg p-6 max-w-md w-full shadow-sm">
+          <div className="text-center">
+            <div className="w-16 h-16 bg-green-100 rounded-full flex items-center justify-center mx-auto mb-4">
+              <CheckCircle className="h-8 w-8 text-green-600" />
+            </div>
+            
+            <h3 className="text-lg font-semibold text-gray-900 mb-2">
+              Application Submitted Successfully!
+            </h3>
+            
+            <p className="text-sm text-gray-600 mb-4">
+              Your Service Request Number is:
+            </p>
+            
+            <div className="bg-white border rounded-lg p-3 mb-4">
+              <span className="font-mono text-lg font-bold text-blue-600">
+                {applicationData.serviceRequestId}
+              </span>
+            </div>
+            
+            <div className="flex gap-3 justify-center">
+              <Button
+                variant="outline"
+                size="sm"
+                onClick={copyRequestID}
+                className="flex items-center gap-2"
+              >
+                <Copy className="h-4 w-4" />
+                Copy ID
+              </Button>
+              
+              <Button
+                size="sm"
+                onClick={() => navigate('/track-application', { 
+                  state: { requestId: applicationData.serviceRequestId } 
+                })}
+                className="flex items-center gap-2"
+              >
+                <FileSearch className="h-4 w-4" />
+                Track My Application
+              </Button>
+            </div>
+          </div>
+        </div>
+      </div>
+    );
+  };
+
   return (
     <div className="min-h-screen bg-gradient-to-b from-background to-muted/20">
       {/* Header */}
@@ -476,12 +549,14 @@ const TradeLicenseApplication = () => {
         {renderStepIndicator()}
         
         {/* Progress Bar */}
-        <div className="mb-8">
-          <Progress value={(currentStep / 5) * 100} className="h-2" />
-          <p className="text-sm text-muted-foreground mt-2 text-center">
-            Step {currentStep} of 5
-          </p>
-        </div>
+        {currentStep <= 5 && (
+          <div className="mb-8">
+            <Progress value={(currentStep / 5) * 100} className="h-2" />
+            <p className="text-sm text-muted-foreground mt-2 text-center">
+              Step {currentStep} of 5
+            </p>
+          </div>
+        )}
 
         {/* Step Content */}
         {currentStep === 1 && renderStep1()}
@@ -489,11 +564,13 @@ const TradeLicenseApplication = () => {
         {currentStep === 3 && renderStep3()}
         {currentStep === 4 && renderStep4()}
         {currentStep === 5 && renderStep5()}
+        {currentStep === 6 && renderStep6()}
 
       </div>
       
       {/* Fixed Navigation Buttons */}
-      <div className="fixed bottom-0 left-0 w-full bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/60 p-4 shadow-[0_-2px_8px_rgba(0,0,0,0.1)] z-50 border-t">
+      {currentStep <= 5 && (
+        <div className="fixed bottom-0 left-0 w-full bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/60 p-4 shadow-[0_-2px_8px_rgba(0,0,0,0.1)] z-50 border-t">
         <div className="flex justify-between">
           <Button 
             variant="outline" 
@@ -540,7 +617,8 @@ const TradeLicenseApplication = () => {
             </Button>
           )}
         </div>
-      </div>
+        </div>
+      )}
     </div>
   );
 };

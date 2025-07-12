@@ -23,6 +23,7 @@ import GrowthBooking from "./pages/GrowthBooking";
 import TradeLicenseApplication from "./pages/TradeLicenseApplication";
 import TradeApplicationFlow from "./pages/TradeApplicationFlow";
 import CompanyFormationProcess from "./pages/CompanyFormationProcess";
+import TrackApplication from "./pages/TrackApplication";
 
 const queryClient = new QueryClient();
 
@@ -80,6 +81,7 @@ const App = () => {
               <Route path="/business-setup" element={<ProtectedRoute><BusinessSetupFlow /></ProtectedRoute>} />
               <Route path="/trade-license" element={<ProtectedRoute><TradeLicenseApplication /></ProtectedRoute>} />
               <Route path="/trade-application" element={<ProtectedRoute><TradeApplicationFlow /></ProtectedRoute>} />
+              <Route path="/track-application" element={<ProtectedRoute><TrackApplication /></ProtectedRoute>} />
               <Route path="/company-formation" element={<ProtectedRoute><CompanyFormationProcess /></ProtectedRoute>} />
               <Route path="/growth/service/:serviceId" element={<ProtectedRoute><GrowthServiceDetail /></ProtectedRoute>} />
               <Route path="/growth/booking/:serviceId" element={<ProtectedRoute><GrowthBooking /></ProtectedRoute>} />
