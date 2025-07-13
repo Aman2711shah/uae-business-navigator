@@ -36,6 +36,22 @@ const TrackApplication = () => {
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState('');
 
+  // Mock recent applications data
+  const recentApplications = [
+    {
+      id: 'SR48936845',
+      jurisdiction: 'IFZA',
+      status: 'under_review',
+      submittedAt: new Date('2024-01-15').toISOString()
+    },
+    {
+      id: 'SR48929011', 
+      jurisdiction: 'SPC',
+      status: 'approved',
+      submittedAt: new Date('2024-01-10').toISOString()
+    }
+  ];
+
   useEffect(() => {
     // Check if request ID was passed via navigation state
     if (location.state?.requestId) {
@@ -131,6 +147,11 @@ const TrackApplication = () => {
     }
   };
 
+  const viewRequest = (id: string) => {
+    setRequestId(id);
+    handleSearch(id);
+  };
+
   return (
     <div className="min-h-screen bg-gradient-to-b from-background to-muted/20">
       {/* Header */}
@@ -174,6 +195,48 @@ const TrackApplication = () => {
               {error && (
                 <p className="text-sm text-red-600">{error}</p>
               )}
+            </div>
+          </CardContent>
+        </Card>
+
+        {/* Recent Applications */}
+        <Card className="mb-6">
+          <CardHeader>
+            <CardTitle>Recent Applications</CardTitle>
+          </CardHeader>
+          <CardContent>
+            <div className="space-y-4">
+              {recentApplications.map((app) => (
+                <div key={app.id} className="border-b border-border pb-4 last:border-b-0 last:pb-0">
+                  <div className="flex items-start justify-between">
+                    <div className="flex-1">
+                      <p className="font-semibold text-sm">Request ID: {app.id}</p>
+                      <div className="flex items-center gap-2 text-sm text-muted-foreground mt-1">
+                        <span>Jurisdiction: {app.jurisdiction}</span>
+                        <span>•</span>
+                        <span>Status: 
+                          <Badge 
+                            variant="secondary" 
+                            className={`ml-1 ${getStatusColor(app.status)}`}
+                          >
+                            {app.status === 'under_review' ? 'Under Review' : 
+                             app.status === 'approved' ? 'Completed' : 
+                             app.status.replace('_', ' ')}
+                          </Badge>
+                        </span>
+                      </div>
+                    </div>
+                    <Button 
+                      variant="outline" 
+                      size="sm"
+                      onClick={() => viewRequest(app.id)}
+                      className="ml-4"
+                    >
+                      View Details
+                    </Button>
+                  </div>
+                </div>
+              ))}
             </div>
           </CardContent>
         </Card>
