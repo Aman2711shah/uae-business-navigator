@@ -8,55 +8,57 @@ All colors MUST be HSL.
 
 @layer base {
   :root {
-    --background: 0 0% 100%;
-    --foreground: 222.2 84% 4.9%;
+    /* Dark Theme Base Colors */
+    --background: 225 43% 8%;        /* Deep navy #0b0f1a */
+    --foreground: 0 0% 100%;         /* Pure white */
 
-    --card: 0 0% 100%;
-    --card-foreground: 222.2 84% 4.9%;
+    --card: 225 30% 16%;             /* Card background #1c2433 */
+    --card-foreground: 0 0% 100%;    /* White text on cards */
 
-    --popover: 0 0% 100%;
-    --popover-foreground: 222.2 84% 4.9%;
+    --popover: 225 30% 16%;          /* Same as card */
+    --popover-foreground: 0 0% 100%;
 
-    --primary: 213 100% 40%;
-    --primary-foreground: 0 0% 100%;
+    /* Electric Blue Primary */
+    --primary: 220 99% 62%;          /* Electric blue #3f80fe */
+    --primary-foreground: 0 0% 100%; /* White text on primary */
+    --primary-hover: 220 99% 69%;    /* Hover shade #5d9eff */
 
-    --secondary: 210 40% 96.1%;
-    --secondary-foreground: 222.2 47.4% 11.2%;
+    /* Secondary Colors */
+    --secondary: 225 30% 20%;        /* Slightly lighter than card */
+    --secondary-foreground: 0 0% 100%;
 
-    --muted: 210 40% 96.1%;
-    --muted-foreground: 215.4 16.3% 46.9%;
+    --muted: 225 30% 20%;
+    --muted-foreground: 225 20% 70%; /* Soft gray #aab2c5 */
 
-    --accent: 210 40% 96.1%;
-    --accent-foreground: 222.2 47.4% 11.2%;
+    --accent: 225 30% 20%;
+    --accent-foreground: 0 0% 100%;
 
-    --destructive: 0 84.2% 60.2%;
-    --destructive-foreground: 210 40% 98%;
+    --destructive: 0 84% 60%;
+    --destructive-foreground: 0 0% 100%;
 
-    --border: 214.3 31.8% 91.4%;
-    --input: 214.3 31.8% 91.4%;
-    --ring: 222.2 84% 4.9%;
+    --border: 225 30% 25%;           /* Subtle borders */
+    --input: 225 30% 18%;            /* Input backgrounds */
+    --ring: 220 99% 62%;             /* Focus rings use primary */
 
-    /* GoPRO Brand Colors */
-    --brand-orange: 18 85% 60%;
-    --brand-orange-foreground: 0 0% 100%;
-    --brand-blue: 213 100% 40%;
-    --brand-green: 142 76% 36%;
-    --brand-purple: 262 83% 58%;
+    /* Chat UI Colors */
+    --chat-bubble: 225 40% 13%;      /* Chat bubble #141a29 */
+    --chat-assistant: 220 95% 78%;   /* Assistant text #8fbafc */
     
     /* Gradients */
-    --gradient-orange: linear-gradient(135deg, hsl(18 85% 60%), hsl(18 85% 55%));
-    --gradient-blue: linear-gradient(135deg, hsl(213 100% 40%), hsl(213 100% 35%));
-    --gradient-subtle: linear-gradient(180deg, hsl(0 0% 100%), hsl(210 40% 98%));
+    --gradient-primary: linear-gradient(180deg, hsl(225 43% 8%), hsl(225 43% 11%));
+    --gradient-card: linear-gradient(135deg, hsl(225 30% 16%), hsl(225 30% 18%));
+    --gradient-blue: linear-gradient(135deg, hsl(220 99% 62%), hsl(220 99% 69%));
     
-    /* Shadows */
-    --shadow-card: 0 4px 6px -1px hsl(0 0% 0% / 0.1), 0 2px 4px -1px hsl(0 0% 0% / 0.06);
-    --shadow-lg: 0 10px 15px -3px hsl(0 0% 0% / 0.1), 0 4px 6px -2px hsl(0 0% 0% / 0.05);
-    --shadow-orange: 0 8px 25px -5px hsl(18 85% 60% / 0.3);
+    /* Shadows with Blue Glow */
+    --shadow-card: 0 0 12px hsl(220 99% 62% / 0.1);
+    --shadow-lg: 0 10px 30px -10px hsl(220 99% 62% / 0.3);
+    --shadow-glow: 0 0 40px hsl(220 99% 69% / 0.4);
     
     /* Animations */
     --transition-smooth: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+    --transition-spring: all 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
 
-    --radius: 0.5rem;
+    --radius: 0.75rem;               /* 12px border radius */
 
     --sidebar-background: 0 0% 98%;
 
@@ -76,41 +78,36 @@ All colors MUST be HSL.
   }
 
   .dark {
-    --background: 222.2 84% 4.9%;
-    --foreground: 210 40% 98%;
+    /* Dark mode uses same colors as base since we're dark-first */
+    --background: 225 43% 8%;
+    --foreground: 0 0% 100%;
+    --card: 225 30% 16%;
+    --card-foreground: 0 0% 100%;
+    --popover: 225 30% 16%;
+    --popover-foreground: 0 0% 100%;
+    --primary: 220 99% 62%;
+    --primary-foreground: 0 0% 100%;
+    --secondary: 225 30% 20%;
+    --secondary-foreground: 0 0% 100%;
+    --muted: 225 30% 20%;
+    --muted-foreground: 225 20% 70%;
+    --accent: 225 30% 20%;
+    --accent-foreground: 0 0% 100%;
+    --destructive: 0 84% 60%;
+    --destructive-foreground: 0 0% 100%;
+    --border: 225 30% 25%;
+    --input: 225 30% 18%;
+    --ring: 220 99% 62%;
 
-    --card: 222.2 84% 4.9%;
-    --card-foreground: 210 40% 98%;
-
-    --popover: 222.2 84% 4.9%;
-    --popover-foreground: 210 40% 98%;
-
-    --primary: 210 40% 98%;
-    --primary-foreground: 222.2 47.4% 11.2%;
-
-    --secondary: 217.2 32.6% 17.5%;
-    --secondary-foreground: 210 40% 98%;
-
-    --muted: 217.2 32.6% 17.5%;
-    --muted-foreground: 215 20.2% 65.1%;
-
-    --accent: 217.2 32.6% 17.5%;
-    --accent-foreground: 210 40% 98%;
-
-    --destructive: 0 62.8% 30.6%;
-    --destructive-foreground: 210 40% 98%;
-
-    --border: 217.2 32.6% 17.5%;
-    --input: 217.2 32.6% 17.5%;
-    --ring: 212.7 26.8% 83.9%;
-    --sidebar-background: 240 5.9% 10%;
-    --sidebar-foreground: 240 4.8% 95.9%;
-    --sidebar-primary: 224.3 76.3% 48%;
+    /* Sidebar Colors */
+    --sidebar-background: 225 43% 8%;
+    --sidebar-foreground: 0 0% 100%;
+    --sidebar-primary: 220 99% 62%;
     --sidebar-primary-foreground: 0 0% 100%;
-    --sidebar-accent: 240 3.7% 15.9%;
-    --sidebar-accent-foreground: 240 4.8% 95.9%;
-    --sidebar-border: 240 3.7% 15.9%;
-    --sidebar-ring: 217.2 91.2% 59.8%;
+    --sidebar-accent: 225 30% 20%;
+    --sidebar-accent-foreground: 0 0% 100%;
+    --sidebar-border: 225 30% 25%;
+    --sidebar-ring: 220 99% 62%;
   }
 }
 
@@ -120,6 +117,30 @@ All colors MUST be HSL.
   }
 
   body {
-    @apply bg-background text-foreground;
+    @apply bg-background text-foreground font-inter antialiased;
+    font-feature-settings: "cv02", "cv03", "cv04", "cv11";
+  }
+  
+  html {
+    @apply dark; /* Apply dark theme by default */
+  }
+}
+
+@layer components {
+  /* Interactive Elements */
+  .story-link {
+    @apply relative inline-block after:content-[''] after:absolute after:w-full after:scale-x-0 after:h-0.5 after:bottom-0 after:left-0 after:bg-primary after:origin-bottom-right after:transition-transform after:duration-300 hover:after:scale-x-100 hover:after:origin-bottom-left;
+  }
+  
+  .hover-scale {
+    @apply transition-transform duration-200 hover:scale-105;
+  }
+  
+  .glow-card {
+    @apply bg-card border border-border/50 rounded-xl shadow-card hover:shadow-glow transition-all duration-300;
+  }
+  
+  .gradient-text {
+    @apply bg-gradient-to-r from-primary to-primary-hover bg-clip-text text-transparent;
   }
 }

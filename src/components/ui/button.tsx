@@ -5,21 +5,22 @@ import { cva, type VariantProps } from "class-variance-authority"
 import { cn } from "@/lib/utils"
 
 const buttonVariants = cva(
-  "inline-flex items-center justify-center gap-2 whitespace-nowrap rounded-md text-sm font-medium ring-offset-background transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:pointer-events-none disabled:opacity-50 [&_svg]:pointer-events-none [&_svg]:size-4 [&_svg]:shrink-0",
+  "inline-flex items-center justify-center gap-2 whitespace-nowrap rounded-xl text-sm font-medium ring-offset-background transition-all duration-300 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:pointer-events-none disabled:opacity-50 [&_svg]:pointer-events-none [&_svg]:size-4 [&_svg]:shrink-0",
   {
     variants: {
       variant: {
-        default: "bg-primary text-primary-foreground hover:bg-primary/90",
+        default: "bg-primary text-primary-foreground hover:bg-primary-hover shadow-lg hover:shadow-glow transition-all duration-300",
         destructive:
-          "bg-destructive text-destructive-foreground hover:bg-destructive/90",
+          "bg-destructive text-destructive-foreground hover:bg-destructive/90 shadow-lg",
         outline:
-          "border border-input bg-background hover:bg-accent hover:text-accent-foreground",
+          "border-2 border-foreground/20 bg-transparent text-foreground hover:bg-foreground/10 hover:border-primary hover:text-primary transition-all duration-300",
         secondary:
-          "bg-secondary text-secondary-foreground hover:bg-secondary/80",
-        ghost: "hover:bg-accent hover:text-accent-foreground",
-        link: "text-primary underline-offset-4 hover:underline",
-        orange: "bg-brand-orange text-brand-orange-foreground hover:bg-brand-orange/90 shadow-md hover:shadow-lg transition-all duration-300",
-        "orange-outline": "border-2 border-brand-orange text-brand-orange bg-transparent hover:bg-brand-orange hover:text-brand-orange-foreground transition-all duration-300",
+          "bg-secondary text-secondary-foreground hover:bg-secondary/80 shadow-md",
+        ghost: "hover:bg-accent hover:text-accent-foreground transition-all duration-200",
+        link: "text-primary underline-offset-4 hover:underline transition-all duration-200",
+        cta: "bg-primary text-primary-foreground hover:bg-primary-hover shadow-glow hover:shadow-[0_0_30px_hsl(220_99%_62%_/_0.6)] transition-all duration-300 animate-glow-pulse",
+        orange: "bg-primary text-primary-foreground hover:bg-primary-hover shadow-lg hover:shadow-glow transition-all duration-300",
+        "orange-outline": "border-2 border-primary text-primary bg-transparent hover:bg-primary hover:text-primary-foreground transition-all duration-300",
       },
       size: {
         default: "h-10 px-4 py-2",
