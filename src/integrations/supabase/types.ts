@@ -171,10 +171,13 @@ export type Database = {
       }
       community_users: {
         Row: {
+          about_you: string | null
+          business_stage: string | null
           business_type: string
           company_name: string
           employee_count: string | null
           id: string
+          industries: string[]
           industry: string
           joined_at: string
           updated_at: string
@@ -183,10 +186,13 @@ export type Database = {
           website_or_linkedin: string | null
         }
         Insert: {
+          about_you?: string | null
+          business_stage?: string | null
           business_type: string
           company_name: string
           employee_count?: string | null
           id?: string
+          industries?: string[]
           industry: string
           joined_at?: string
           updated_at?: string
@@ -195,10 +201,13 @@ export type Database = {
           website_or_linkedin?: string | null
         }
         Update: {
+          about_you?: string | null
+          business_stage?: string | null
           business_type?: string
           company_name?: string
           employee_count?: string | null
           id?: string
+          industries?: string[]
           industry?: string
           joined_at?: string
           updated_at?: string

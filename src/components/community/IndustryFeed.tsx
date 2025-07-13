@@ -2,6 +2,7 @@ import { useState, useEffect } from 'react';
 import { supabase } from '@/integrations/supabase/client';
 import { useToast } from '@/hooks/use-toast';
 import IndustryFeedHeader from './IndustryFeedHeader';
+import PostCreationBox from './PostCreationBox';
 import PostsFeed from './PostsFeed';
 import FeedEmptyState from './FeedEmptyState';
 import FeedLoadingState from './FeedLoadingState';
@@ -12,9 +13,10 @@ interface IndustryFeedProps {
   industry: string;
   onBack: () => void;
   currentUserId?: string;
+  userProfile?: any;
 }
 
-export default function IndustryFeed({ industry, onBack, currentUserId }: IndustryFeedProps) {
+export default function IndustryFeed({ industry, onBack, currentUserId, userProfile }: IndustryFeedProps) {
   const [posts, setPosts] = useState<Post[]>([]);
   const [isLoading, setIsLoading] = useState(false);
   const [searchTerm, setSearchTerm] = useState('');
@@ -91,7 +93,7 @@ export default function IndustryFeed({ industry, onBack, currentUserId }: Indust
   const hasFilters = Boolean(searchTerm || selectedTag);
 
   return (
-    <div className="min-h-screen bg-gradient-primary pb-20">
+    <div className="min-h-screen bg-background pb-20">
       <IndustryFeedHeader
         industry={industry}
         onBack={onBack}
@@ -106,6 +108,14 @@ export default function IndustryFeed({ industry, onBack, currentUserId }: Indust
         isLoading={isLoading}
         onCreatePost={() => setShowCreatePost(true)}
       />
+
+      {/* Post Creation Box */}
+      <div className="p-4 pt-0">
+        <PostCreationBox 
+          onCreatePost={() => setShowCreatePost(true)}
+          userProfile={userProfile}
+        />
+      </div>
 
       {isLoading ? (
         <FeedLoadingState />

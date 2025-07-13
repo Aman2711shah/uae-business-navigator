@@ -1,11 +1,14 @@
 import { useState, useEffect } from "react";
-import { TrendingUp, Building2, ShoppingCart, Smartphone, Utensils, Truck, Shield, Store, Monitor, Plane, GraduationCap, Video, Users } from "lucide-react";
+import { TrendingUp, Building2, ShoppingCart, Smartphone, Utensils, Truck, Shield, Store, Monitor, Plane, GraduationCap, Video, Users, ChevronDown } from "lucide-react";
 import { Card, CardContent } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
+import { Badge } from "@/components/ui/badge";
 import BottomNavigation from "@/components/BottomNavigation";
 import { supabase } from "@/integrations/supabase/client";
 import { useToast } from "@/hooks/use-toast";
-import JoinCommunityForm from "@/components/community/JoinCommunityForm";
+import IndustrySelection from "@/components/community/IndustrySelection";
+import CommunityEntryForm from "@/components/community/CommunityEntryForm";
 import IndustryFeed from "@/components/community/IndustryFeed";
 
 const industries = [
@@ -25,7 +28,9 @@ const industries = [
 
 const Community = () => {
   const [selectedIndustry, setSelectedIndustry] = useState<string | null>(null);
-  const [showJoinForm, setShowJoinForm] = useState(false);
+  const [showIndustrySelection, setShowIndustrySelection] = useState(false);
+  const [showEntryForm, setShowEntryForm] = useState(false);
+  const [selectedIndustries, setSelectedIndustries] = useState<string[]>([]);
   const [currentUserId, setCurrentUserId] = useState<string | null>(null);
   const [userCommunityProfile, setUserCommunityProfile] = useState<any>(null);
   const { toast } = useToast();
@@ -59,16 +64,26 @@ const Community = () => {
       if (data) {
         setUserCommunityProfile(data);
       } else {
-        setShowJoinForm(true);
+        setShowIndustrySelection(true);
       }
     } catch (error) {
       console.error('Error checking community profile:', error);
     }
   };
 
+  const handleIndustrySelectionContinue = (industries: string[]) => {
+    setSelectedIndustries(industries);
+    setShowIndustrySelection(false);
+    setShowEntryForm(true);
+  };
+
   const handleJoinCommunity = (profile: any) => {
     setUserCommunityProfile(profile);
-    setShowJoinForm(false);
+    setShowEntryForm(false);
+    // Set the first industry as selected by default
+    if (profile.industries && profile.industries.length > 0) {
+      setSelectedIndustry(profile.industries[0]);
+    }
     toast({
       title: "Welcome to the Community!",
       description: "You can now participate in discussions and connect with other members.",
@@ -83,15 +98,22 @@ const Community = () => {
     setSelectedIndustry(null);
   };
 
-  if (showJoinForm) {
+  if (showIndustrySelection) {
     return (
-      <div className="min-h-screen bg-gradient-primary">
-        <JoinCommunityForm 
-          industry=""
-          onBack={() => setShowJoinForm(false)}
-          onSuccess={handleJoinCommunity} 
-        />
-      </div>
+      <IndustrySelection onContinue={handleIndustrySelectionContinue} />
+    );
+  }
+
+  if (showEntryForm) {
+    return (
+      <CommunityEntryForm 
+        selectedIndustries={selectedIndustries}
+        onBack={() => {
+          setShowEntryForm(false);
+          setShowIndustrySelection(true);
+        }}
+        onSuccess={handleJoinCommunity} 
+      />
     );
   }
 
@@ -101,49 +123,83 @@ const Community = () => {
         industry={selectedIndustry} 
         onBack={handleBackToMain}
         currentUserId={currentUserId}
+        userProfile={userCommunityProfile}
       />
     );
   }
 
   return (
-    <div className="min-h-screen bg-gradient-primary pb-20">
+    <div className="min-h-screen bg-background pb-20">
       {/* Header */}
       <div className="bg-card border-b border-border/50 p-4">
         <div className="flex items-center justify-between mb-4">
-          <div>
+          <div className="flex-1">
             <h1 className="text-2xl font-bold text-foreground">Community</h1>
             {userCommunityProfile && (
               <p className="text-sm text-muted-foreground">
-                Welcome, {userCommunityProfile.username} • {userCommunityProfile.industry}
+                Welcome back, {userCommunityProfile.username}
               </p>
             )}
           </div>
         </div>
+
+        {/* Industry Selector */}
+        {userCommunityProfile && userCommunityProfile.industries && (
+          <div className="space-y-3">
+            <label className="text-sm font-medium text-foreground">Your Communities</label>
+            <Select value={selectedIndustry || ""} onValueChange={setSelectedIndustry}>
+              <SelectTrigger className="w-full">
+                <SelectValue placeholder="Select an industry community" />
+              </SelectTrigger>
+              <SelectContent>
+                {userCommunityProfile.industries.map((industry: string) => (
+                  <SelectItem key={industry} value={industry}>
+                    {industry}
+                  </SelectItem>
+                ))}
+              </SelectContent>
+            </Select>
+            
+            <div className="flex flex-wrap gap-2">
+              {userCommunityProfile.industries.map((industry: string) => (
+                <Badge 
+                  key={industry} 
+                  variant={selectedIndustry === industry ? "default" : "secondary"}
+                  className="cursor-pointer"
+                  onClick={() => setSelectedIndustry(industry)}
+                >
+                  {industry}
+                </Badge>
+              ))}
+            </div>
+          </div>
+        )}
       </div>
 
-      {/* Industries Grid */}
+      {/* Content based on selection */}
       <div className="p-4">
-        <h2 className="text-lg font-semibold text-foreground mb-4">Join Industry Communities</h2>
-        <div className="grid grid-cols-2 gap-3">
-          {industries.map((industry, index) => (
-            <Card 
-              key={index} 
-              className="border-none shadow-sm hover:shadow-md transition-all duration-300 cursor-pointer hover:scale-105"
-              onClick={() => handleIndustryClick(industry.name)}
-            >
-              <CardContent className="p-4">
-                <div className="flex items-center gap-3">
-                  <div className="w-12 h-12 rounded-xl bg-gradient-to-br from-primary/10 to-primary/5 flex items-center justify-center">
-                    <industry.icon className={`h-6 w-6 ${industry.color}`} />
-                  </div>
-                  <div className="flex-1 min-w-0">
-                    <h3 className="font-semibold text-foreground text-sm truncate">{industry.name}</h3>
-                    <p className="text-xs text-muted-foreground">{industry.count} members</p>
-                  </div>
-                </div>
-              </CardContent>
-            </Card>
-          ))}
+        <div className="text-center py-12">
+          <Users className="h-16 w-16 text-muted-foreground mx-auto mb-4" />
+          <h2 className="text-xl font-semibold text-foreground mb-2">
+            Welcome to the Community
+          </h2>
+          <p className="text-muted-foreground mb-6">
+            {userCommunityProfile ? 
+              "Select an industry above to start engaging with your communities" :
+              "Join industry communities to connect with like-minded professionals"
+            }
+          </p>
+          {userCommunityProfile && (
+            <div className="text-sm text-muted-foreground space-y-1">
+              <p><strong>Business Stage:</strong> {userCommunityProfile.business_stage}</p>
+              <p><strong>Company:</strong> {userCommunityProfile.company_name}</p>
+              {userCommunityProfile.about_you && (
+                <p className="mt-4 text-left max-w-md mx-auto">
+                  <strong>About:</strong> {userCommunityProfile.about_you}
+                </p>
+              )}
+            </div>
+          )}
         </div>
       </div>
 
