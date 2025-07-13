@@ -1,32 +1,11 @@
 import React, { useState, useEffect } from 'react';
 import { useLocation, useNavigate } from 'react-router-dom';
 import { Button } from "@/components/ui/button";
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-import { Input } from "@/components/ui/input";
-import { Label } from "@/components/ui/label";
-import { Badge } from "@/components/ui/badge";
-import { ArrowLeft, Search, FileText, Clock, CheckCircle, AlertCircle } from "lucide-react";
-
-interface ApplicationStatus {
-  id: string;
-  status: 'draft' | 'submitted' | 'under_review' | 'approved' | 'rejected';
-  submittedAt: string;
-  lastUpdated: string;
-  jurisdictionType: string;
-  selectedZone: string;
-  packageName: string;
-  contactDetails: {
-    fullName: string;
-    email: string;
-    phone: string;
-  };
-  timeline: {
-    step: string;
-    status: 'completed' | 'current' | 'pending';
-    date?: string;
-    description: string;
-  }[];
-}
+import { ArrowLeft } from "lucide-react";
+import { ApplicationStatus, RecentApplication } from "@/types/trackApplication";
+import { TrackApplicationSearch } from "@/components/track-application/TrackApplicationSearch";
+import { RecentApplications } from "@/components/track-application/RecentApplications";
+import { ApplicationDetails } from "@/components/track-application/ApplicationDetails";
 
 const TrackApplication = () => {
   const navigate = useNavigate();
@@ -37,7 +16,7 @@ const TrackApplication = () => {
   const [error, setError] = useState('');
 
   // Mock recent applications data
-  const recentApplications = [
+  const recentApplications: RecentApplication[] = [
     {
       id: 'SR48936845',
       jurisdiction: 'IFZA',
@@ -136,16 +115,6 @@ const TrackApplication = () => {
     }
   };
 
-  const getTimelineIcon = (status: 'completed' | 'current' | 'pending') => {
-    switch (status) {
-      case 'completed':
-        return <CheckCircle className="h-5 w-5 text-green-500" />;
-      case 'current':
-        return <Clock className="h-5 w-5 text-blue-500" />;
-      case 'pending':
-        return <AlertCircle className="h-5 w-5 text-gray-400" />;
-    }
-  };
 
   const viewRequest = (id: string) => {
     setRequestId(id);
@@ -167,180 +136,27 @@ const TrackApplication = () => {
 
       <div className="p-4 pb-24">
         {/* Search Section */}
-        <Card className="mb-6">
-          <CardHeader>
-            <CardTitle className="flex items-center gap-2">
-              <Search className="h-5 w-5" />
-              Search Your Application
-            </CardTitle>
-          </CardHeader>
-          <CardContent>
-            <div className="space-y-4">
-              <div>
-                <Label htmlFor="requestId">Service Request ID</Label>
-                <Input
-                  id="requestId"
-                  value={requestId}
-                  onChange={(e) => setRequestId(e.target.value)}
-                  placeholder="Enter your request ID (e.g., SR48936845)"
-                />
-              </div>
-              <Button 
-                onClick={() => handleSearch()}
-                disabled={loading || !requestId.trim()}
-                className="w-full"
-              >
-                {loading ? "Searching..." : "Search Application"}
-              </Button>
-              {error && (
-                <p className="text-sm text-red-600">{error}</p>
-              )}
-            </div>
-          </CardContent>
-        </Card>
+        <TrackApplicationSearch
+          requestId={requestId}
+          setRequestId={setRequestId}
+          onSearch={() => handleSearch()}
+          loading={loading}
+          error={error}
+        />
 
         {/* Recent Applications */}
-        <Card className="mb-6">
-          <CardHeader>
-            <CardTitle>Recent Applications</CardTitle>
-          </CardHeader>
-          <CardContent>
-            <div className="space-y-4">
-              {recentApplications.map((app) => (
-                <div key={app.id} className="border-b border-border pb-4 last:border-b-0 last:pb-0">
-                  <div className="flex items-start justify-between">
-                    <div className="flex-1">
-                      <p className="font-semibold text-sm">Request ID: {app.id}</p>
-                      <div className="flex items-center gap-2 text-sm text-muted-foreground mt-1">
-                        <span>Jurisdiction: {app.jurisdiction}</span>
-                        <span>•</span>
-                        <span>Status: 
-                          <Badge 
-                            variant="secondary" 
-                            className={`ml-1 ${getStatusColor(app.status)}`}
-                          >
-                            {app.status === 'under_review' ? 'Under Review' : 
-                             app.status === 'approved' ? 'Completed' : 
-                             app.status.replace('_', ' ')}
-                          </Badge>
-                        </span>
-                      </div>
-                    </div>
-                    <Button 
-                      variant="outline" 
-                      size="sm"
-                      onClick={() => viewRequest(app.id)}
-                      className="ml-4"
-                    >
-                      View Details
-                    </Button>
-                  </div>
-                </div>
-              ))}
-            </div>
-          </CardContent>
-        </Card>
+        <RecentApplications
+          applications={recentApplications}
+          onViewRequest={viewRequest}
+          getStatusColor={getStatusColor}
+        />
 
         {/* Application Details */}
         {application && (
-          <>
-            {/* Status Overview */}
-            <Card className="mb-6">
-              <CardHeader>
-                <CardTitle className="flex items-center justify-between">
-                  <span className="flex items-center gap-2">
-                    <FileText className="h-5 w-5" />
-                    Application Details
-                  </span>
-                  <Badge className={getStatusColor(application.status)}>
-                    {application.status.replace('_', ' ').toUpperCase()}
-                  </Badge>
-                </CardTitle>
-              </CardHeader>
-              <CardContent>
-                <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                  <div>
-                    <p className="text-sm text-muted-foreground">Request ID</p>
-                    <p className="font-mono font-semibold">{application.id}</p>
-                  </div>
-                  <div>
-                    <p className="text-sm text-muted-foreground">Jurisdiction</p>
-                    <p className="font-medium">{application.selectedZone}</p>
-                  </div>
-                  <div>
-                    <p className="text-sm text-muted-foreground">Package</p>
-                    <p className="font-medium">{application.packageName}</p>
-                  </div>
-                  <div>
-                    <p className="text-sm text-muted-foreground">Submitted On</p>
-                    <p className="font-medium">
-                      {new Date(application.submittedAt).toLocaleDateString()}
-                    </p>
-                  </div>
-                </div>
-              </CardContent>
-            </Card>
-
-            {/* Timeline */}
-            <Card>
-              <CardHeader>
-                <CardTitle>Application Progress</CardTitle>
-              </CardHeader>
-              <CardContent>
-                <div className="space-y-4">
-                  {application.timeline.map((item, index) => (
-                    <div key={index} className="flex items-start gap-4">
-                      <div className="flex-shrink-0 mt-1">
-                        {getTimelineIcon(item.status)}
-                      </div>
-                      <div className="flex-1 min-w-0">
-                        <div className="flex items-center justify-between">
-                          <h4 className={`font-medium ${
-                            item.status === 'current' ? 'text-blue-600' : 
-                            item.status === 'completed' ? 'text-green-600' : 
-                            'text-gray-500'
-                          }`}>
-                            {item.step}
-                          </h4>
-                          {item.date && (
-                            <span className="text-xs text-muted-foreground">
-                              {new Date(item.date).toLocaleDateString()}
-                            </span>
-                          )}
-                        </div>
-                        <p className="text-sm text-muted-foreground mt-1">
-                          {item.description}
-                        </p>
-                      </div>
-                    </div>
-                  ))}
-                </div>
-              </CardContent>
-            </Card>
-
-            {/* Contact Information */}
-            <Card className="mt-6">
-              <CardHeader>
-                <CardTitle>Contact Information</CardTitle>
-              </CardHeader>
-              <CardContent>
-                <div className="space-y-2">
-                  <div>
-                    <p className="text-sm text-muted-foreground">Name</p>
-                    <p className="font-medium">{application.contactDetails.fullName}</p>
-                  </div>
-                  <div>
-                    <p className="text-sm text-muted-foreground">Email</p>
-                    <p className="font-medium">{application.contactDetails.email}</p>
-                  </div>
-                  <div>
-                    <p className="text-sm text-muted-foreground">Phone</p>
-                    <p className="font-medium">{application.contactDetails.phone}</p>
-                  </div>
-                </div>
-              </CardContent>
-            </Card>
-          </>
+          <ApplicationDetails
+            application={application}
+            getStatusColor={getStatusColor}
+          />
         )}
       </div>
     </div>
