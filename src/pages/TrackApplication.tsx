@@ -6,6 +6,7 @@ import { ApplicationStatus, RecentApplication } from "@/types/trackApplication";
 import { TrackApplicationSearch } from "@/components/track-application/TrackApplicationSearch";
 import { RecentApplications } from "@/components/track-application/RecentApplications";
 import { ApplicationDetails } from "@/components/track-application/ApplicationDetails";
+import { ChatbotWidget } from "@/components/chatbot/ChatbotWidget";
 
 const TrackApplication = () => {
   const navigate = useNavigate();
@@ -159,6 +160,7 @@ const TrackApplication = () => {
           />
         )}
       </div>
+      <ChatbotWidget />
     </div>
   );
 };

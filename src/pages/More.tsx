@@ -7,6 +7,7 @@ import { Badge } from "@/components/ui/badge";
 import BottomNavigation from "@/components/BottomNavigation";
 import { VirtualAssistant } from "@/components/VirtualAssistant";
 import { ProfileAssistant } from "@/components/ProfileAssistant";
+import { FeedbackForm } from "@/components/feedback/FeedbackForm";
 
 const menuSections = [
   {
@@ -31,7 +32,7 @@ const menuSections = [
     items: [
       { icon: HelpCircle, label: "Help & FAQs", description: "Get help and find answers", hasNotification: false },
       { icon: MessageCircle, label: "Live Chat Support", description: "Chat with our team", hasNotification: true, count: 1 },
-      { icon: Star, label: "Rate Our App", description: "Share your feedback", hasNotification: false }
+      { icon: Star, label: "Feedback", description: "Share your feedback and rate our app", hasNotification: false }
     ]
   },
   {
@@ -104,8 +105,28 @@ const More = () => {
     setSelectedOption(null);
   };
 
-  // Show profile assistant if option is selected
+  // Show profile assistant or feedback form if option is selected
   if (selectedSection && selectedOption) {
+    // Show feedback form for feedback option
+    if (selectedOption === "Feedback") {
+      return (
+        <div className="min-h-screen bg-gradient-to-b from-background to-muted/20 pb-20">
+          <div className="p-4">
+            <Button 
+              variant="ghost" 
+              onClick={handleBackToMenu}
+              className="mb-4"
+            >
+              ← Back to Menu
+            </Button>
+            <FeedbackForm />
+          </div>
+          <BottomNavigation />
+        </div>
+      );
+    }
+    
+    // Show profile assistant for other options
     return (
       <div className="min-h-screen bg-gradient-to-b from-background to-muted/20 pb-20">
         <div className="p-4">

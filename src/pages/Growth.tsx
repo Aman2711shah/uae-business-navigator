@@ -6,6 +6,7 @@ import FeaturedOffer from "@/components/growth/FeaturedOffer";
 import GrowthServiceCard from "@/components/growth/GrowthServiceCard";
 import SuccessStoryCard from "@/components/growth/SuccessStoryCard";
 import WorkshopCard from "@/components/growth/WorkshopCard";
+import { ChatbotWidget } from "@/components/chatbot/ChatbotWidget";
 import { growthServices, successStories, upcomingWorkshops } from "@/data/growthData";
 
 const Growth = () => {
@@ -109,6 +110,7 @@ const Growth = () => {
       </div>
 
       <BottomNavigation />
+      <ChatbotWidget />
     </div>
   );
 };

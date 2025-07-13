@@ -3,6 +3,7 @@ import { Card, CardContent } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
 import { Badge } from "@/components/ui/badge";
 import BottomNavigation from "@/components/BottomNavigation";
+import { ChatbotWidget } from "@/components/chatbot/ChatbotWidget";
 import { useState } from "react";
 import { useNavigate } from "react-router-dom";
 
@@ -301,6 +302,7 @@ const Services = () => {
       </div>
 
       <BottomNavigation />
+      <ChatbotWidget />
     </div>
   );
 };

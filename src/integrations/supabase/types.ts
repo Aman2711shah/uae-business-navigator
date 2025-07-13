@@ -349,6 +349,60 @@ export type Database = {
         }
         Relationships: []
       }
+      service_requests: {
+        Row: {
+          created_at: string
+          document_uploaded: boolean | null
+          id: string
+          request_id: string
+          status: string
+          updated_at: string
+          user_id: string | null
+        }
+        Insert: {
+          created_at?: string
+          document_uploaded?: boolean | null
+          id?: string
+          request_id: string
+          status?: string
+          updated_at?: string
+          user_id?: string | null
+        }
+        Update: {
+          created_at?: string
+          document_uploaded?: boolean | null
+          id?: string
+          request_id?: string
+          status?: string
+          updated_at?: string
+          user_id?: string | null
+        }
+        Relationships: []
+      }
+      user_feedback: {
+        Row: {
+          feedback_text: string | null
+          id: string
+          rating: number
+          submitted_on: string
+          user_id: string | null
+        }
+        Insert: {
+          feedback_text?: string | null
+          id?: string
+          rating: number
+          submitted_on?: string
+          user_id?: string | null
+        }
+        Update: {
+          feedback_text?: string | null
+          id?: string
+          rating?: number
+          submitted_on?: string
+          user_id?: string | null
+        }
+        Relationships: []
+      }
       user_roles: {
         Row: {
           created_at: string
