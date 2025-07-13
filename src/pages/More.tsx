@@ -8,6 +8,9 @@ import BottomNavigation from "@/components/BottomNavigation";
 import { VirtualAssistant } from "@/components/VirtualAssistant";
 import { ProfileAssistant } from "@/components/ProfileAssistant";
 import { FeedbackForm } from "@/components/feedback/FeedbackForm";
+import { UserAnalytics } from "@/components/dashboard/UserAnalytics";
+import { ActivityFeed } from "@/components/dashboard/ActivityFeed";
+import { QuickActionsDashboard } from "@/components/dashboard/QuickActionsDashboard";
 
 const menuSections = [
   {
@@ -62,6 +65,7 @@ const quickStats = [
 const More = () => {
   const [selectedSection, setSelectedSection] = useState<'Account' | 'Preferences' | 'Support' | 'Legal' | null>(null);
   const [selectedOption, setSelectedOption] = useState<string | null>(null);
+  const [showDashboard, setShowDashboard] = useState(true);
 
   const userData = {
     user_full_name: userInfo.name,
@@ -89,6 +93,50 @@ const More = () => {
     console.log(`Action clicked: ${action}`);
     // Handle action routing here
   };
+
+  const handleQuickAction = (actionId: string) => {
+    console.log(`Quick action: ${actionId}`);
+    // Handle quick action routing
+  };
+
+  const userStats = {
+    activeServices: 5,
+    completedServices: 12,
+    inProgressServices: 3,
+    monthlyProgress: 75,
+    completionRate: 92
+  };
+
+  const recentActivities = [
+    {
+      id: '1',
+      type: 'completed' as const,
+      title: 'Business License Renewal',
+      description: 'Successfully renewed your business license',
+      timestamp: '2 hours ago'
+    },
+    {
+      id: '2',
+      type: 'pending' as const,
+      title: 'Document Verification',
+      description: 'Awaiting document review for visa application',
+      timestamp: '1 day ago'
+    },
+    {
+      id: '3',
+      type: 'scheduled' as const,
+      title: 'Consultation Meeting',
+      description: 'Business strategy consultation scheduled',
+      timestamp: 'Tomorrow 2:00 PM'
+    },
+    {
+      id: '4',
+      type: 'document' as const,
+      title: 'Invoice Generated',
+      description: 'New invoice for accounting services',
+      timestamp: '3 days ago'
+    }
+  ];
 
   const handleItemClick = (sectionTitle: string, itemLabel: string) => {
     if (sectionTitle === "Account" || sectionTitle === "Preferences" || sectionTitle === "Support" || sectionTitle === "Legal") {
@@ -175,6 +223,28 @@ const More = () => {
             </div>
           ))}
         </div>
+      </div>
+
+      {/* Dashboard Toggle */}
+      <div className="p-4 pt-2">
+        <div className="flex items-center justify-between mb-4">
+          <h2 className="text-lg font-semibold text-foreground">Dashboard</h2>
+          <Button 
+            variant="ghost" 
+            size="sm"
+            onClick={() => setShowDashboard(!showDashboard)}
+          >
+            {showDashboard ? 'Hide' : 'Show'}
+          </Button>
+        </div>
+
+        {showDashboard && (
+          <div className="space-y-6">
+            <QuickActionsDashboard onActionClick={handleQuickAction} />
+            <UserAnalytics stats={userStats} />
+            <ActivityFeed activities={recentActivities} />
+          </div>
+        )}
       </div>
 
       {/* AI Virtual Assistant */}

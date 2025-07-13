@@ -1,509 +1,221 @@
-import { ArrowLeft, Star, Clock, Users, DollarSign, CheckCircle, Calendar, Phone, Mail, MessageSquare } from "lucide-react";
-import { useParams, Link, useNavigate } from "react-router-dom";
+import { useState } from "react";
+import { useParams, useNavigate } from "react-router-dom";
+import { ArrowLeft, Star, Clock, Users, CheckCircle, Calendar, MessageCircle, Share2 } from "lucide-react";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
-import { Separator } from "@/components/ui/separator";
+import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
+import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import BottomNavigation from "@/components/BottomNavigation";
-
-const serviceDetails = {
-  "business-consultancy": {
-    title: "Business Consultancy",
-    description: "Unlock expert business strategy and planning tailored to your industry. Our consultants help refine your goals, optimize processes, and build actionable roadmaps for success.",
-    rating: 4.8,
-    price: "Starting from AED 1,500",
-    duration: "2-4 weeks",
-    clients: "500+",
-    features: [
-      "Strategic Growth Planning",
-      "Market Expansion Guidance", 
-      "Business Model Optimization",
-      "Financial Planning & Forecasting",
-      "Operational Optimization",
-      "Risk Assessment & Mitigation"
-    ],
-    benefits: [
-      "Strategic Growth Planning",
-      "Market Expansion Guidance",
-      "Business Model Optimization",
-      "Increase revenue by 20-40%",
-      "Access to expert advisors"
-    ],
-    packages: [
-      {
-        name: "Starter",
-        price: "AED 1,500",
-        duration: "2 weeks",
-        features: ["Basic business analysis", "Growth recommendations", "1 follow-up session"]
-      },
-      {
-        name: "Professional", 
-        price: "AED 3,500",
-        duration: "4 weeks",
-        features: ["Comprehensive analysis", "Detailed strategy plan", "3 follow-up sessions", "Financial projections"]
-      },
-      {
-        name: "Enterprise",
-        price: "AED 6,000", 
-        duration: "6 weeks",
-        features: ["Full business transformation", "Ongoing support", "Team training", "Implementation assistance"]
-      }
-    ],
-    faqs: [
-      {
-        question: "How long does the consultation process take?",
-        answer: "Depending on your package, consultations range from 2-6 weeks with ongoing support."
-      },
-      {
-        question: "Do you provide industry-specific advice?",
-        answer: "Yes, our consultants specialize in various industries including tech, retail, healthcare, and more."
-      }
-    ]
-  },
-  "digital-marketing": {
-    title: "Digital Marketing",
-    description: "Maximize your online presence with our comprehensive digital marketing services. From social media to SEO, we craft campaigns that drive traffic, leads, and conversions.",
-    rating: 4.9,
-    price: "Starting from AED 2,000",
-    duration: "3-6 months",
-    clients: "300+",
-    features: [
-      "Social Media Campaigns",
-      "SEO Optimization",
-      "Performance Analytics",
-      "Google Ads & PPC",
-      "Content Marketing",
-      "Email Marketing Campaigns"
-    ],
-    benefits: [
-      "Social Media Campaigns",
-      "SEO Optimization", 
-      "Performance Analytics",
-      "Increase online visibility by 300%",
-      "Higher conversion rates"
-    ],
-    packages: [
-      {
-        name: "Basic",
-        price: "AED 2,000/month",
-        duration: "3 months minimum",
-        features: ["Social media management", "Basic SEO", "Monthly reporting"]
-      },
-      {
-        name: "Growth",
-        price: "AED 4,500/month", 
-        duration: "6 months minimum",
-        features: ["Full digital strategy", "Google Ads", "Content creation", "Weekly reporting"]
-      },
-      {
-        name: "Enterprise",
-        price: "AED 8,000/month",
-        duration: "12 months minimum", 
-        features: ["Complete marketing suite", "Dedicated account manager", "Custom campaigns", "Daily monitoring"]
-      }
-    ],
-    faqs: [
-      {
-        question: "How quickly will I see results?",
-        answer: "Most clients see initial improvements within 30-60 days, with significant results after 3 months."
-      },
-      {
-        question: "Do you work with all industries?",
-        answer: "Yes, we have experience across various industries and tailor strategies accordingly."
-      }
-    ]
-  },
-  "website-development": {
-    title: "Website Development",
-    description: "Build a powerful digital foundation with custom website and e-commerce solutions. Whether you're launching a brand or scaling up, we create user-friendly, mobile-responsive sites.",
-    rating: 4.7,
-    price: "Starting from AED 3,000",
-    duration: "4-8 weeks",
-    clients: "200+",
-    features: [
-      "Custom Website Design",
-      "E-commerce Integrations", 
-      "Fast & Secure Platforms",
-      "Mobile-Responsive Design",
-      "SEO-Optimized Structure",
-      "Content Management System"
-    ],
-    benefits: [
-      "Custom Website Design",
-      "E-commerce Integrations",
-      "Fast & Secure Platforms",
-      "Professional online presence",
-      "Mobile-responsive design"
-    ],
-    packages: [
-      {
-        name: "Basic",
-        price: "AED 3,000",
-        duration: "4 weeks",
-        features: ["5-page website", "Mobile responsive", "Basic SEO setup"]
-      },
-      {
-        name: "Professional",
-        price: "AED 6,500",
-        duration: "6 weeks", 
-        features: ["10-page website", "E-commerce ready", "Advanced SEO", "Contact forms"]
-      },
-      {
-        name: "Enterprise",
-        price: "AED 12,000",
-        duration: "8 weeks",
-        features: ["Unlimited pages", "Full e-commerce", "Custom features", "Ongoing maintenance"]
-      }
-    ],
-    faqs: [
-      {
-        question: "Do you provide ongoing maintenance?",
-        answer: "Yes, we offer maintenance packages to keep your website secure and updated."
-      },
-      {
-        question: "Can you integrate with my existing systems?",
-        answer: "Absolutely, we can integrate with most CRM, payment, and business management systems."
-      }
-    ]
-  },
-  "business-networking": {
-    title: "Business Networking",
-    description: "Connect with industry leaders and peers through our exclusive networking events and platforms. Expand your business connections and explore partnerships.",
-    rating: 4.6,
-    price: "Starting from AED 500",
-    duration: "Ongoing",
-    clients: "1000+",
-    features: [
-      "Access to Business Communities",
-      "Event Invitations",
-      "Collaboration Opportunities",
-      "Industry Meetups",
-      "Partner Introductions",
-      "Exclusive Business Events"
-    ],
-    benefits: [
-      "Access to Business Communities",
-      "Event Invitations", 
-      "Collaboration Opportunities",
-      "Expand professional network",
-      "Access to exclusive events"
-    ],
-    packages: [
-      {
-        name: "Basic",
-        price: "AED 500/month",
-        duration: "Monthly",
-        features: ["Access to networking events", "Basic member directory", "Monthly meetups"]
-      },
-      {
-        name: "Premium",
-        price: "AED 1,200/month",
-        duration: "Monthly",
-        features: ["All basic features", "VIP event access", "One-on-one introductions", "Industry reports"]
-      },
-      {
-        name: "Executive",
-        price: "AED 2,500/month", 
-        duration: "Monthly",
-        features: ["All premium features", "Executive roundtables", "Private events", "Personal networking consultant"]
-      }
-    ],
-    faqs: [
-      {
-        question: "What types of events do you organize?",
-        answer: "We organize industry meetups, business mixers, workshops, and exclusive executive roundtables."
-      },
-      {
-        question: "How do you match business partners?",
-        answer: "Our team uses industry expertise and member profiles to facilitate relevant introductions."
-      }
-    ]
-  },
-  "investor-assistance": {
-    title: "Investor Assistance", 
-    description: "Gain access to funding and investment opportunities through expert advisory and network connections. We assist in investor matchmaking, pitch deck development, and more.",
-    rating: 4.8,
-    price: "Starting from AED 2,500",
-    duration: "3-6 months",
-    clients: "150+",
-    features: [
-      "Investment Readiness Support",
-      "Investor Introductions",
-      "Funding Strategy Guidance",
-      "Pitch Deck Development",
-      "Financial Modeling",
-      "Due Diligence Preparation"
-    ],
-    benefits: [
-      "Investment Readiness Support",
-      "Investor Introductions",
-      "Funding Strategy Guidance", 
-      "Access to investor network",
-      "Professional pitch preparation"
-    ],
-    packages: [
-      {
-        name: "Starter",
-        price: "AED 2,500",
-        duration: "6 weeks",
-        features: ["Pitch deck review", "Investment readiness assessment", "Basic guidance"]
-      },
-      {
-        name: "Growth",
-        price: "AED 7,500", 
-        duration: "3 months",
-        features: ["Complete pitch deck development", "Investor introductions", "Financial modeling", "Ongoing support"]
-      },
-      {
-        name: "Scale",
-        price: "AED 15,000",
-        duration: "6 months",
-        features: ["Full funding strategy", "Multiple investor rounds", "Due diligence support", "Dedicated advisor"]
-      }
-    ],
-    faqs: [
-      {
-        question: "What types of investors do you work with?",
-        answer: "We work with angel investors, VCs, private equity firms, and family offices across various industries."
-      },
-      {
-        question: "What is your success rate?",
-        answer: "Over 75% of our clients secure funding within 6 months of completing our program."
-      }
-    ]
-  },
-  "business-training": {
-    title: "Business Training",
-    description: "Empower your team and yourself with specialized workshops and training programs. Learn essential business, marketing, and leadership skills from industry experts.",
-    rating: 4.5,
-    price: "Starting from AED 800",
-    duration: "1-4 weeks",
-    clients: "800+",
-    features: [
-      "Skill Development Workshops",
-      "Customized Training Programs", 
-      "Certified Trainers & Consultants",
-      "Leadership Development",
-      "Team Building Programs",
-      "Digital Skills Training"
-    ],
-    benefits: [
-      "Skill Development Workshops",
-      "Customized Training Programs",
-      "Certified Trainers & Consultants",
-      "Improved team productivity",
-      "Enhanced business skills"
-    ],
-    packages: [
-      {
-        name: "Workshop",
-        price: "AED 800",
-        duration: "1 day",
-        features: ["Single workshop session", "Training materials", "Certificate of completion"]
-      },
-      {
-        name: "Program",
-        price: "AED 2,500",
-        duration: "1 week",
-        features: ["5-day intensive program", "Practical exercises", "Follow-up session", "Resource kit"]
-      },
-      {
-        name: "Custom",
-        price: "AED 6,000",
-        duration: "4 weeks",
-        features: ["Tailored curriculum", "On-site training", "Ongoing coaching", "Performance tracking"]
-      }
-    ],
-    faqs: [
-      {
-        question: "Do you offer custom training programs?",
-        answer: "Yes, we design custom training programs based on your specific business needs and goals."
-      },
-      {
-        question: "Are the trainers certified?",
-        answer: "All our trainers are industry-certified professionals with extensive practical experience."
-      }
-    ]
-  }
-};
+import { growthServices } from "@/data/growthData";
 
 const GrowthServiceDetail = () => {
-  const { serviceId } = useParams<{ serviceId: string }>();
+  const { serviceId } = useParams();
   const navigate = useNavigate();
-  
-  const service = serviceId ? serviceDetails[serviceId as keyof typeof serviceDetails] : null;
+  const [selectedPackage, setSelectedPackage] = useState('basic');
+
+  // Find service by converting serviceId back to title
+  const service = growthServices.find(s => 
+    s.title.toLowerCase().replace(/\s+/g, '-') === serviceId
+  );
 
   if (!service) {
     return (
       <div className="min-h-screen bg-gradient-to-b from-background to-muted/20 flex items-center justify-center">
         <div className="text-center">
-          <h1 className="text-2xl font-bold text-foreground mb-4">Service Not Found</h1>
-          <Link to="/growth">
-            <Button variant="outline">
-              <ArrowLeft className="h-4 w-4 mr-2" />
-              Back to Growth Services
-            </Button>
-          </Link>
+          <h2 className="text-2xl font-bold text-foreground mb-2">Service Not Found</h2>
+          <p className="text-muted-foreground mb-4">The requested service could not be found.</p>
+          <Button onClick={() => navigate('/growth')}>Back to Growth</Button>
         </div>
       </div>
     );
   }
 
+  const packages = [
+    {
+      id: 'basic',
+      name: 'Basic Package',
+      price: service.price,
+      duration: '2-3 weeks',
+      features: ['Initial consultation', 'Basic strategy document', 'Email support', '1 revision']
+    },
+    {
+      id: 'premium',
+      name: 'Premium Package',
+      price: `AED ${parseInt(service.price.match(/\d+/)?.[0] || '0') * 1.5}`,
+      duration: '3-4 weeks',
+      features: ['Extended consultation', 'Comprehensive strategy', 'Priority support', '3 revisions', '1 follow-up session']
+    },
+    {
+      id: 'enterprise',
+      name: 'Enterprise Package',
+      price: `AED ${parseInt(service.price.match(/\d+/)?.[0] || '0') * 2.5}`,
+      duration: '4-6 weeks',
+      features: ['Full consultation series', 'Complete implementation plan', '24/7 support', 'Unlimited revisions', 'Monthly follow-ups']
+    }
+  ];
+
+  const reviews = [
+    {
+      name: "Sarah Al-Mansouri",
+      rating: 5,
+      comment: "Exceptional service! Helped transform our business strategy completely.",
+      date: "2 weeks ago",
+      avatar: "/placeholder.svg"
+    },
+    {
+      name: "Ahmed Hassan",
+      rating: 5,
+      comment: "Professional team with deep expertise. Highly recommended!",
+      date: "1 month ago",
+      avatar: "/placeholder.svg"
+    }
+  ];
+
   return (
     <div className="min-h-screen bg-gradient-to-b from-background to-muted/20 pb-20">
       {/* Header */}
-      <div className="bg-white border-b border-border p-4">
-        <div className="flex items-center gap-3 mb-4">
-          <Button variant="ghost" size="sm" onClick={() => navigate('/growth')}>
-            <ArrowLeft className="h-4 w-4" />
-          </Button>
-          <div>
-            <h1 className="text-2xl font-bold text-foreground">{service.title}</h1>
-            <p className="text-muted-foreground">{service.description}</p>
+      <div className="bg-white border-b border-border">
+        <div className="p-4">
+          <div className="flex items-center gap-3 mb-4">
+            <Button variant="ghost" size="sm" onClick={() => navigate('/growth')}>
+              <ArrowLeft className="h-4 w-4" />
+            </Button>
+            <h1 className="text-xl font-bold text-foreground flex-1">{service.title}</h1>
+            <Button variant="ghost" size="sm">
+              <Share2 className="h-4 w-4" />
+            </Button>
           </div>
-        </div>
 
-        {/* Quick Stats */}
-        <div className="flex items-center gap-4">
-          <div className="flex items-center gap-1">
-            <Star className="h-4 w-4 text-yellow-500 fill-current" />
-            <span className="font-medium">{service.rating}</span>
-          </div>
-          <div className="flex items-center gap-1">
-            <Users className="h-4 w-4 text-muted-foreground" />
-            <span className="text-sm">{service.clients} clients</span>
-          </div>
-          <div className="flex items-center gap-1">
-            <Clock className="h-4 w-4 text-muted-foreground" />
-            <span className="text-sm">{service.duration}</span>
+          {/* Service Header Info */}
+          <div className="flex items-center gap-4 mb-4">
+            <div className={`w-12 h-12 rounded-xl ${service.bgColor} flex items-center justify-center`}>
+              <service.icon className={`h-6 w-6 ${service.color}`} />
+            </div>
+            <div className="flex-1">
+              <div className="flex items-center gap-2 mb-1">
+                <div className="flex items-center gap-1">
+                  <Star className="h-4 w-4 text-yellow-500 fill-current" />
+                  <span className="text-sm font-medium">{service.rating}</span>
+                </div>
+                <Badge variant="secondary" className="text-xs">
+                  {service.popular ? 'Popular' : 'Available'}
+                </Badge>
+              </div>
+              <p className="text-sm text-muted-foreground">{service.description}</p>
+            </div>
           </div>
         </div>
       </div>
 
       <div className="p-4 space-y-6">
-        {/* Key Features */}
-        <Card>
-          <CardHeader>
-            <CardTitle>What's Included</CardTitle>
-          </CardHeader>
-          <CardContent>
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
-              {service.features.map((feature, index) => (
-                <div key={index} className="flex items-center gap-2">
-                  <CheckCircle className="h-4 w-4 text-green-600" />
-                  <span className="text-sm">{feature}</span>
-                </div>
-              ))}
+        {/* Overview */}
+        <Card className="border-none shadow-sm">
+          <CardContent className="p-4">
+            <h3 className="font-semibold text-foreground mb-3">Service Overview</h3>
+            <p className="text-muted-foreground mb-4">{service.fullDescription}</p>
+            
+            <div className="grid grid-cols-3 gap-4">
+              <div className="text-center">
+                <Clock className="h-5 w-5 text-brand-blue mx-auto mb-2" />
+                <div className="text-sm font-medium">2-6 weeks</div>
+                <div className="text-xs text-muted-foreground">Duration</div>
+              </div>
+              <div className="text-center">
+                <Users className="h-5 w-5 text-brand-green mx-auto mb-2" />
+                <div className="text-sm font-medium">50+ clients</div>
+                <div className="text-xs text-muted-foreground">Served</div>
+              </div>
+              <div className="text-center">
+                <CheckCircle className="h-5 w-5 text-brand-orange mx-auto mb-2" />
+                <div className="text-sm font-medium">98% success</div>
+                <div className="text-xs text-muted-foreground">Rate</div>
+              </div>
             </div>
           </CardContent>
         </Card>
 
-        {/* Benefits */}
-        <Card>
-          <CardHeader>
-            <CardTitle>Key Benefits</CardTitle>
-          </CardHeader>
-          <CardContent>
-            <div className="space-y-2">
-              {service.benefits.map((benefit, index) => (
-                <div key={index} className="flex items-center gap-2">
-                  <div className="w-2 h-2 bg-brand-orange rounded-full"></div>
-                  <span className="text-sm">{benefit}</span>
-                </div>
-              ))}
-            </div>
-          </CardContent>
-        </Card>
-
-        {/* Pricing Packages */}
-        <Card>
-          <CardHeader>
+        {/* Packages */}
+        <Card className="border-none shadow-sm">
+          <CardHeader className="pb-3">
             <CardTitle>Choose Your Package</CardTitle>
           </CardHeader>
-          <CardContent>
-            <div className="space-y-4">
-              {service.packages.map((pkg, index) => (
-                <div key={index} className="border border-border rounded-lg p-4">
-                  <div className="flex items-center justify-between mb-3">
-                    <div>
-                      <h3 className="font-semibold">{pkg.name}</h3>
-                      <p className="text-sm text-muted-foreground">{pkg.duration}</p>
-                    </div>
-                    <div className="text-right">
-                      <div className="text-lg font-bold text-brand-orange">{pkg.price}</div>
-                    </div>
+          <CardContent className="space-y-3">
+            {packages.map((pkg) => (
+              <div
+                key={pkg.id}
+                className={`p-4 rounded-lg border-2 cursor-pointer transition-all ${
+                  selectedPackage === pkg.id
+                    ? 'border-brand-blue bg-brand-blue/5'
+                    : 'border-border hover:border-brand-blue/50'
+                }`}
+                onClick={() => setSelectedPackage(pkg.id)}
+              >
+                <div className="flex items-center justify-between mb-2">
+                  <h4 className="font-medium text-foreground">{pkg.name}</h4>
+                  <div className="text-right">
+                    <div className="font-bold text-foreground">{pkg.price}</div>
+                    <div className="text-xs text-muted-foreground">{pkg.duration}</div>
                   </div>
-                  <div className="space-y-1 mb-3">
-                    {pkg.features.map((feature, idx) => (
-                      <div key={idx} className="flex items-center gap-2">
-                        <CheckCircle className="h-3 w-3 text-green-600" />
-                        <span className="text-xs">{feature}</span>
+                </div>
+                <div className="space-y-1">
+                  {pkg.features.map((feature, index) => (
+                    <div key={index} className="flex items-center gap-2">
+                      <CheckCircle className="h-3 w-3 text-brand-green" />
+                      <span className="text-sm text-muted-foreground">{feature}</span>
+                    </div>
+                  ))}
+                </div>
+              </div>
+            ))}
+          </CardContent>
+        </Card>
+
+        {/* Reviews */}
+        <Card className="border-none shadow-sm">
+          <CardHeader className="pb-3">
+            <CardTitle>Customer Reviews</CardTitle>
+          </CardHeader>
+          <CardContent className="space-y-4">
+            {reviews.map((review, index) => (
+              <div key={index} className="border-b border-border last:border-b-0 pb-4 last:pb-0">
+                <div className="flex items-start gap-3">
+                  <Avatar className="w-8 h-8">
+                    <AvatarImage src={review.avatar} />
+                    <AvatarFallback className="text-xs">
+                      {review.name.split(' ').map(n => n[0]).join('')}
+                    </AvatarFallback>
+                  </Avatar>
+                  <div className="flex-1">
+                    <div className="flex items-center gap-2 mb-1">
+                      <span className="font-medium text-sm">{review.name}</span>
+                      <div className="flex items-center gap-1">
+                        {Array(review.rating).fill(0).map((_, i) => (
+                          <Star key={i} className="h-3 w-3 text-yellow-500 fill-current" />
+                        ))}
                       </div>
-                    ))}
+                    </div>
+                    <p className="text-sm text-muted-foreground mb-1">{review.comment}</p>
+                    <span className="text-xs text-muted-foreground">{review.date}</span>
                   </div>
-                  <Button 
-                    className="w-full" 
-                    variant={index === 1 ? "default" : "outline"}
-                    onClick={() => navigate(`/growth/booking/${serviceId}?package=${pkg.name.toLowerCase()}`)}
-                  >
-                    Select {pkg.name}
-                  </Button>
                 </div>
-              ))}
-            </div>
+              </div>
+            ))}
           </CardContent>
         </Card>
 
-        {/* FAQ */}
-        <Card>
-          <CardHeader>
-            <CardTitle>Frequently Asked Questions</CardTitle>
-          </CardHeader>
-          <CardContent>
-            <div className="space-y-4">
-              {service.faqs.map((faq, index) => (
-                <div key={index}>
-                  <h4 className="font-medium mb-2">{faq.question}</h4>
-                  <p className="text-sm text-muted-foreground">{faq.answer}</p>
-                  {index < service.faqs.length - 1 && <Separator className="mt-4" />}
-                </div>
-              ))}
-            </div>
-          </CardContent>
-        </Card>
-
-        {/* Contact Options */}
-        <Card>
-          <CardHeader>
-            <CardTitle>Need More Information?</CardTitle>
-          </CardHeader>
-          <CardContent>
-            <div className="grid grid-cols-1 md:grid-cols-3 gap-3">
-              <Button variant="outline" className="flex items-center gap-2">
-                <Phone className="h-4 w-4" />
-                Call Us
-              </Button>
-              <Button variant="outline" className="flex items-center gap-2">
-                <Mail className="h-4 w-4" />
-                Email Us
-              </Button>
-              <Button variant="outline" className="flex items-center gap-2">
-                <MessageSquare className="h-4 w-4" />
-                Live Chat
-              </Button>
-            </div>
-          </CardContent>
-        </Card>
-
-        {/* CTA */}
+        {/* Action Buttons */}
         <div className="flex gap-3">
-          <Button 
-            size="lg" 
+          <Button
             className="flex-1"
-            onClick={() => navigate(`/growth/booking/${serviceId}`)}
+            onClick={() => navigate(`/growth/booking/${serviceId}?package=${selectedPackage}`)}
           >
             <Calendar className="h-4 w-4 mr-2" />
             Book Consultation
+          </Button>
+          <Button variant="outline">
+            <MessageCircle className="h-4 w-4 mr-2" />
+            Chat
           </Button>
         </div>
       </div>
