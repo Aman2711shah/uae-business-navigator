@@ -100,6 +100,33 @@ export type Database = {
         }
         Relationships: []
       }
+      chat_logs: {
+        Row: {
+          created_at: string
+          id: number
+          question: string
+          response: string
+          response_type: string | null
+          user_id: string | null
+        }
+        Insert: {
+          created_at?: string
+          id?: number
+          question: string
+          response: string
+          response_type?: string | null
+          user_id?: string | null
+        }
+        Update: {
+          created_at?: string
+          id?: number
+          question?: string
+          response?: string
+          response_type?: string | null
+          user_id?: string | null
+        }
+        Relationships: []
+      }
       document_requirements: {
         Row: {
           created_at: string
@@ -265,6 +292,33 @@ export type Database = {
           office_location?: string | null
           updated_at?: string
           website_url?: string | null
+        }
+        Relationships: []
+      }
+      knowledge_base: {
+        Row: {
+          answer: string
+          category: string | null
+          created_at: string
+          id: number
+          question: string
+          updated_at: string
+        }
+        Insert: {
+          answer: string
+          category?: string | null
+          created_at?: string
+          id?: number
+          question: string
+          updated_at?: string
+        }
+        Update: {
+          answer?: string
+          category?: string | null
+          created_at?: string
+          id?: number
+          question?: string
+          updated_at?: string
         }
         Relationships: []
       }
