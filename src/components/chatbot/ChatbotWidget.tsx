@@ -65,6 +65,46 @@ export const ChatbotWidget: React.FC = () => {
   const generateBotResponse = (userInput: string): string => {
     const input = userInput.toLowerCase();
     
+    // Tax-related queries
+    if (input.includes('corporate tax') || input.includes('tax rate')) {
+      return "As of June 2023, the UAE imposes a 9% corporate tax on businesses with net profits exceeding AED 375,000 annually. Businesses earning less than that remain exempt.";
+    }
+    
+    if (input.includes('vat') || input.includes('value added tax')) {
+      return "Yes, the UAE has a standard VAT rate of 5% on most goods and services. Businesses with annual turnover exceeding AED 375,000 must register for VAT with the Federal Tax Authority (FTA).";
+    }
+    
+    if (input.includes('esr') || input.includes('economic substance')) {
+      return "ESR (Economic Substance Regulation) requires UAE entities conducting specific activities like banking, shipping, or holding companies to demonstrate substantial economic presence in the UAE. Annual ESR reports are mandatory for qualifying activities.";
+    }
+    
+    if (input.includes('freezone tax') || input.includes('free zone tax')) {
+      return "Most Freezone companies that do not earn mainland UAE income remain exempt from corporate tax under qualifying rules. However, if they conduct business in mainland UAE, they may be subject to the 9% corporate tax.";
+    }
+    
+    // Banking queries
+    if (input.includes('bank account') || input.includes('banking') || input.includes('corporate account')) {
+      return "Yes, Freezone companies can open UAE corporate accounts with banks like Emirates NBD, ADCB, Mashreq, and RAKBank. Required documents include: Trade License, Shareholder Passport Copies, Emirates ID, Company MOA/AOA, and sometimes a business plan. The process typically takes 7-21 business days.";
+    }
+    
+    if (input.includes('bank documents') || input.includes('account opening documents')) {
+      return "For corporate account opening, you need: Trade License, Shareholder Passport Copies, Emirates ID (if available), Company MOA or AOA, Tenancy Contract (optional), and Business Plan with Contracts for high-risk sectors.";
+    }
+    
+    // Real estate queries
+    if (input.includes('office space') || input.includes('rent office') || input.includes('physical office')) {
+      return "Yes, Freezone companies can rent physical offices in Dubai. While Freezones offer Flexi-desks, you can lease private offices if needed. You may need a tenancy contract registered with Ejari for visa purposes.";
+    }
+    
+    if (input.includes('ejari') || input.includes('tenancy')) {
+      return "Ejari is Dubai's system for registering tenancy contracts. It's mandatory if you're applying for visas using your office lease, especially for Mainland company setups.";
+    }
+    
+    if (input.includes('buy property') || input.includes('real estate') || input.includes('property purchase')) {
+      return "Foreigners can buy property in designated freehold areas via personal ownership or through UAE-registered entities. Some Freezones like DIFC and ADGM allow property-holding structures.";
+    }
+    
+    // Original queries
     if (input.includes('start') || input.includes('begin')) {
       return "To start your business setup in the UAE, you'll need to: 1) Choose between Mainland or Freezone, 2) Select your business activities, 3) Prepare required documents, and 4) Submit your application. Would you like me to explain any of these steps in detail?";
     }
@@ -85,7 +125,7 @@ export const ChatbotWidget: React.FC = () => {
       return "Business setup costs vary significantly: Mainland companies typically range from AED 15,000-50,000, while Freezone setups can range from AED 10,000-40,000. This includes licensing fees, visa costs, and government charges. Would you like a detailed cost breakdown for your specific business type?";
     }
     
-    return "I understand you're asking about UAE business setup. I can help with trade licenses, visa requirements, freezone options, document preparation, and cost estimates. Could you please be more specific about what aspect you'd like to know more about?";
+    return "I can help you with UAE business setup including: trade licenses, visa requirements, freezone options, document preparation, cost estimates, tax information (corporate tax, VAT, ESR), banking & account opening, and real estate matters. What would you like to know more about?";
   };
 
   if (!isOpen) {
