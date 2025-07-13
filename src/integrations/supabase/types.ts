@@ -127,6 +127,87 @@ export type Database = {
         }
         Relationships: []
       }
+      community_posts: {
+        Row: {
+          body: string
+          comments_count: number | null
+          created_at: string
+          id: string
+          image_url: string | null
+          industry_tag: string
+          likes_count: number | null
+          tags: string[] | null
+          title: string
+          updated_at: string
+          user_id: string
+        }
+        Insert: {
+          body: string
+          comments_count?: number | null
+          created_at?: string
+          id?: string
+          image_url?: string | null
+          industry_tag: string
+          likes_count?: number | null
+          tags?: string[] | null
+          title: string
+          updated_at?: string
+          user_id: string
+        }
+        Update: {
+          body?: string
+          comments_count?: number | null
+          created_at?: string
+          id?: string
+          image_url?: string | null
+          industry_tag?: string
+          likes_count?: number | null
+          tags?: string[] | null
+          title?: string
+          updated_at?: string
+          user_id?: string
+        }
+        Relationships: []
+      }
+      community_users: {
+        Row: {
+          business_type: string
+          company_name: string
+          employee_count: string | null
+          id: string
+          industry: string
+          joined_at: string
+          updated_at: string
+          user_id: string
+          username: string
+          website_or_linkedin: string | null
+        }
+        Insert: {
+          business_type: string
+          company_name: string
+          employee_count?: string | null
+          id?: string
+          industry: string
+          joined_at?: string
+          updated_at?: string
+          user_id: string
+          username: string
+          website_or_linkedin?: string | null
+        }
+        Update: {
+          business_type?: string
+          company_name?: string
+          employee_count?: string | null
+          id?: string
+          industry?: string
+          joined_at?: string
+          updated_at?: string
+          user_id?: string
+          username?: string
+          website_or_linkedin?: string | null
+        }
+        Relationships: []
+      }
       document_requirements: {
         Row: {
           created_at: string
@@ -372,6 +453,70 @@ export type Database = {
           updated_at?: string | null
         }
         Relationships: []
+      }
+      post_comments: {
+        Row: {
+          comment: string
+          created_at: string
+          id: string
+          post_id: string
+          updated_at: string
+          user_id: string
+        }
+        Insert: {
+          comment: string
+          created_at?: string
+          id?: string
+          post_id: string
+          updated_at?: string
+          user_id: string
+        }
+        Update: {
+          comment?: string
+          created_at?: string
+          id?: string
+          post_id?: string
+          updated_at?: string
+          user_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "post_comments_post_id_fkey"
+            columns: ["post_id"]
+            isOneToOne: false
+            referencedRelation: "community_posts"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      post_likes: {
+        Row: {
+          created_at: string
+          id: string
+          post_id: string
+          user_id: string
+        }
+        Insert: {
+          created_at?: string
+          id?: string
+          post_id: string
+          user_id: string
+        }
+        Update: {
+          created_at?: string
+          id?: string
+          post_id?: string
+          user_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "post_likes_post_id_fkey"
+            columns: ["post_id"]
+            isOneToOne: false
+            referencedRelation: "community_posts"
+            referencedColumns: ["id"]
+          },
+        ]
       }
       profiles: {
         Row: {
