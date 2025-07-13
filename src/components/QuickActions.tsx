@@ -41,6 +41,8 @@ const QuickActions = () => {
       navigate("/business-setup");
     } else if (index === 1) { // Apply for Trade License
       navigate("/trade-license");
+    } else if (index === 3) { // Track Application
+      navigate("/track-application");
     }
     // Add more navigation logic for other actions as needed
   };
