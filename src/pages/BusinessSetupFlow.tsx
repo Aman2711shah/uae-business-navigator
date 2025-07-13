@@ -14,6 +14,7 @@ import TenureStep from "@/components/business-setup/TenureStep";
 import LegalEntityStep from "@/components/business-setup/LegalEntityStep";
 import CostEstimationStep from "@/components/business-setup/CostEstimationStep";
 import SummaryStep from "@/components/business-setup/SummaryStep";
+import SavedQuoteManager from "@/components/business-setup/SavedQuoteManager";
 const BusinessSetupFlow = () => {
   const navigate = useNavigate();
   const {
@@ -221,6 +222,16 @@ const BusinessSetupFlow = () => {
       ...updates
     }));
   };
+
+  const handleLoadQuote = (quoteData: BusinessSetupState) => {
+    setState(quoteData);
+    // Recalculate cost with loaded data
+    setTimeout(() => {
+      if (quoteData.selectedActivities.length > 0) {
+        calculateCost();
+      }
+    }, 100);
+  };
   const renderStepContent = () => {
     const stepProps = {
       state,
@@ -259,23 +270,70 @@ const BusinessSetupFlow = () => {
         </div>
       </div>
 
-      {/* Progress Indicator */}
+      {/* Progress Indicator - Enhanced */}
       <div className="bg-white border-b p-4">
-        <div className="flex items-center justify-between mb-2">
-          {businessSetupSteps.map(step => <div key={step.number} className={`flex flex-col items-center space-y-1 ${step.number <= currentStep ? 'text-primary' : 'text-muted-foreground'}`}>
-              <step.icon className="w-5 h-5" />
-              <span className="text-xs font-medium">{step.title}</span>
-            </div>)}
+        <div className="flex items-center justify-between mb-3">
+          {businessSetupSteps.map((step, index) => {
+            const isActive = step.number === currentStep;
+            const isCompleted = step.number < currentStep;
+            const isAccessible = step.number <= currentStep;
+            
+            return (
+              <div 
+                key={step.number} 
+                className={`flex flex-col items-center space-y-1 transition-all cursor-pointer ${
+                  isActive 
+                    ? 'text-primary scale-110' 
+                    : isCompleted 
+                      ? 'text-green-600' 
+                      : isAccessible 
+                        ? 'text-muted-foreground hover:text-primary/70' 
+                        : 'text-muted-foreground/50'
+                }`}
+                onClick={() => isAccessible && setCurrentStep(step.number)}
+              >
+                <div className={`w-8 h-8 rounded-full flex items-center justify-center text-xs font-bold transition-all ${
+                  isActive 
+                    ? 'bg-primary text-primary-foreground shadow-lg' 
+                    : isCompleted 
+                      ? 'bg-green-100 text-green-700 border-2 border-green-500' 
+                      : isAccessible 
+                        ? 'bg-muted hover:bg-primary/10' 
+                        : 'bg-muted/50'
+                }`}>
+                  {isCompleted ? '✓' : step.number}
+                </div>
+                <span className="text-xs font-medium text-center">{step.title}</span>
+              </div>
+            );
+          })}
         </div>
-        <div className="w-full bg-muted rounded-full h-2">
-          <div className="bg-primary h-2 rounded-full transition-all duration-300" style={{
-          width: `${currentStep / 7 * 100}%`
-        }} />
+        <div className="relative w-full bg-muted rounded-full h-2">
+          <div 
+            className="bg-gradient-to-r from-primary to-green-500 h-2 rounded-full transition-all duration-500 ease-out" 
+            style={{ width: `${(currentStep / 7) * 100}%` }}
+          />
+          <div 
+            className="absolute top-0 h-2 w-4 bg-white rounded-full shadow-sm transition-all duration-500 ease-out"
+            style={{ left: `calc(${(currentStep / 7) * 100}% - 8px)` }}
+          />
+        </div>
+        <div className="flex justify-between text-xs text-muted-foreground mt-2">
+          <span>Step {currentStep} of 7</span>
+          <span>{Math.round((currentStep / 7) * 100)}% Complete</span>
         </div>
       </div>
 
       {/* Content */}
       <div className="p-4 pb-24">
+        {/* Saved Quote Manager */}
+        <div className="mb-6">
+          <SavedQuoteManager 
+            currentState={state}
+            onLoadQuote={handleLoadQuote}
+          />
+        </div>
+        
         {renderStepContent()}
       </div>
 

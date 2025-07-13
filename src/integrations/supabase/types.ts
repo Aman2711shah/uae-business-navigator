@@ -557,6 +557,63 @@ export type Database = {
         }
         Relationships: []
       }
+      saved_quotes: {
+        Row: {
+          alternative_packages: Json | null
+          cost_breakdown: Json | null
+          created_at: string
+          entity_type: string | null
+          estimated_cost: number | null
+          id: string
+          is_freezone: boolean | null
+          quote_name: string
+          recommended_package: Json | null
+          selected_activities: string[]
+          shareholders: number
+          status: string
+          tenure: number
+          total_visas: number
+          updated_at: string
+          user_id: string
+        }
+        Insert: {
+          alternative_packages?: Json | null
+          cost_breakdown?: Json | null
+          created_at?: string
+          entity_type?: string | null
+          estimated_cost?: number | null
+          id?: string
+          is_freezone?: boolean | null
+          quote_name?: string
+          recommended_package?: Json | null
+          selected_activities?: string[]
+          shareholders?: number
+          status?: string
+          tenure?: number
+          total_visas?: number
+          updated_at?: string
+          user_id: string
+        }
+        Update: {
+          alternative_packages?: Json | null
+          cost_breakdown?: Json | null
+          created_at?: string
+          entity_type?: string | null
+          estimated_cost?: number | null
+          id?: string
+          is_freezone?: boolean | null
+          quote_name?: string
+          recommended_package?: Json | null
+          selected_activities?: string[]
+          shareholders?: number
+          status?: string
+          tenure?: number
+          total_visas?: number
+          updated_at?: string
+          user_id?: string
+        }
+        Relationships: []
+      }
       service_requests: {
         Row: {
           created_at: string
@@ -584,6 +641,42 @@ export type Database = {
           status?: string
           updated_at?: string
           user_id?: string | null
+        }
+        Relationships: []
+      }
+      timeline_estimates: {
+        Row: {
+          created_at: string
+          description: string | null
+          entity_type: string
+          estimated_days: number
+          freezone_name: string | null
+          id: string
+          is_business_day: boolean | null
+          process_step: string
+          updated_at: string
+        }
+        Insert: {
+          created_at?: string
+          description?: string | null
+          entity_type: string
+          estimated_days: number
+          freezone_name?: string | null
+          id?: string
+          is_business_day?: boolean | null
+          process_step: string
+          updated_at?: string
+        }
+        Update: {
+          created_at?: string
+          description?: string | null
+          entity_type?: string
+          estimated_days?: number
+          freezone_name?: string | null
+          id?: string
+          is_business_day?: boolean | null
+          process_step?: string
+          updated_at?: string
         }
         Relationships: []
       }
