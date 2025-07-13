@@ -160,8 +160,8 @@ export const ChatbotWidget: React.FC = () => {
   }
 
   return (
-    <Card className="fixed bottom-6 right-6 w-80 h-96 shadow-xl z-50 flex flex-col">
-      <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-3">
+    <Card className="fixed bottom-6 right-6 w-80 md:w-96 max-h-[60vh] md:max-h-[90vh] shadow-2xl z-50 flex flex-col rounded-2xl border-2 bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/80">
+      <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-3 px-4 pt-4 flex-shrink-0">
         <CardTitle className="text-sm font-medium flex items-center gap-2">
           <Bot className="h-4 w-4 text-primary" />
           Business Setup Assistant
@@ -169,32 +169,32 @@ export const ChatbotWidget: React.FC = () => {
         <Button 
           variant="ghost" 
           size="icon" 
-          className="h-6 w-6"
+          className="h-6 w-6 hover:bg-muted"
           onClick={() => setIsOpen(false)}
         >
           <X className="h-4 w-4" />
         </Button>
       </CardHeader>
       
-      <CardContent className="flex-1 flex flex-col p-3 space-y-3">
-        <ScrollArea className="flex-1 pr-2">
-          <div className="space-y-3">
+      <CardContent className="flex-1 flex flex-col p-0 min-h-0 overflow-hidden">
+        <ScrollArea className="flex-1 min-h-0 px-4">
+          <div className="space-y-3 pb-4">
             {messages.map((message) => (
               <div
                 key={message.id}
                 className={`flex ${message.sender === 'user' ? 'justify-end' : 'justify-start'}`}
               >
                 <div
-                  className={`max-w-[80%] rounded-lg p-2 text-xs ${
+                  className={`max-w-[85%] rounded-xl p-3 text-xs shadow-sm ${
                     message.sender === 'user'
                       ? 'bg-primary text-primary-foreground'
-                      : 'bg-muted text-muted-foreground'
+                      : 'bg-muted/80 text-muted-foreground border'
                   }`}
                 >
-                  <div className="flex items-start gap-1">
-                    {message.sender === 'bot' && <Bot className="h-3 w-3 mt-0.5 flex-shrink-0" />}
+                  <div className="flex items-start gap-2">
+                    {message.sender === 'bot' && <Bot className="h-3 w-3 mt-0.5 flex-shrink-0 text-primary" />}
                     {message.sender === 'user' && <User className="h-3 w-3 mt-0.5 flex-shrink-0" />}
-                    <span className="leading-relaxed">{message.content}</span>
+                    <span className="leading-relaxed whitespace-pre-wrap break-words">{message.content}</span>
                   </div>
                 </div>
               </div>
@@ -202,8 +202,8 @@ export const ChatbotWidget: React.FC = () => {
             
             {isTyping && (
               <div className="flex justify-start">
-                <div className="bg-muted text-muted-foreground rounded-lg p-2 text-xs flex items-center gap-1">
-                  <Bot className="h-3 w-3" />
+                <div className="bg-muted/80 text-muted-foreground rounded-xl p-3 text-xs flex items-center gap-2 border shadow-sm">
+                  <Bot className="h-3 w-3 text-primary" />
                   <span>Typing...</span>
                   <div className="flex space-x-1">
                     <div className="w-1 h-1 bg-current rounded-full animate-bounce"></div>
@@ -218,22 +218,24 @@ export const ChatbotWidget: React.FC = () => {
           </div>
         </ScrollArea>
         
-        <div className="flex gap-2">
-          <Input
-            placeholder="Ask about business setup..."
-            value={inputMessage}
-            onChange={(e) => setInputMessage(e.target.value)}
-            onKeyPress={(e) => e.key === 'Enter' && handleSendMessage()}
-            className="text-xs"
-          />
-          <Button 
-            size="icon" 
-            onClick={handleSendMessage}
-            disabled={!inputMessage.trim() || isTyping}
-            className="h-9 w-9"
-          >
-            <Send className="h-3 w-3" />
-          </Button>
+        <div className="sticky bottom-0 bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/80 border-t p-4 flex-shrink-0">
+          <div className="flex gap-2">
+            <Input
+              placeholder="Ask about business setup..."
+              value={inputMessage}
+              onChange={(e) => setInputMessage(e.target.value)}
+              onKeyPress={(e) => e.key === 'Enter' && handleSendMessage()}
+              className="text-xs flex-1 rounded-lg"
+            />
+            <Button 
+              size="icon" 
+              onClick={handleSendMessage}
+              disabled={!inputMessage.trim() || isTyping}
+              className="h-9 w-9 rounded-lg"
+            >
+              <Send className="h-3 w-3" />
+            </Button>
+          </div>
         </div>
       </CardContent>
     </Card>
