@@ -132,8 +132,8 @@ export default {
 				},
 				// Glow pulse
 				'glow-pulse': {
-					'0%, 100%': { boxShadow: '0 0 20px hsl(220 99% 62% / 0.4)' },
-					'50%': { boxShadow: '0 0 30px hsl(220 99% 62% / 0.6)' }
+					'0%, 100%': { boxShadow: '0 0 20px hsl(0 0% 100% / 0.4)' },
+					'50%': { boxShadow: '0 0 30px hsl(0 0% 100% / 0.6)' }
 				}
 			},
 			animation: {

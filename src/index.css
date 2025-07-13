@@ -18,10 +18,10 @@ All colors MUST be HSL.
     --popover: 225 30% 16%;          /* Same as card */
     --popover-foreground: 0 0% 100%;
 
-    /* Electric Blue Primary */
-    --primary: 220 99% 62%;          /* Electric blue #3f80fe */
-    --primary-foreground: 0 0% 100%; /* White text on primary */
-    --primary-hover: 220 99% 69%;    /* Hover shade #5d9eff */
+    /* White Primary */
+    --primary: 0 0% 100%;            /* Pure white */
+    --primary-foreground: 225 43% 8%; /* Dark text on white */
+    --primary-hover: 0 0% 92%;       /* Light gray hover */
 
     /* Secondary Colors */
     --secondary: 225 30% 20%;        /* Slightly lighter than card */
@@ -38,21 +38,21 @@ All colors MUST be HSL.
 
     --border: 225 30% 25%;           /* Subtle borders */
     --input: 225 30% 18%;            /* Input backgrounds */
-    --ring: 220 99% 62%;             /* Focus rings use primary */
+    --ring: 0 0% 100%;               /* Focus rings use white */
 
     /* Chat UI Colors */
     --chat-bubble: 225 40% 13%;      /* Chat bubble #141a29 */
-    --chat-assistant: 220 95% 78%;   /* Assistant text #8fbafc */
+    --chat-assistant: 0 0% 95%;      /* Assistant text white */
     
     /* Gradients */
     --gradient-primary: linear-gradient(180deg, hsl(225 43% 8%), hsl(225 43% 11%));
     --gradient-card: linear-gradient(135deg, hsl(225 30% 16%), hsl(225 30% 18%));
-    --gradient-blue: linear-gradient(135deg, hsl(220 99% 62%), hsl(220 99% 69%));
+    --gradient-blue: linear-gradient(135deg, hsl(0 0% 100%), hsl(0 0% 95%));
     
-    /* Shadows with Blue Glow */
-    --shadow-card: 0 0 12px hsl(220 99% 62% / 0.1);
-    --shadow-lg: 0 10px 30px -10px hsl(220 99% 62% / 0.3);
-    --shadow-glow: 0 0 40px hsl(220 99% 69% / 0.4);
+    /* Shadows with White Glow */
+    --shadow-card: 0 0 12px hsl(0 0% 100% / 0.1);
+    --shadow-lg: 0 10px 30px -10px hsl(0 0% 100% / 0.3);
+    --shadow-glow: 0 0 40px hsl(0 0% 95% / 0.4);
     
     /* Animations */
     --transition-smooth: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
@@ -85,8 +85,8 @@ All colors MUST be HSL.
     --card-foreground: 0 0% 100%;
     --popover: 225 30% 16%;
     --popover-foreground: 0 0% 100%;
-    --primary: 220 99% 62%;
-    --primary-foreground: 0 0% 100%;
+    --primary: 0 0% 100%;
+    --primary-foreground: 225 43% 8%;
     --secondary: 225 30% 20%;
     --secondary-foreground: 0 0% 100%;
     --muted: 225 30% 20%;
@@ -97,17 +97,17 @@ All colors MUST be HSL.
     --destructive-foreground: 0 0% 100%;
     --border: 225 30% 25%;
     --input: 225 30% 18%;
-    --ring: 220 99% 62%;
+    --ring: 0 0% 100%;
 
     /* Sidebar Colors */
     --sidebar-background: 225 43% 8%;
     --sidebar-foreground: 0 0% 100%;
-    --sidebar-primary: 220 99% 62%;
-    --sidebar-primary-foreground: 0 0% 100%;
+    --sidebar-primary: 0 0% 100%;
+    --sidebar-primary-foreground: 225 43% 8%;
     --sidebar-accent: 225 30% 20%;
     --sidebar-accent-foreground: 0 0% 100%;
     --sidebar-border: 225 30% 25%;
-    --sidebar-ring: 220 99% 62%;
+    --sidebar-ring: 0 0% 100%;
   }
 }
 
