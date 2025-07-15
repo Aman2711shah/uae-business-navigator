@@ -11,7 +11,7 @@ const Header = () => {
   return (
     <header className="flex items-center justify-between p-4 bg-white border-b border-border">
       <div>
-        <h1 className="text-2xl font-bold text-foreground">Welcome to GoPRO</h1>
+        <h1 className="text-2xl font-bold text-foreground">Welcome to WAZEET</h1>
         <p className="text-muted-foreground">Your complete business setup partner</p>
       </div>
       <div className="flex items-center gap-3">

@@ -26,7 +26,7 @@ const SupportButton: React.FC = () => {
       title: "Email Support",
       description: "Send us detailed questions",
       icon: <Mail className="h-5 w-5" />,
-      action: () => window.open("mailto:support@gopro-uae.com?subject=Business Setup Inquiry"),
+      action: () => window.open("mailto:support@wazeet-uae.com?subject=Business Setup Inquiry"),
       color: "text-purple-600"
     }
   ];

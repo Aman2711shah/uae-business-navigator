@@ -310,7 +310,7 @@ export const ProfileAssistant = ({
             <div>
               <h3 className="font-semibold text-foreground mb-2">Rate Our App</h3>
               <p className="text-sm text-muted-foreground mb-4">
-                Help us improve by sharing your experience with GoPRO Business Setup.
+                Help us improve by sharing your experience with WAZEET Business Setup.
               </p>
             </div>
             <Button 
@@ -375,7 +375,7 @@ export const ProfileAssistant = ({
               <div className="p-3 bg-muted/50 rounded-lg">
                 <h4 className="font-medium text-foreground mb-2">Service Usage</h4>
                 <p className="text-sm text-muted-foreground">
-                  By using GoPRO, you agree to use our services for legitimate business purposes only.
+                  By using WAZEET, you agree to use our services for legitimate business purposes only.
                 </p>
               </div>
               <div className="p-3 bg-muted/50 rounded-lg">
@@ -398,16 +398,16 @@ export const ProfileAssistant = ({
           </div>
         );
 
-      case 'About GoPRO':
+      case 'About WAZEET':
         return (
           <div className="space-y-4 text-center">
             <div className="w-16 h-16 bg-primary/10 rounded-full flex items-center justify-center mx-auto">
               <Info className="h-8 w-8 text-primary" />
             </div>
             <div>
-              <h3 className="font-semibold text-foreground mb-2">About GoPRO</h3>
+              <h3 className="font-semibold text-foreground mb-2">About WAZEET</h3>
               <p className="text-sm text-muted-foreground mb-4">
-                GoPRO Business Setup is your trusted partner for business formation and 
+                WAZEET Business Setup is your trusted partner for business formation and 
                 government services in the UAE.
               </p>
             </div>
@@ -418,7 +418,7 @@ export const ProfileAssistant = ({
               </div>
               <div className="flex justify-between">
                 <span className="text-muted-foreground">Company:</span>
-                <span className="font-medium">GoPRO UAE</span>
+                <span className="font-medium">WAZEET UAE</span>
               </div>
               <div className="flex justify-between">
                 <span className="text-muted-foreground">Purpose:</span>
@@ -426,7 +426,7 @@ export const ProfileAssistant = ({
               </div>
             </div>
             <p className="text-xs text-muted-foreground mt-4">
-              © 2024 GoPRO UAE. All rights reserved.
+              © 2024 WAZEET UAE. All rights reserved.
             </p>
           </div>
         );
@@ -496,7 +496,7 @@ export const ProfileAssistant = ({
       <Dialog open={showRatingDialog} onOpenChange={setShowRatingDialog}>
         <DialogContent className="sm:max-w-md">
           <DialogHeader>
-            <DialogTitle>Rate GoPRO Business Setup</DialogTitle>
+            <DialogTitle>Rate WAZEET Business Setup</DialogTitle>
           </DialogHeader>
           <div className="space-y-4 text-center">
             <p className="text-sm text-muted-foreground">

@@ -14,7 +14,7 @@ const Index = () => {
 
   useEffect(() => {
     // Show welcome modal on first login or if user hasn't seen it
-    const hasSeenWelcome = localStorage.getItem('gopro-welcome-shown');
+    const hasSeenWelcome = localStorage.getItem('wazeet-welcome-shown');
     if (user && !hasSeenWelcome) {
       setShowWelcomeModal(true);
     }

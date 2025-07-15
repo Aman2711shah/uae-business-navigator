@@ -43,7 +43,7 @@ const menuSections = [
     items: [
       { icon: Shield, label: "Privacy Policy", description: "How we protect your data", hasNotification: false },
       { icon: FileText, label: "Terms & Conditions", description: "App usage terms", hasNotification: false },
-      { icon: Info, label: "About GoPRO", description: "Version 2.1.0", hasNotification: false }
+      { icon: Info, label: "About WAZEET", description: "Version 2.1.0", hasNotification: false }
     ]
   }
 ];
@@ -311,10 +311,10 @@ const More = () => {
         {/* App Version */}
         <div className="text-center py-4">
           <p className="text-sm text-muted-foreground">
-            GoPRO Business Setup v2.1.0
+            WAZEET Business Setup v2.1.0
           </p>
           <p className="text-xs text-muted-foreground mt-1">
-            © 2024 GoPRO UAE. All rights reserved.
+            © 2024 WAZEET UAE. All rights reserved.
           </p>
         </div>
       </div>

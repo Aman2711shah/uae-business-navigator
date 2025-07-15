@@ -89,7 +89,7 @@ export const FeedbackForm: React.FC = () => {
             <CardTitle>Share Your Feedback</CardTitle>
           </div>
           <CardDescription>
-            Help us improve GoPRO by sharing your experience
+            Help us improve WAZEET by sharing your experience
           </CardDescription>
         </CardHeader>
         <CardContent>

@@ -1,4 +1,4 @@
-// Google Analytics integration for GoPRO business setup application
+// Google Analytics integration for WAZEET business setup application
 
 interface AnalyticsEvent {
   action: string;
@@ -67,7 +67,7 @@ class Analytics {
     }
   }
 
-  // Predefined tracking methods for GoPRO events
+  // Predefined tracking methods for WAZEET events
   trackApplicationStarted(applicationType: string, freezone?: string) {
     this.track('Application_Started', {
       application_type: applicationType,

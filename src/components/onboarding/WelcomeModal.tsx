@@ -18,7 +18,7 @@ interface WelcomeModalProps {
 const slides = [
   {
     icon: Building2,
-    title: "Welcome to GoPRO",
+    title: "Welcome to WAZEET",
     description: "Your trusted partner for UAE business setup and company formation",
     content: "Get started with setting up your business in the UAE with our comprehensive platform designed to make the process simple and efficient."
   },
@@ -42,7 +42,7 @@ export const WelcomeModal: React.FC<WelcomeModalProps> = ({ isOpen, onClose }) =
 
   const handleClose = () => {
     if (dontShowAgain) {
-      localStorage.setItem('gopro-welcome-shown', 'true');
+      localStorage.setItem('wazeet-welcome-shown', 'true');
     }
     onClose();
   };
