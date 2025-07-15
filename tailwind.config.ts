@@ -23,77 +23,86 @@ export default {
 				'poppins': ['Poppins', 'system-ui', 'sans-serif'],
 				'sans': ['Inter', 'system-ui', 'sans-serif'], // Default sans-serif
 			},
-				colors: {
-					border: 'hsl(var(--border))',
-					input: 'hsl(var(--input))',
-					ring: 'hsl(var(--ring))',
-					background: 'hsl(var(--background))',
-					foreground: 'hsl(var(--foreground))',
-					primary: {
-						DEFAULT: 'hsl(var(--primary))',
-						foreground: 'hsl(var(--primary-foreground))',
-						hover: 'hsl(var(--primary-hover))'
-					},
-					secondary: {
-						DEFAULT: 'hsl(var(--secondary))',
-						foreground: 'hsl(var(--secondary-foreground))',
-						accent: 'hsl(var(--secondary-accent))'
-					},
-					destructive: {
-						DEFAULT: 'hsl(var(--destructive))',
-						foreground: 'hsl(var(--destructive-foreground))'
-					},
-					muted: {
-						DEFAULT: 'hsl(var(--muted))',
-						foreground: 'hsl(var(--muted-foreground))'
-					},
-					accent: {
-						DEFAULT: 'hsl(var(--accent))',
-						foreground: 'hsl(var(--accent-foreground))'
-					},
-					popover: {
-						DEFAULT: 'hsl(var(--popover))',
-						foreground: 'hsl(var(--popover-foreground))'
-					},
-					card: {
-						DEFAULT: 'hsl(var(--card))',
-						foreground: 'hsl(var(--card-foreground))'
-					},
-					// Chat UI Colors  
-					chat: {
-						bubble: 'hsl(var(--chat-bubble))',
-						assistant: 'hsl(var(--chat-assistant))'
-					},
-					// Navigation Colors
-					nav: {
-						background: 'hsl(var(--nav-background))',
-						selected: 'hsl(var(--nav-selected))',
-						unselected: 'hsl(var(--nav-unselected))'
-					},
-					sidebar: {
-						DEFAULT: 'hsl(var(--sidebar-background))',
-						foreground: 'hsl(var(--sidebar-foreground))',
-						primary: 'hsl(var(--sidebar-primary))',
-						'primary-foreground': 'hsl(var(--sidebar-primary-foreground))',
-						accent: 'hsl(var(--sidebar-accent))',
-						'accent-foreground': 'hsl(var(--sidebar-accent-foreground))',
-						border: 'hsl(var(--sidebar-border))',
-						ring: 'hsl(var(--sidebar-ring))'
-					}
+			colors: {
+				border: 'hsl(var(--border))',
+				input: 'hsl(var(--input))',
+				ring: 'hsl(var(--ring))',
+				background: 'hsl(var(--background))',
+				foreground: 'hsl(var(--foreground))',
+				primary: {
+					DEFAULT: 'hsl(var(--primary))',
+					foreground: 'hsl(var(--primary-foreground))',
+					hover: 'hsl(var(--primary-hover))',
+					light: 'hsl(var(--primary-light))',
+					glow: 'hsl(var(--primary-glow))'
 				},
+				secondary: {
+					DEFAULT: 'hsl(var(--secondary))',
+					foreground: 'hsl(var(--secondary-foreground))',
+					accent: 'hsl(var(--secondary-accent))'
+				},
+				destructive: {
+					DEFAULT: 'hsl(var(--destructive))',
+					foreground: 'hsl(var(--destructive-foreground))'
+				},
+				muted: {
+					DEFAULT: 'hsl(var(--muted))',
+					foreground: 'hsl(var(--muted-foreground))'
+				},
+				accent: {
+					DEFAULT: 'hsl(var(--accent))',
+					foreground: 'hsl(var(--accent-foreground))'
+				},
+				popover: {
+					DEFAULT: 'hsl(var(--popover))',
+					foreground: 'hsl(var(--popover-foreground))'
+				},
+				card: {
+					DEFAULT: 'hsl(var(--card))',
+					foreground: 'hsl(var(--card-foreground))'
+				},
+				// Chat UI Colors  
+				chat: {
+					bubble: 'hsl(var(--chat-bubble))',
+					assistant: 'hsl(var(--chat-assistant))'
+				},
+				// Navigation Colors
+				nav: {
+					background: 'hsl(var(--nav-background))',
+					selected: 'hsl(var(--nav-selected))',
+					unselected: 'hsl(var(--nav-unselected))'
+				},
+				sidebar: {
+					DEFAULT: 'hsl(var(--sidebar-background))',
+					foreground: 'hsl(var(--sidebar-foreground))',
+					primary: 'hsl(var(--sidebar-primary))',
+					'primary-foreground': 'hsl(var(--sidebar-primary-foreground))',
+					accent: 'hsl(var(--sidebar-accent))',
+					'accent-foreground': 'hsl(var(--sidebar-accent-foreground))',
+					border: 'hsl(var(--sidebar-border))',
+					ring: 'hsl(var(--sidebar-ring))'
+				}
+			},
 			backgroundImage: {
 				'gradient-primary': 'var(--gradient-primary)',
 				'gradient-card': 'var(--gradient-card)',
 				'gradient-blue': 'var(--gradient-blue)',
+				'gradient-button': 'var(--gradient-button)',
+				'gradient-hover': 'var(--gradient-hover)',
+				'gradient-soft': 'var(--gradient-soft)',
 			},
 			boxShadow: {
 				'card': 'var(--shadow-card)',
 				'lg': 'var(--shadow-lg)',
 				'glow': 'var(--shadow-glow)',
+				'button': 'var(--shadow-button)',
+				'button-hover': 'var(--shadow-button-hover)',
+				'inset': 'var(--shadow-inset)',
 			},
 			transitionTimingFunction: {
 				'smooth': 'cubic-bezier(0.4, 0, 0.2, 1)',
 				'spring': 'cubic-bezier(0.175, 0.885, 0.32, 1.275)',
+				'bounce': 'cubic-bezier(0.68, -0.55, 0.265, 1.55)',
 			},
 			borderRadius: {
 				lg: 'var(--radius)',

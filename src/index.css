@@ -8,73 +8,82 @@ All colors MUST be HSL.
 
 @layer base {
   :root {
-    /* Light Theme Base Colors */
-    --background: 220 50% 98%;        /* Soft white-blue #f7f9fc */
-    --foreground: 210 11% 13%;        /* Dark grey text #202124 */
+    /* 3D Light Blue Theme - Airy & Clean */
+    --background: 200 100% 97%;        /* Ultra light blue #f0f8ff */
+    --foreground: 210 20% 25%;         /* Deep blue-grey text #3a4e66 */
 
-    --card: 0 0% 100%;               /* Pure white #ffffff */
-    --card-foreground: 210 11% 13%;   /* Dark text on cards */
+    --card: 0 0% 100%;                 /* Pure white cards */
+    --card-foreground: 210 20% 25%;    /* Deep blue-grey text on cards */
 
-    --popover: 0 0% 100%;            /* White popover */
-    --popover-foreground: 210 11% 13%;
+    --popover: 0 0% 100%;              /* White popover */
+    --popover-foreground: 210 20% 25%; /* Deep blue-grey popover text */
 
-    /* Google Blue Primary */
-    --primary: 217 91% 52%;          /* Google blue #1A73E8 */
-    --primary-foreground: 0 0% 100%; /* White text on primary */
-    --primary-hover: 217 91% 45%;    /* Darker blue hover */
+    /* Light Blue Primary Palette */
+    --primary: 200 100% 60%;           /* Light blue #33b5ff */
+    --primary-foreground: 0 0% 100%;   /* White text on primary */
+    --primary-hover: 200 100% 55%;     /* Slightly darker blue hover */
+    --primary-light: 200 100% 85%;     /* Very light blue #cce7ff */
+    --primary-glow: 200 100% 75%;      /* Soft glow blue #99d6ff */
 
-    /* Secondary Colors */
-    --secondary: 220 10% 96%;        /* Very light grey */
-    --secondary-foreground: 210 11% 13%;
-    --secondary-accent: 137 66% 44%; /* Green accent #34A853 */
+    /* Secondary Light Blue Tones */
+    --secondary: 200 50% 95%;          /* Very light blue-grey #f2f7fb */
+    --secondary-foreground: 210 20% 25%;
+    --secondary-accent: 190 100% 50%;  /* Cyan accent #00bfff */
 
-    --muted: 220 10% 96%;
-    --muted-foreground: 210 7% 38%;  /* Muted grey #5f6368 */
+    --muted: 200 40% 94%;              /* Light blue-grey muted #f0f4f8 */
+    --muted-foreground: 210 15% 45%;   /* Soft blue-grey text #6b7684 */
 
-    --accent: 217 91% 95%;           /* Light blue background #E8F0FE */
-    --accent-foreground: 217 91% 52%; /* Blue text on accent */
+    --accent: 200 100% 92%;            /* Light blue accent bg #e6f3ff */
+    --accent-foreground: 200 100% 35%; /* Darker blue accent text #0080bf */
 
     --destructive: 0 84% 60%;
     --destructive-foreground: 0 0% 100%;
 
-    --border: 220 13% 91%;           /* Light border */
-    --input: 0 0% 100%;              /* White input backgrounds */
-    --ring: 217 91% 52%;             /* Focus rings use primary */
+    --border: 200 30% 88%;             /* Light blue border #d9e7f0 */
+    --input: 0 0% 100%;                /* White input backgrounds */
+    --ring: 200 100% 60%;              /* Light blue focus rings */
 
     /* Chat UI Colors */
-    --chat-bubble: 0 0% 100%;        /* White chat bubble */
-    --chat-assistant: 217 91% 52%;   /* Blue assistant text */
+    --chat-bubble: 0 0% 100%;          /* White chat bubble */
+    --chat-assistant: 200 100% 50%;    /* Light blue assistant text */
     
     /* Navigation Colors */
-    --nav-background: 0 0% 100%;     /* White navigation */
-    --nav-selected: 217 91% 52%;     /* Blue for selected tabs */
-    --nav-unselected: 210 7% 64%;    /* Muted grey for unselected #9AA0A6 */
+    --nav-background: 0 0% 100%;       /* White navigation */
+    --nav-selected: 200 100% 60%;      /* Light blue for selected tabs */
+    --nav-unselected: 210 15% 60%;     /* Muted blue-grey for unselected */
     
-    /* Gradients */
-    --gradient-primary: linear-gradient(180deg, hsl(220 50% 98%), hsl(220 50% 96%));
-    --gradient-card: linear-gradient(135deg, hsl(0 0% 100%), hsl(220 10% 99%));
-    --gradient-blue: linear-gradient(135deg, hsl(217 91% 52%), hsl(217 91% 45%));
+    /* 3D Gradients & Depth */
+    --gradient-primary: linear-gradient(135deg, hsl(200 100% 97%), hsl(200 80% 94%));
+    --gradient-card: linear-gradient(135deg, hsl(0 0% 100%), hsl(200 50% 98%));
+    --gradient-blue: linear-gradient(135deg, hsl(200 100% 65%), hsl(200 100% 55%));
+    --gradient-button: linear-gradient(135deg, hsl(200 100% 62%), hsl(200 100% 58%));
+    --gradient-hover: linear-gradient(135deg, hsl(200 100% 58%), hsl(200 100% 52%));
+    --gradient-soft: linear-gradient(135deg, hsl(200 100% 90%), hsl(200 100% 95%));
     
-    /* Shadows */
-    --shadow-card: 0 2px 8px rgba(0, 0, 0, 0.05);
-    --shadow-lg: 0 4px 16px rgba(0, 0, 0, 0.08);
-    --shadow-glow: 0 0 20px hsl(217 91% 52% / 0.15);
+    /* 3D Shadow System */
+    --shadow-card: 0 4px 12px rgba(0, 150, 255, 0.08), 0 2px 4px rgba(0, 150, 255, 0.05);
+    --shadow-lg: 0 8px 25px rgba(0, 150, 255, 0.12), 0 4px 10px rgba(0, 150, 255, 0.08);
+    --shadow-glow: 0 0 30px hsl(200 100% 70% / 0.3), 0 0 60px hsl(200 100% 80% / 0.15);
+    --shadow-button: 0 2px 8px rgba(0, 150, 255, 0.15), 0 1px 3px rgba(0, 150, 255, 0.1);
+    --shadow-button-hover: 0 4px 15px rgba(0, 150, 255, 0.25), 0 2px 8px rgba(0, 150, 255, 0.15);
+    --shadow-inset: inset 0 1px 2px rgba(255, 255, 255, 0.8);
     
-    /* Animations */
+    /* Enhanced Animations */
     --transition-smooth: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
-    --transition-spring: all 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+    --transition-spring: all 0.5s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+    --transition-bounce: all 0.3s cubic-bezier(0.68, -0.55, 0.265, 1.55);
 
-    --radius: 0.75rem;               /* 12px border radius */
+    --radius: 1rem;                    /* Increased border radius for 3D feel */
 
     /* Sidebar Colors */
     --sidebar-background: 0 0% 100%;
-    --sidebar-foreground: 210 11% 13%;
-    --sidebar-primary: 217 91% 52%;
+    --sidebar-foreground: 210 20% 25%;
+    --sidebar-primary: 200 100% 60%;
     --sidebar-primary-foreground: 0 0% 100%;
-    --sidebar-accent: 217 91% 95%;
-    --sidebar-accent-foreground: 217 91% 52%;
-    --sidebar-border: 220 13% 91%;
-    --sidebar-ring: 217 91% 52%;
+    --sidebar-accent: 200 100% 92%;
+    --sidebar-accent-foreground: 200 100% 35%;
+    --sidebar-border: 200 30% 88%;
+    --sidebar-ring: 200 100% 60%;
   }
 
   .dark {
@@ -127,20 +136,66 @@ All colors MUST be HSL.
 }
 
 @layer components {
-  /* Interactive Elements */
+  /* 3D Interactive Elements */
   .story-link {
     @apply relative inline-block after:content-[''] after:absolute after:w-full after:scale-x-0 after:h-0.5 after:bottom-0 after:left-0 after:bg-primary after:origin-bottom-right after:transition-transform after:duration-300 hover:after:scale-x-100 hover:after:origin-bottom-left;
   }
   
   .hover-scale {
-    @apply transition-transform duration-200 hover:scale-105;
+    @apply transition-all duration-300 hover:scale-105 hover:shadow-button-hover;
   }
   
+  /* 3D Card Styles */
   .glow-card {
-    @apply bg-card border border-border/50 rounded-xl shadow-card hover:shadow-glow transition-all duration-300;
+    @apply bg-gradient-card border border-border/30 rounded-xl shadow-card hover:shadow-glow transition-all duration-300 hover:scale-[1.02];
   }
   
+  .glass-card {
+    @apply bg-gradient-soft border border-primary-light/30 rounded-xl shadow-card backdrop-blur-sm hover:shadow-glow transition-all duration-300;
+  }
+  
+  .floating-card {
+    @apply bg-card border border-border/20 rounded-xl shadow-lg hover:shadow-glow hover:-translate-y-1 transition-all duration-300;
+  }
+  
+  /* 3D Button Styles */
+  .btn-3d {
+    @apply bg-gradient-button text-primary-foreground font-medium rounded-lg px-4 py-2 shadow-button hover:shadow-button-hover hover:bg-gradient-hover transition-all duration-300 transform hover:scale-105 active:scale-95;
+  }
+  
+  .btn-glass {
+    @apply bg-primary-light/20 text-primary border border-primary-light/40 font-medium rounded-lg px-4 py-2 shadow-inset hover:bg-primary-light/30 hover:shadow-button transition-all duration-300 backdrop-blur-sm;
+  }
+  
+  /* Text Effects */
   .gradient-text {
     @apply bg-gradient-to-r from-primary to-primary-hover bg-clip-text text-transparent;
+  }
+  
+  .glow-text {
+    @apply text-primary drop-shadow-[0_0_8px_hsl(200_100%_70%_/_0.6)];
+  }
+  
+  /* Input 3D Effects */
+  .input-3d {
+    @apply bg-card border border-border/40 rounded-lg px-3 py-2 shadow-inset focus:shadow-button focus:border-primary/50 transition-all duration-300 outline-none;
+  }
+  
+  /* Surface Effects */
+  .surface-raised {
+    @apply bg-gradient-card border border-border/30 rounded-lg shadow-card;
+  }
+  
+  .surface-inset {
+    @apply bg-muted border border-border/50 rounded-lg shadow-inset;
+  }
+  
+  /* Hover Effects */
+  .hover-lift {
+    @apply transition-all duration-300 hover:-translate-y-1 hover:shadow-lg;
+  }
+  
+  .hover-glow {
+    @apply transition-all duration-300 hover:shadow-glow hover:scale-[1.02];
   }
 }
