@@ -100,13 +100,13 @@ export default function CreatePostModal({ isOpen, onClose, industry, onPostCreat
         const fileName = `${user.id}/${Date.now()}.${fileExt}`;
         
         const { data: uploadData, error: uploadError } = await supabase.storage
-          .from('application-documents')
+          .from('community-images')
           .upload(fileName, selectedImage);
         
         if (uploadError) throw uploadError;
         
         const { data: publicUrlData } = supabase.storage
-          .from('application-documents')
+          .from('community-images')
           .getPublicUrl(fileName);
         
         imageUrl = publicUrlData.publicUrl;

@@ -2,7 +2,7 @@ import { useState } from 'react';
 import { MessageSquarePlus, Image, Hash } from 'lucide-react';
 import { Card, CardContent } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
-import { Avatar, AvatarFallback } from '@/components/ui/avatar';
+import UserAvatar from './UserAvatar';
 
 interface PostCreationBoxProps {
   onCreatePost: () => void;
@@ -14,11 +14,10 @@ export default function PostCreationBox({ onCreatePost, userProfile }: PostCreat
     <Card className="border-none shadow-sm">
       <CardContent className="p-4">
         <div className="flex gap-3">
-          <Avatar className="h-10 w-10">
-            <AvatarFallback className="bg-primary/10 text-primary font-semibold">
-              {userProfile?.username?.charAt(0)?.toUpperCase() || 'U'}
-            </AvatarFallback>
-          </Avatar>
+          <UserAvatar 
+            name={userProfile?.username}
+            size="md"
+          />
           <div className="flex-1">
             <Button
               variant="outline"

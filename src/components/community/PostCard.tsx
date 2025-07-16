@@ -4,11 +4,11 @@ import { Heart, MessageCircle, Share2, Flag, MoreHorizontal, Bookmark, ExternalL
 import { Card, CardContent } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
-import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
 import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger } from '@/components/ui/dropdown-menu';
 import { supabase } from '@/integrations/supabase/client';
 import { useToast } from '@/hooks/use-toast';
 import CommentSection from './CommentSection';
+import UserAvatar from './UserAvatar';
 
 interface Post {
   id: string;
@@ -172,12 +172,11 @@ export default function PostCard({ post, currentUserId, onPostUpdate }: PostCard
       <CardContent className="p-6">
         {/* Post Header */}
         <div className="flex items-start gap-3 mb-4">
-          <Avatar className="w-10 h-10">
-            <AvatarImage src="/placeholder.svg" />
-            <AvatarFallback className="bg-primary/10 text-primary font-medium">
-              {authorInitials}
-            </AvatarFallback>
-          </Avatar>
+          <UserAvatar 
+            name={authorName}
+            username={post.community_users?.username}
+            size="md"
+          />
           <div className="flex-1 min-w-0">
             <div className="flex items-center gap-2 mb-1">
               <span className="font-medium text-foreground truncate">{authorName}</span>

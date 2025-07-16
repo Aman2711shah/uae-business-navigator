@@ -7,6 +7,7 @@ import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
 import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger } from '@/components/ui/dropdown-menu';
 import { supabase } from '@/integrations/supabase/client';
 import { useToast } from '@/hooks/use-toast';
+import UserAvatar from './UserAvatar';
 
 interface Comment {
   id: string;
@@ -115,12 +116,10 @@ export default function CommentSection({ postId, currentUserId }: CommentSection
 
             return (
               <div key={comment.id} className="flex gap-3 p-3 bg-muted/30 rounded-lg">
-                <Avatar className="w-8 h-8 shrink-0">
-                  <AvatarImage src="/placeholder.svg" />
-                  <AvatarFallback className="bg-primary/10 text-primary text-xs">
-                    {authorInitials}
-                  </AvatarFallback>
-                </Avatar>
+                <UserAvatar 
+                  name={authorName}
+                  size="sm"
+                />
                 <div className="flex-1 min-w-0">
                   <div className="flex items-center gap-2 mb-1">
                     <span className="font-medium text-sm text-foreground truncate">
@@ -157,12 +156,7 @@ export default function CommentSection({ postId, currentUserId }: CommentSection
       {/* Add Comment */}
       {currentUserId ? (
         <div className="flex gap-3">
-          <Avatar className="w-8 h-8 shrink-0">
-            <AvatarImage src="/placeholder.svg" />
-            <AvatarFallback className="bg-primary/10 text-primary text-xs">
-              U
-            </AvatarFallback>
-          </Avatar>
+          <UserAvatar size="sm" />
           <div className="flex-1 space-y-2">
             <Textarea
               placeholder="Write a comment..."
