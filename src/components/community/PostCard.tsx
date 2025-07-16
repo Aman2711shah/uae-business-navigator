@@ -1,6 +1,6 @@
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { formatDistanceToNow } from 'date-fns';
-import { Heart, MessageCircle, Share2, Flag, MoreHorizontal } from 'lucide-react';
+import { Heart, MessageCircle, Share2, Flag, MoreHorizontal, Bookmark, ExternalLink } from 'lucide-react';
 import { Card, CardContent } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
@@ -20,8 +20,14 @@ interface Post {
   comments_count: number;
   created_at: string;
   user_id: string;
+  image_url?: string;
   profiles?: {
     full_name: string;
+  };
+  community_users?: {
+    username: string;
+    company_name: string;
+    business_stage: string;
   };
 }
 
@@ -36,7 +42,41 @@ export default function PostCard({ post, currentUserId, onPostUpdate }: PostCard
   const [likesCount, setLikesCount] = useState(post.likes_count);
   const [showComments, setShowComments] = useState(false);
   const [isLiking, setIsLiking] = useState(false);
+  const [isBookmarked, setIsBookmarked] = useState(false);
+  const [linkPreview, setLinkPreview] = useState<any>(null);
   const { toast } = useToast();
+
+  useEffect(() => {
+    if (currentUserId) {
+      checkLikeStatus();
+    }
+    extractLinkPreview();
+  }, [currentUserId, post.id]);
+
+  const checkLikeStatus = async () => {
+    try {
+      const { data } = await supabase
+        .from('post_likes')
+        .select('id')
+        .eq('post_id', post.id)
+        .eq('user_id', currentUserId!)
+        .maybeSingle();
+      
+      setIsLiked(!!data);
+    } catch (error) {
+      console.error('Error checking like status:', error);
+    }
+  };
+
+  const extractLinkPreview = () => {
+    const urlRegex = /(https?:\/\/[^\s]+)/g;
+    const urls = post.body.match(urlRegex);
+    if (urls && urls.length > 0) {
+      // In a real app, you'd fetch the preview from the URL
+      // For now, we'll just show the first URL found
+      setLinkPreview({ url: urls[0] });
+    }
+  };
 
   const handleLike = async () => {
     if (!currentUserId || isLiking) return;
@@ -81,6 +121,17 @@ export default function PostCard({ post, currentUserId, onPostUpdate }: PostCard
     }
   };
 
+  const handleBookmark = async () => {
+    if (!currentUserId) return;
+    
+    // In a real app, you'd have a bookmarks table
+    setIsBookmarked(!isBookmarked);
+    toast({
+      title: isBookmarked ? "Removed from bookmarks" : "Added to bookmarks",
+      description: isBookmarked ? "Post removed from your bookmarks." : "Post saved to your bookmarks.",
+    });
+  };
+
   const handleShare = async () => {
     if (navigator.share) {
       try {
@@ -113,6 +164,8 @@ export default function PostCard({ post, currentUserId, onPostUpdate }: PostCard
   const authorName = post.profiles?.full_name || 'Anonymous User';
   const authorInitials = authorName.split(' ').map(n => n[0]).join('').toUpperCase();
   const timeAgo = formatDistanceToNow(new Date(post.created_at), { addSuffix: true });
+  const companyName = post.community_users?.company_name || 'Company';
+  const businessStage = post.community_users?.business_stage || 'Startup';
 
   return (
     <Card className="glow-card hover:shadow-lg transition-all duration-300">
@@ -129,9 +182,10 @@ export default function PostCard({ post, currentUserId, onPostUpdate }: PostCard
             <div className="flex items-center gap-2 mb-1">
               <span className="font-medium text-foreground truncate">{authorName}</span>
               <Badge variant="secondary" className="text-xs shrink-0">
-                {post.industry_tag}
+                {businessStage}
               </Badge>
             </div>
+            <p className="text-xs text-muted-foreground">{companyName}</p>
             <p className="text-xs text-muted-foreground">{timeAgo}</p>
           </div>
           <DropdownMenu>
@@ -157,6 +211,27 @@ export default function PostCard({ post, currentUserId, onPostUpdate }: PostCard
           <div className="text-foreground/90 leading-relaxed whitespace-pre-wrap">
             {post.body}
           </div>
+          
+          {/* Image */}
+          {post.image_url && (
+            <div className="mt-3 rounded-lg overflow-hidden border border-border/50">
+              <img 
+                src={post.image_url} 
+                alt="Post image" 
+                className="w-full h-auto max-h-96 object-cover"
+              />
+            </div>
+          )}
+          
+          {/* Link Preview */}
+          {linkPreview && (
+            <div className="mt-3 border border-border/50 rounded-lg p-3 bg-muted/20">
+              <div className="flex items-center gap-2 text-sm text-muted-foreground">
+                <ExternalLink className="h-4 w-4" />
+                <span className="truncate">{linkPreview.url}</span>
+              </div>
+            </div>
+          )}
         </div>
 
         {/* Tags */}
@@ -171,30 +246,42 @@ export default function PostCard({ post, currentUserId, onPostUpdate }: PostCard
         )}
 
         {/* Actions */}
-        <div className="flex items-center gap-1 pt-3 border-t border-border/50">
-          <Button 
-            variant="ghost" 
-            size="sm"
-            onClick={handleLike}
-            disabled={isLiking || !currentUserId}
-            className={`${isLiked ? 'text-red-500 hover:text-red-600' : 'text-muted-foreground hover:text-foreground'} transition-colors`}
-          >
-            <Heart className={`h-4 w-4 mr-1 ${isLiked ? 'fill-current' : ''}`} />
-            {likesCount}
-          </Button>
+        <div className="flex items-center justify-between pt-3 border-t border-border/50">
+          <div className="flex items-center gap-1">
+            <Button 
+              variant="ghost" 
+              size="sm"
+              onClick={handleLike}
+              disabled={isLiking || !currentUserId}
+              className={`${isLiked ? 'text-red-500 hover:text-red-600' : 'text-muted-foreground hover:text-foreground'} transition-colors`}
+            >
+              <Heart className={`h-4 w-4 mr-1 ${isLiked ? 'fill-current' : ''}`} />
+              {likesCount}
+            </Button>
+            
+            <Button 
+              variant="ghost" 
+              size="sm"
+              onClick={() => setShowComments(!showComments)}
+            >
+              <MessageCircle className="h-4 w-4 mr-1" />
+              {post.comments_count}
+            </Button>
+            
+            <Button variant="ghost" size="sm" onClick={handleShare}>
+              <Share2 className="h-4 w-4 mr-1" />
+              Share
+            </Button>
+          </div>
           
           <Button 
             variant="ghost" 
             size="sm"
-            onClick={() => setShowComments(!showComments)}
+            onClick={handleBookmark}
+            disabled={!currentUserId}
+            className={`${isBookmarked ? 'text-blue-500 hover:text-blue-600' : 'text-muted-foreground hover:text-foreground'} transition-colors`}
           >
-            <MessageCircle className="h-4 w-4 mr-1" />
-            {post.comments_count}
-          </Button>
-          
-          <Button variant="ghost" size="sm" onClick={handleShare}>
-            <Share2 className="h-4 w-4 mr-1" />
-            Share
+            <Bookmark className={`h-4 w-4 ${isBookmarked ? 'fill-current' : ''}`} />
           </Button>
         </div>
 

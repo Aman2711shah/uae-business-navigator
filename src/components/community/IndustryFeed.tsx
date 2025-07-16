@@ -54,7 +54,31 @@ export default function IndustryFeed({ industry, onBack, currentUserId, userProf
 
       if (error) throw error;
       
-      setPosts(data || []);
+      // Fetch user profiles for each post
+      const postsWithProfiles = await Promise.all(
+        (data || []).map(async (post) => {
+          const [profileData, communityUserData] = await Promise.all([
+            supabase
+              .from('profiles')
+              .select('full_name')
+              .eq('user_id', post.user_id)
+              .maybeSingle(),
+            supabase
+              .from('community_users')
+              .select('username, company_name, business_stage')
+              .eq('user_id', post.user_id)
+              .maybeSingle()
+          ]);
+          
+          return {
+            ...post,
+            profiles: profileData.data,
+            community_users: communityUserData.data
+          };
+        })
+      );
+      
+      setPosts(postsWithProfiles);
       
       // Extract unique tags
       const tags = new Set<string>();
