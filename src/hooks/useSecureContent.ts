@@ -8,6 +8,7 @@ import {
   clearRateLimit
 } from '@/lib/security';
 import { useToast } from '@/hooks/use-toast';
+import { logSuspiciousUpload } from '@/lib/security-logger';
 
 export const useSecureContent = () => {
   const [isLoading, setIsLoading] = useState(false);
@@ -193,6 +194,11 @@ export const useSecureContent = () => {
 
     if (suspiciousPatterns.some(pattern => pattern.test(file.name))) {
       errors.push('File type not allowed');
+    }
+
+    // Log suspicious upload attempts (fire and forget)
+    if (errors.length > 0) {
+      logSuspiciousUpload('unknown', file.name, errors.join(', ')).catch(console.error);
     }
 
     return {

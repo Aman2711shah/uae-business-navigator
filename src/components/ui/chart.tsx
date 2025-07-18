@@ -123,13 +123,23 @@ ${colorConfig
       .join("\n")
   )
 
-  return (
-    <style
-      dangerouslySetInnerHTML={{
-        __html: cssContent,
-      }}
-    />
-  )
+  // Use React.useEffect to safely inject CSS instead of dangerouslySetInnerHTML
+  React.useEffect(() => {
+    if (typeof document !== 'undefined') {
+      const styleId = 'chart-css-vars';
+      let existingStyle = document.getElementById(styleId);
+      
+      if (!existingStyle) {
+        existingStyle = document.createElement('style');
+        existingStyle.id = styleId;
+        document.head.appendChild(existingStyle);
+      }
+      
+      existingStyle.textContent = cssContent;
+    }
+  }, [cssContent]);
+
+  return null
 }
 
 const ChartTooltip = RechartsPrimitive.Tooltip

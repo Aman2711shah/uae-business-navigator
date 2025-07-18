@@ -12,6 +12,7 @@ import {
   validateCSRFToken
 } from '@/lib/security';
 import { sanitizeEmail } from '@/lib/validations';
+import { logAuthFailure } from '@/lib/security-logger';
 
 export const useSecureAuth = () => {
   const [isLoading, setIsLoading] = useState(false);
@@ -27,12 +28,14 @@ export const useSecureAuth = () => {
       
       // Validate email format
       if (!validateEmailFormat(cleanEmail)) {
+        await logAuthFailure(cleanEmail, 'Invalid email format');
         throw new Error('Invalid email format');
       }
       
       // Enhanced password validation with strength check
       const passwordValidation = validatePasswordStrength(password);
       if (!passwordValidation.isValid) {
+        await logAuthFailure(cleanEmail, 'Weak password');
         throw new Error(passwordValidation.errors.join('. '));
       }
       
@@ -47,6 +50,7 @@ export const useSecureAuth = () => {
       // Stricter rate limiting for signup
       const rateLimitKeyValue = rateLimitKey('signup', cleanEmail);
       if (!checkRateLimit(rateLimitKeyValue, 3, 60 * 60 * 1000)) { // 3 attempts per hour
+        await logAuthFailure(cleanEmail, 'Rate limit exceeded - signup');
         throw new Error('Too many signup attempts. Please try again later.');
       }
       
@@ -102,12 +106,14 @@ export const useSecureAuth = () => {
       
       // Validate email format
       if (!validateEmailFormat(cleanEmail)) {
+        await logAuthFailure(cleanEmail, 'Invalid email format');
         throw new Error('Invalid email format');
       }
       
       // Enhanced rate limiting with progressive delays
       const rateLimitKeyValue = rateLimitKey('signin', cleanEmail);
       if (!checkRateLimit(rateLimitKeyValue, 5, 15 * 60 * 1000)) { // 5 attempts per 15 minutes
+        await logAuthFailure(cleanEmail, 'Rate limit exceeded - signin');
         throw new Error('Too many login attempts. Please try again later.');
       }
       
