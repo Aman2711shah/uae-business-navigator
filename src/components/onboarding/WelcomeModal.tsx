@@ -69,7 +69,7 @@ export const WelcomeModal: React.FC<WelcomeModalProps> = ({ isOpen, onClose }) =
 
   return (
     <Dialog open={isOpen} onOpenChange={handleClose}>
-      <DialogContent className="sm:max-w-lg">
+      <DialogContent className="sm:max-w-lg" aria-describedby="welcome-slide-description">
         <DialogHeader className="text-center pb-4">
           <DialogTitle className="text-2xl font-bold text-primary">
             {slides[currentSlide].title}
@@ -86,7 +86,7 @@ export const WelcomeModal: React.FC<WelcomeModalProps> = ({ isOpen, onClose }) =
               <h3 className="text-lg font-semibold text-foreground">
                 {slides[currentSlide].description}
               </h3>
-              <p className="text-muted-foreground leading-relaxed">
+              <p id="welcome-slide-description" className="text-muted-foreground leading-relaxed">
                 {slides[currentSlide].content}
               </p>
             </div>

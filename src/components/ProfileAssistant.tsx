@@ -494,12 +494,12 @@ export const ProfileAssistant = ({
 
       {/* Rating Dialog */}
       <Dialog open={showRatingDialog} onOpenChange={setShowRatingDialog}>
-        <DialogContent className="sm:max-w-md">
+        <DialogContent className="sm:max-w-md" aria-describedby="rating-description">
           <DialogHeader>
             <DialogTitle>Rate WAZEET Business Setup</DialogTitle>
           </DialogHeader>
           <div className="space-y-4 text-center">
-            <p className="text-sm text-muted-foreground">
+            <p id="rating-description" className="text-sm text-muted-foreground">
               How would you rate your experience with our app?
             </p>
             <div className="flex justify-center gap-2">

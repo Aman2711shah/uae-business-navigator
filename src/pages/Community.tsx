@@ -42,12 +42,9 @@ const Community = () => {
   const checkUserAuth = async () => {
     try {
       const { data: { user } } = await supabase.auth.getUser();
-      console.log('Community auth check - user:', user);
       if (user) {
         setCurrentUserId(user.id);
         await checkUserCommunityProfile(user.id);
-      } else {
-        console.log('No user found in community auth check');
       }
     } catch (error) {
       console.error('Error checking user auth:', error);
@@ -56,22 +53,17 @@ const Community = () => {
 
   const checkUserCommunityProfile = async (userId: string) => {
     try {
-      console.log('Checking community profile for user:', userId);
       const { data, error } = await supabase
         .from('community_users')
         .select('*')
         .eq('user_id', userId)
         .maybeSingle();
 
-      console.log('Community profile query result:', { data, error });
-
       if (error) throw error;
       
       if (data) {
-        console.log('Found community profile:', data);
         setUserCommunityProfile(data);
       } else {
-        console.log('No community profile found, showing industry selection');
         setShowIndustrySelection(true);
       }
     } catch (error) {

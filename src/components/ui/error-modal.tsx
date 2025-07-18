@@ -25,13 +25,13 @@ export const ErrorModal: React.FC<ErrorModalProps> = ({
 }) => {
   return (
     <Dialog open={isOpen} onOpenChange={onClose}>
-      <DialogContent className="sm:max-w-md">
+      <DialogContent className="sm:max-w-md" aria-describedby="error-description">
         <DialogHeader className="text-center">
           <div className="mx-auto w-12 h-12 bg-destructive/10 rounded-full flex items-center justify-center mb-4">
             <AlertTriangle className="h-6 w-6 text-destructive" />
           </div>
           <DialogTitle className="text-destructive">{title}</DialogTitle>
-          <DialogDescription className="text-center">
+          <DialogDescription id="error-description" className="text-center">
             {errorMessage}
           </DialogDescription>
         </DialogHeader>

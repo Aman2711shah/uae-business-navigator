@@ -188,10 +188,13 @@ const SavedQuoteManager: React.FC<SavedQuoteManagerProps> = ({
             Load Saved Quote ({savedQuotes?.length || 0})
           </Button>
         </DialogTrigger>
-        <DialogContent className="max-w-2xl">
+        <DialogContent className="max-w-2xl" aria-describedby="saved-quotes-description">
           <DialogHeader>
             <DialogTitle>Your Saved Quotes</DialogTitle>
           </DialogHeader>
+          <p id="saved-quotes-description" className="sr-only">
+            Manage and load your previously saved business setup quotes
+          </p>
           
           <div className="space-y-3 max-h-96 overflow-y-auto">
             {isLoading && (

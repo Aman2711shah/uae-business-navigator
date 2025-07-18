@@ -42,7 +42,7 @@ const SupportButton: React.FC = () => {
       </Button>
 
       <Dialog open={isOpen} onOpenChange={setIsOpen}>
-        <DialogContent className="sm:max-w-md">
+        <DialogContent className="sm:max-w-md" aria-describedby="support-description">
           <DialogHeader>
             <DialogTitle className="flex items-center gap-2">
               <MessageCircle className="h-5 w-5 text-primary" />
@@ -51,7 +51,7 @@ const SupportButton: React.FC = () => {
           </DialogHeader>
           
           <div className="space-y-3">
-            <p className="text-sm text-muted-foreground">
+            <p id="support-description" className="text-sm text-muted-foreground">
               Our business setup experts are here to help you every step of the way.
             </p>
             
