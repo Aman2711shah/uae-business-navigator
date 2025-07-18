@@ -11,15 +11,10 @@ import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from '
 import { Badge } from '@/components/ui/badge';
 import { supabase } from '@/integrations/supabase/client';
 import { useToast } from '@/hooks/use-toast';
+import { useSecureContent } from '@/hooks/useSecureContent';
+import { communityPostSchema } from '@/lib/validations';
 
-const formSchema = z.object({
-  title: z.string().min(10, 'Title must be at least 10 characters').max(200, 'Title must be less than 200 characters'),
-  body: z.string().min(20, 'Post content must be at least 20 characters').max(2000, 'Post content must be less than 2000 characters'),
-  tags: z.string().optional(),
-  image: z.any().optional(),
-});
-
-type FormData = z.infer<typeof formSchema>;
+type FormData = z.infer<typeof communityPostSchema>;
 
 interface CreatePostModalProps {
   isOpen: boolean;
@@ -36,14 +31,15 @@ export default function CreatePostModal({ isOpen, onClose, industry, onPostCreat
   const [imagePreview, setImagePreview] = useState<string | null>(null);
   const fileInputRef = useRef<HTMLInputElement>(null);
   const { toast } = useToast();
+  const { validateAndSanitizePost, validateFileUpload } = useSecureContent();
 
   const form = useForm<FormData>({
-    resolver: zodResolver(formSchema),
+    resolver: zodResolver(communityPostSchema),
     defaultValues: {
       title: '',
-      body: '',
-      tags: '',
-      image: null,
+      content: '',
+      tags: [],
+      industryTag: industry,
     },
   });
 
@@ -69,6 +65,17 @@ export default function CreatePostModal({ isOpen, onClose, industry, onPostCreat
   const handleImageSelect = (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0];
     if (file) {
+      // Validate file upload
+      const validation = validateFileUpload(file);
+      if (!validation.isValid) {
+        toast({
+          title: "Invalid file",
+          description: validation.errors.join(', '),
+          variant: "destructive"
+        });
+        return;
+      }
+
       setSelectedImage(file);
       const reader = new FileReader();
       reader.onload = (e) => {
@@ -92,10 +99,28 @@ export default function CreatePostModal({ isOpen, onClose, industry, onPostCreat
       const { data: { user } } = await supabase.auth.getUser();
       if (!user) throw new Error('Not authenticated');
 
+      // Validate and sanitize content with security checks
+      const validation = await validateAndSanitizePost(
+        data.title,
+        data.content,
+        user.id,
+        tags
+      );
+
+      if (!validation.isValid) {
+        return; // Error already shown by the hook
+      }
+
       let imageUrl = null;
       
       // Upload image if selected
       if (selectedImage) {
+        // Additional security check for image upload
+        const fileValidation = validateFileUpload(selectedImage);
+        if (!fileValidation.isValid) {
+          throw new Error(`Invalid file: ${fileValidation.errors.join(', ')}`);
+        }
+
         const fileExt = selectedImage.name.split('.').pop();
         const fileName = `${user.id}/${Date.now()}.${fileExt}`;
         
@@ -116,10 +141,10 @@ export default function CreatePostModal({ isOpen, onClose, industry, onPostCreat
         .from('community_posts')
         .insert({
           user_id: user.id,
-          title: data.title,
-          body: data.body,
+          title: validation.title,
+          body: validation.content,
           industry_tag: industry,
-          tags: tags,
+          tags: validation.tags,
           image_url: imageUrl,
         })
         .select('*')
@@ -148,7 +173,7 @@ export default function CreatePostModal({ isOpen, onClose, industry, onPostCreat
       };
 
       toast({
-        title: "Post created!",
+        title: "Post created securely!",
         description: "Your post has been shared with the community.",
       });
 
@@ -214,7 +239,7 @@ export default function CreatePostModal({ isOpen, onClose, industry, onPostCreat
             {/* Body */}
             <FormField
               control={form.control}
-              name="body"
+              name="content"
               render={({ field }) => (
                 <FormItem>
                   <FormLabel>Content *</FormLabel>
@@ -227,7 +252,7 @@ export default function CreatePostModal({ isOpen, onClose, industry, onPostCreat
                   </FormControl>
                   <FormMessage />
                   <p className="text-sm text-muted-foreground">
-                    {field.value?.length || 0}/2000 characters
+                    {field.value?.length || 0}/10000 characters
                   </p>
                 </FormItem>
               )}

@@ -1,6 +1,6 @@
 import React from 'react';
 import { UseFormReturn } from 'react-hook-form';
-import { sanitizeInput } from '@/lib/validations';
+import { sanitizeInput } from '@/lib/security';
 
 interface SecureInputProps extends Omit<React.InputHTMLAttributes<HTMLInputElement>, 'form'> {
   form?: UseFormReturn<any>;
