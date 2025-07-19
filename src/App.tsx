@@ -7,6 +7,7 @@ import { BrowserRouter, Routes, Route } from "react-router-dom";
 import { AuthProvider } from "@/contexts/AuthContext";
 import { ProtectedRoute } from "@/components/auth/ProtectedRoute";
 import { useEffect } from "react";
+import { applyClientSecurityHeaders } from "./lib/csp";
 import Index from "./pages/Index";
 import Auth from "./pages/Auth";
 import Admin from "./pages/Admin";
@@ -30,34 +31,7 @@ const queryClient = new QueryClient();
 
 const App = () => {
   useEffect(() => {
-    // Set security headers via meta tags
-    const setSecurityHeaders = () => {
-      // Content Security Policy
-      const cspMeta = document.createElement('meta');
-      cspMeta.httpEquiv = 'Content-Security-Policy';
-      cspMeta.content = "default-src 'self'; script-src 'self' 'unsafe-inline' 'unsafe-eval'; style-src 'self' 'unsafe-inline'; img-src 'self' data: https:; font-src 'self' data:; connect-src 'self' https://ajxbjxoujummahqcctuo.supabase.co; frame-ancestors 'none';";
-      document.head.appendChild(cspMeta);
-
-      // X-Frame-Options equivalent
-      const frameMeta = document.createElement('meta');
-      frameMeta.httpEquiv = 'X-Frame-Options';
-      frameMeta.content = 'DENY';
-      document.head.appendChild(frameMeta);
-
-      // X-Content-Type-Options equivalent
-      const contentTypeMeta = document.createElement('meta');
-      contentTypeMeta.httpEquiv = 'X-Content-Type-Options';
-      contentTypeMeta.content = 'nosniff';
-      document.head.appendChild(contentTypeMeta);
-
-      // Referrer Policy
-      const referrerMeta = document.createElement('meta');
-      referrerMeta.name = 'referrer';
-      referrerMeta.content = 'strict-origin-when-cross-origin';
-      document.head.appendChild(referrerMeta);
-    };
-
-    setSecurityHeaders();
+    applyClientSecurityHeaders();
   }, []);
 
   return (

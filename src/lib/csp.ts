@@ -32,7 +32,7 @@ export function generateCSPHeader(): string {
 }
 
 /**
- * Apply security headers to response
+ * Apply security headers to response (server-side)
  */
 export function applySecurityHeaders(response: Response): Response {
   const headers = new Headers(response.headers);
@@ -50,4 +50,35 @@ export function applySecurityHeaders(response: Response): Response {
     statusText: response.statusText,
     headers
   });
+}
+
+/**
+ * Apply security headers via meta tags (client-side)
+ */
+export function applyClientSecurityHeaders(): void {
+  // Remove existing security meta tags
+  document.querySelectorAll('meta[http-equiv^="Content-Security-Policy"], meta[http-equiv^="X-"]')
+    .forEach(tag => tag.remove());
+
+  // Apply CSP via meta tag
+  const cspMeta = document.createElement('meta');
+  cspMeta.httpEquiv = 'Content-Security-Policy';
+  cspMeta.content = generateCSPHeader();
+  document.head.appendChild(cspMeta);
+
+  // Apply other security headers as meta tags
+  Object.entries(SECURITY_HEADERS).forEach(([key, value]) => {
+    if (key.startsWith('X-')) {
+      const meta = document.createElement('meta');
+      meta.httpEquiv = key;
+      meta.content = value;
+      document.head.appendChild(meta);
+    }
+  });
+
+  // Add referrer policy
+  const referrerMeta = document.createElement('meta');
+  referrerMeta.name = 'referrer';
+  referrerMeta.content = 'strict-origin-when-cross-origin';
+  document.head.appendChild(referrerMeta);
 }

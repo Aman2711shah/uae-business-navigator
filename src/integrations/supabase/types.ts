@@ -748,6 +748,10 @@ export type Database = {
         }
         Returns: boolean
       }
+      setup_initial_admin: {
+        Args: Record<PropertyKey, never>
+        Returns: string
+      }
     }
     Enums: {
       app_role: "admin" | "user"
