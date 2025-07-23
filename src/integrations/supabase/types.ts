@@ -737,6 +737,10 @@ export type Database = {
         }
         Returns: undefined
       }
+      check_admin_exists: {
+        Args: Record<PropertyKey, never>
+        Returns: boolean
+      }
       create_initial_admin: {
         Args: { admin_email: string }
         Returns: undefined
