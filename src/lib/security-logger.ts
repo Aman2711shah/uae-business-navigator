@@ -14,22 +14,38 @@ export interface SecurityEvent {
  */
 export async function logSecurityEvent(event: SecurityEvent): Promise<void> {
   try {
-    // In a real application, you would send this to a dedicated security logging service
-    // For now, we'll log to console and optionally store in database
+    // Log to console for immediate debugging
     console.warn('Security Event:', {
       timestamp: new Date().toISOString(),
       ...event
     });
 
-    // Store critical events in database for admin review
-    // TODO: Create security_logs table if needed for persistent storage
+    // Store critical and high severity events in database for admin review
     if (event.severity === 'critical' || event.severity === 'high') {
-      // For now, just enhanced console logging for critical events
       console.error('CRITICAL SECURITY EVENT:', {
         timestamp: new Date().toISOString(),
         ...event
       });
     }
+
+    // Log to database using the log_security_event function
+    try {
+      const { error } = await supabase.rpc('log_security_event', {
+        event_type: event.event_type,
+        user_id: event.user_id || null,
+        ip_address: event.ip_address || null,
+        user_agent: event.user_agent || null,
+        details: event.details || null,
+        severity: event.severity || 'low'
+      });
+      
+      if (error) {
+        console.warn('Failed to log security event to database:', error);
+      }
+    } catch (dbError) {
+      console.warn('Database security logging failed:', dbError);
+    }
+    
   } catch (error) {
     // Never let security logging break the application
     console.error('Failed to log security event:', error);
