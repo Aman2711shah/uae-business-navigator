@@ -614,6 +614,39 @@ export type Database = {
         }
         Relationships: []
       }
+      security_events: {
+        Row: {
+          created_at: string
+          details: Json | null
+          event_type: string
+          id: string
+          ip_address: string | null
+          severity: string
+          user_agent: string | null
+          user_id: string | null
+        }
+        Insert: {
+          created_at?: string
+          details?: Json | null
+          event_type: string
+          id?: string
+          ip_address?: string | null
+          severity?: string
+          user_agent?: string | null
+          user_id?: string | null
+        }
+        Update: {
+          created_at?: string
+          details?: Json | null
+          event_type?: string
+          id?: string
+          ip_address?: string | null
+          severity?: string
+          user_agent?: string | null
+          user_id?: string | null
+        }
+        Relationships: []
+      }
       service_requests: {
         Row: {
           created_at: string
@@ -727,7 +760,42 @@ export type Database = {
       }
     }
     Views: {
-      [_ in never]: never
+      freezone_public_info: {
+        Row: {
+          created_at: string | null
+          description: string | null
+          faqs: Json | null
+          freezone_name: string | null
+          id: string | null
+          key_benefits: string[] | null
+          office_location: string | null
+          updated_at: string | null
+          website_url: string | null
+        }
+        Insert: {
+          created_at?: string | null
+          description?: string | null
+          faqs?: Json | null
+          freezone_name?: string | null
+          id?: string | null
+          key_benefits?: string[] | null
+          office_location?: string | null
+          updated_at?: string | null
+          website_url?: string | null
+        }
+        Update: {
+          created_at?: string | null
+          description?: string | null
+          faqs?: Json | null
+          freezone_name?: string | null
+          id?: string | null
+          key_benefits?: string[] | null
+          office_location?: string | null
+          updated_at?: string | null
+          website_url?: string | null
+        }
+        Relationships: []
+      }
     }
     Functions: {
       assign_user_role: {
@@ -751,6 +819,17 @@ export type Database = {
           _user_id: string
         }
         Returns: boolean
+      }
+      log_security_event: {
+        Args: {
+          details?: Json
+          event_type: string
+          ip_address?: string
+          severity?: string
+          user_agent?: string
+          user_id?: string
+        }
+        Returns: undefined
       }
       setup_initial_admin: {
         Args: Record<PropertyKey, never>
