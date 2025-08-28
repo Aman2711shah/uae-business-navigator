@@ -1,9 +1,9 @@
 import { createRoot } from 'react-dom/client'
 import App from './App.tsx'
 import './index.css'
-import { applyClientSecurityHeaders } from '@/lib/csp'
+import { initializeProductionSecurity } from '@/lib/production-security'
 
-// Apply security headers immediately
-applyClientSecurityHeaders();
+// Initialize all security measures
+initializeProductionSecurity();
 
 createRoot(document.getElementById("root")!).render(<App />);
