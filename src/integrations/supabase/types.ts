@@ -727,27 +727,7 @@ export type Database = {
       }
     }
     Views: {
-      post_author_info: {
-        Row: {
-          business_stage: string | null
-          company_name: string | null
-          user_id: string | null
-          username: string | null
-        }
-        Insert: {
-          business_stage?: string | null
-          company_name?: string | null
-          user_id?: string | null
-          username?: string | null
-        }
-        Update: {
-          business_stage?: string | null
-          company_name?: string | null
-          user_id?: string | null
-          username?: string | null
-        }
-        Relationships: []
-      }
+      [_ in never]: never
     }
     Functions: {
       assign_user_role: {
