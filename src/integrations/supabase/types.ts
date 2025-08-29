@@ -29,7 +29,7 @@ export type Database = {
           status: string
           submitted_at: string | null
           updated_at: string
-          user_id: string | null
+          user_id: string
         }
         Insert: {
           application_id: string
@@ -45,7 +45,7 @@ export type Database = {
           status?: string
           submitted_at?: string | null
           updated_at?: string
-          user_id?: string | null
+          user_id: string
         }
         Update: {
           application_id?: string
@@ -61,7 +61,7 @@ export type Database = {
           status?: string
           submitted_at?: string | null
           updated_at?: string
-          user_id?: string | null
+          user_id?: string
         }
         Relationships: [
           {
@@ -107,7 +107,7 @@ export type Database = {
           question: string
           response: string
           response_type: string | null
-          user_id: string | null
+          user_id: string
         }
         Insert: {
           created_at?: string
@@ -115,7 +115,7 @@ export type Database = {
           question: string
           response: string
           response_type?: string | null
-          user_id?: string | null
+          user_id: string
         }
         Update: {
           created_at?: string
@@ -123,7 +123,7 @@ export type Database = {
           question?: string
           response?: string
           response_type?: string | null
-          user_id?: string | null
+          user_id?: string
         }
         Relationships: []
       }
@@ -655,7 +655,7 @@ export type Database = {
           request_id: string
           status: string
           updated_at: string
-          user_id: string | null
+          user_id: string
         }
         Insert: {
           created_at?: string
@@ -664,7 +664,7 @@ export type Database = {
           request_id: string
           status?: string
           updated_at?: string
-          user_id?: string | null
+          user_id: string
         }
         Update: {
           created_at?: string
@@ -673,7 +673,7 @@ export type Database = {
           request_id?: string
           status?: string
           updated_at?: string
-          user_id?: string | null
+          user_id?: string
         }
         Relationships: []
       }
@@ -719,21 +719,21 @@ export type Database = {
           id: string
           rating: number
           submitted_on: string
-          user_id: string | null
+          user_id: string
         }
         Insert: {
           feedback_text?: string | null
           id?: string
           rating: number
           submitted_on?: string
-          user_id?: string | null
+          user_id: string
         }
         Update: {
           feedback_text?: string | null
           id?: string
           rating?: number
           submitted_on?: string
-          user_id?: string | null
+          user_id?: string
         }
         Relationships: []
       }
