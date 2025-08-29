@@ -73,15 +73,21 @@ const setupXSSMonitoring = () => {
   const originalAppendChild = Node.prototype.appendChild;
   const originalInsertBefore = Node.prototype.insertBefore;
   
-  const checkSuspiciousContent = (node: Node) => {
+const checkSuspiciousContent = (node: Node) => {
     if (node.nodeType === Node.ELEMENT_NODE) {
       const element = node as Element;
       const tagName = element.tagName?.toLowerCase();
+      const outerHTML = element.outerHTML || '';
+      
+      // Skip Lovable development attributes to reduce false positives
+      if (outerHTML.includes('data-lov-') || outerHTML.includes('data-reactroot')) {
+        return;
+      }
       
       // Check for suspicious script tags or inline event handlers
       if (tagName === 'script' || 
           element.innerHTML?.includes('javascript:') ||
-          element.outerHTML?.match(/on\w+\s*=/i)) {
+          outerHTML.match(/on\w+\s*=/i)) {
         
         console.warn('Potential XSS attempt detected:', {
           element: element.outerHTML?.substring(0, 200),

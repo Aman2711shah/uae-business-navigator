@@ -173,10 +173,14 @@ const TradeApplicationFlow = () => {
       const newApplicationId = generateApplicationId();
       
       // Create application in database
+      const { data: { user } } = await supabase.auth.getUser();
+      if (!user) throw new Error('User must be authenticated');
+      
       const { data: appData, error: appError } = await supabase
         .from('applications')
         .insert({
           application_id: newApplicationId,
+          user_id: user.id,
           freezone_name: applicationData.freezoneName,
           package_id: parseInt(applicationData.packageId),
           package_name: applicationData.packageName,

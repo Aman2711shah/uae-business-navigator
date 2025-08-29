@@ -73,10 +73,14 @@ const DocumentUploadStep: React.FC<DocumentUploadStepProps> = ({
       const newApplicationId = onGenerateApplicationId();
       
       // Create application in database
+      const { data: { user } } = await supabase.auth.getUser();
+      if (!user) throw new Error('User must be authenticated');
+      
       const { data: appData, error: appError } = await supabase
         .from('applications')
         .insert({
           application_id: newApplicationId,
+          user_id: user.id,
           freezone_name: applicationData.selectedFreezone,
           package_id: applicationData.selectedPackage?.id || null,
           package_name: applicationData.selectedPackage?.package_name || 'Custom Package',
