@@ -28,8 +28,6 @@ interface FreezoneInfo {
   key_benefits: string[];
   office_location: string;
   website_url: string;
-  contact_email: string;
-  contact_phone: string;
   faqs: any;
 }
 
@@ -62,7 +60,7 @@ const PackageReviewStep: React.FC<PackageReviewStepProps> = ({
     try {
       setLoading(true);
       const { data, error } = await supabase
-        .from('freezone_info')
+        .from('freezone_public_info')
         .select('*')
         .eq('freezone_name', selectedFreezone)
         .single();
@@ -238,18 +236,6 @@ const PackageReviewStep: React.FC<PackageReviewStepProps> = ({
                   <div className="flex items-center gap-2">
                     <MapPin className="h-4 w-4 text-muted-foreground" />
                     <span>{freezoneInfo.office_location}</span>
-                  </div>
-                )}
-                {freezoneInfo.contact_email && (
-                  <div className="flex items-center gap-2">
-                    <Mail className="h-4 w-4 text-muted-foreground" />
-                    <span>{freezoneInfo.contact_email}</span>
-                  </div>
-                )}
-                {freezoneInfo.contact_phone && (
-                  <div className="flex items-center gap-2">
-                    <Phone className="h-4 w-4 text-muted-foreground" />
-                    <span>{freezoneInfo.contact_phone}</span>
                   </div>
                 )}
                 {freezoneInfo.website_url && (

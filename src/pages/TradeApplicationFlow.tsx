@@ -18,8 +18,6 @@ interface FreezoneInfo {
   key_benefits: string[];
   office_location: string;
   website_url: string;
-  contact_email: string;
-  contact_phone: string;
   faqs: any;
 }
 
@@ -76,7 +74,7 @@ const TradeApplicationFlow = () => {
       
       // Fetch freezone information
       const { data: freezoneData, error: freezoneError } = await supabase
-        .from('freezone_info')
+        .from('freezone_public_info')
         .select('*')
         .eq('freezone_name', applicationData.freezoneName)
         .single();
@@ -248,10 +246,6 @@ const TradeApplicationFlow = () => {
                 <div className="flex items-center gap-2">
                   <MapPin className="h-4 w-4 text-muted-foreground" />
                   <span>{freezoneInfo.office_location}</span>
-                </div>
-                <div className="flex items-center gap-2">
-                  <Mail className="h-4 w-4 text-muted-foreground" />
-                  <span>{freezoneInfo.contact_email}</span>
                 </div>
                 <div className="flex items-center gap-2">
                   <Globe className="h-4 w-4 text-muted-foreground" />
