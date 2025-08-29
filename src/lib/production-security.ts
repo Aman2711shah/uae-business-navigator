@@ -144,7 +144,7 @@ const disableRiskyFeatures = () => {
  */
 export const MANUAL_SECURITY_CHECKLIST = {
   supabase_auth: {
-    otp_expiry: 'Set OTP/Magic link expiry to 900 seconds (15 minutes) in Auth > Settings',
+    otp_expiry: 'Set OTP/Magic link expiry to 300 seconds (5 minutes) in Auth > Settings',
     password_protection: 'Enable "Password breach protection" in Auth > Settings > Password Security',
     rate_limiting: 'Review rate limiting settings in Auth > Rate Limits'
   },
