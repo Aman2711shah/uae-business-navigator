@@ -18,54 +18,54 @@ All colors MUST be HSL.
     --popover: 0 0% 100%;              /* White popover */
     --popover-foreground: 210 25% 40%; /* Readable blue-grey popover text */
 
-    /* Professional Purple Primary Palette - Psychology: Trust, Creativity, Premium */
-    --primary: 262 83% 58%;            /* Professional purple #7C3AED */
+    /* Professional Gray/Black Primary Palette - Clean & Modern */
+    --primary: 0 0% 9%;                /* Deep charcoal black #171717 */
     --primary-foreground: 0 0% 100%;   /* White text on primary */
-    --primary-hover: 262 83% 52%;      /* Darker purple hover */
-    --primary-light: 262 83% 70%;      /* Light purple #A78BFA */
-    --primary-glow: 262 83% 85%;       /* Soft glow purple #C4B5FD */
+    --primary-hover: 0 0% 15%;         /* Lighter black hover */
+    --primary-light: 0 0% 25%;         /* Light charcoal #404040 */
+    --primary-glow: 0 0% 50%;          /* Medium gray glow #808080 */
 
-    /* Professional Indigo Secondary - Psychology: Wisdom, Innovation */
-    --secondary: 243 75% 59%;          /* Professional indigo #6366F1 */
-    --secondary-foreground: 0 0% 100%;
-    --secondary-accent: 243 75% 70%;   /* Light indigo #818CF8 */
+    /* Professional Light Gray Secondary - Clean & Elegant */
+    --secondary: 0 0% 96%;             /* Very light gray #F5F5F5 */
+    --secondary-foreground: 0 0% 9%;   /* Black text on light gray */
+    --secondary-accent: 0 0% 85%;      /* Medium light gray #D9D9D9 */
 
-    --muted: 200 40% 94%;              /* Light blue-grey muted #f0f4f8 */
-    --muted-foreground: 210 15% 45%;   /* Soft blue-grey text #6b7684 */
+    --muted: 0 0% 94%;                 /* Light gray muted #F0F0F0 */
+    --muted-foreground: 0 0% 45%;      /* Medium gray text #737373 */
 
-    --accent: 200 100% 92%;            /* Light blue accent bg #e6f3ff */
-    --accent-foreground: 200 100% 35%; /* Darker blue accent text #0080bf */
+    --accent: 0 0% 92%;                /* Light gray accent bg #EBEBEB */
+    --accent-foreground: 0 0% 15%;     /* Dark gray accent text #262626 */
 
     --destructive: 0 84% 60%;
     --destructive-foreground: 0 0% 100%;
 
-    --border: 200 30% 88%;             /* Light blue border #d9e7f0 */
+    --border: 0 0% 88%;                /* Light gray border #E0E0E0 */
     --input: 0 0% 100%;                /* White input backgrounds */
-    --ring: 200 100% 60%;              /* Light blue focus rings */
+    --ring: 0 0% 15%;                  /* Dark gray focus rings */
 
     /* Chat UI Colors */
     --chat-bubble: 0 0% 100%;          /* White chat bubble */
-    --chat-assistant: 200 100% 50%;    /* Light blue assistant text */
+    --chat-assistant: 0 0% 15%;        /* Dark gray assistant text */
     
     /* Navigation Colors */
     --nav-background: 0 0% 100%;       /* White navigation */
-    --nav-selected: 200 100% 60%;      /* Light blue for selected tabs */
-    --nav-unselected: 210 15% 60%;     /* Muted blue-grey for unselected */
+    --nav-selected: 0 0% 9%;           /* Black for selected tabs */
+    --nav-unselected: 0 0% 60%;        /* Medium gray for unselected */
     
-    /* Professional Purple Gradients & Depth */
-    --gradient-primary: linear-gradient(135deg, hsl(262 83% 58%), hsl(262 83% 52%));
-    --gradient-card: linear-gradient(135deg, hsl(0 0% 100%), hsl(262 20% 98%));
-    --gradient-blue: linear-gradient(135deg, hsl(262 83% 58%), hsl(262 83% 70%));
-    --gradient-button: linear-gradient(135deg, hsl(262 83% 58%), hsl(262 83% 52%));
-    --gradient-hover: linear-gradient(135deg, hsl(262 83% 52%), hsl(262 83% 48%));
-    --gradient-soft: linear-gradient(135deg, hsl(262 83% 85%), hsl(262 83% 90%));
+    /* Professional Gray Gradients & Depth */
+    --gradient-primary: linear-gradient(135deg, hsl(0 0% 9%), hsl(0 0% 15%));
+    --gradient-card: linear-gradient(135deg, hsl(0 0% 100%), hsl(0 0% 98%));
+    --gradient-blue: linear-gradient(135deg, hsl(0 0% 9%), hsl(0 0% 25%));
+    --gradient-button: linear-gradient(135deg, hsl(0 0% 9%), hsl(0 0% 15%));
+    --gradient-hover: linear-gradient(135deg, hsl(0 0% 15%), hsl(0 0% 20%));
+    --gradient-soft: linear-gradient(135deg, hsl(0 0% 85%), hsl(0 0% 90%));
     
-    /* Purple 3D Shadow System */
-    --shadow-card: 0 4px 12px rgba(124, 58, 237, 0.08), 0 2px 4px rgba(124, 58, 237, 0.05);
-    --shadow-lg: 0 8px 25px rgba(124, 58, 237, 0.12), 0 4px 10px rgba(124, 58, 237, 0.08);
-    --shadow-glow: 0 0 30px hsl(262 83% 70% / 0.3), 0 0 60px hsl(262 83% 85% / 0.15);
-    --shadow-button: 0 2px 8px rgba(124, 58, 237, 0.15), 0 1px 3px rgba(124, 58, 237, 0.1);
-    --shadow-button-hover: 0 4px 15px rgba(124, 58, 237, 0.25), 0 2px 8px rgba(124, 58, 237, 0.15);
+    /* Gray/Black 3D Shadow System */
+    --shadow-card: 0 4px 12px rgba(23, 23, 23, 0.08), 0 2px 4px rgba(23, 23, 23, 0.05);
+    --shadow-lg: 0 8px 25px rgba(23, 23, 23, 0.12), 0 4px 10px rgba(23, 23, 23, 0.08);
+    --shadow-glow: 0 0 30px hsl(0 0% 25% / 0.3), 0 0 60px hsl(0 0% 50% / 0.15);
+    --shadow-button: 0 2px 8px rgba(23, 23, 23, 0.15), 0 1px 3px rgba(23, 23, 23, 0.1);
+    --shadow-button-hover: 0 4px 15px rgba(23, 23, 23, 0.25), 0 2px 8px rgba(23, 23, 23, 0.15);
     --shadow-inset: inset 0 1px 2px rgba(255, 255, 255, 0.8);
     
     /* Enhanced Animations */
