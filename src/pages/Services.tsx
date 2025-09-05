@@ -1,4 +1,4 @@
-import { Building2, FileText, UserCheck, Scale, Calculator, Building, Users, Banknote, TrendingUp, Shield, Lightbulb, Globe, Monitor, Megaphone, Truck, Briefcase, ChevronRight, Search } from "lucide-react";
+import { Building2, FileText, UserCheck, Scale, Calculator, Building, Users, Banknote, TrendingUp, Shield, Lightbulb, Globe, Monitor, Megaphone, Truck, Briefcase, ChevronRight, Search, CreditCard, Award, MapPin } from "lucide-react";
 import { Card, CardContent } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
 import { Badge } from "@/components/ui/badge";
@@ -9,20 +9,7 @@ import { useNavigate } from "react-router-dom";
 
 const serviceCategories = [
   {
-    title: "Company Formation & Licensing",
-    icon: Building2,
-    color: "text-brand-blue",
-    bgColor: "bg-blue-50",
-    services: [
-      { name: "Trade License Application & Renewals", description: "Complete trade license processing and renewals" },
-      { name: "Name Reservation & Initial Approvals", description: "Business name registration and approval" },
-      { name: "Drafting & Notarization of MOA/LSA Agreements", description: "Legal document preparation and notarization" },
-      { name: "Chamber of Commerce Registration", description: "Registration with local chamber of commerce" },
-      { name: "DED & Free Zone License Processes", description: "Department of Economic Development licensing" }
-    ]
-  },
-  {
-    title: "Immigration & Visa Services",
+    title: "Visa & Immigration",
     icon: UserCheck,
     color: "text-brand-purple",
     bgColor: "bg-purple-50",
@@ -38,40 +25,18 @@ const serviceCategories = [
     ]
   },
   {
-    title: "Government Liaison & Approvals",
-    icon: Users,
-    color: "text-pink-600",
-    bgColor: "bg-pink-50",
+    title: "Taxation",
+    icon: Banknote,
+    color: "text-emerald-600",
+    bgColor: "bg-emerald-50",
     services: [
-      { name: "Coordination with MOHRE, GDRFA, DED, MOFA", description: "Government department coordination" },
-      { name: "Document Clearance with Government Departments", description: "Official document processing" },
-      { name: "Municipality Approvals & Permits", description: "Local authority permits and approvals" },
-      { name: "Health Authority Licensing (DHA/DOH/MOH)", description: "Health sector licensing and permits" }
-    ]
-  },
-  {
-    title: "Attestation & Legalization",
-    icon: FileText,
-    color: "text-brand-green",
-    bgColor: "bg-green-50",
-    services: [
-      { name: "Attestation of Educational, Commercial & POA Documents", description: "Document attestation services" },
-      { name: "MOFA Attestation", description: "Ministry of Foreign Affairs attestation" },
-      { name: "Consulate/Embassy Legalization", description: "Diplomatic legalization services" },
-      { name: "Legal Translation & Notarization Support", description: "Translation and notarization services" }
-    ]
-  },
-  {
-    title: "Corporate Compliance",
-    icon: Shield,
-    color: "text-blue-600",
-    bgColor: "bg-blue-50",
-    services: [
-      { name: "Labour Card & WPS Setup", description: "Labour card and wage protection system setup" },
-      { name: "Company Immigration & Labour File Opening", description: "Immigration and labour file establishment" },
-      { name: "GOSI Registration (if applicable)", description: "General Organization for Social Insurance registration" },
-      { name: "Renewal Reminders & Compliance Tracking", description: "Compliance monitoring and renewal tracking" },
-      { name: "E-Signature Card Application", description: "Digital signature card processing" }
+      { name: "VAT Registration & Deregistration", description: "Value Added Tax registration services" },
+      { name: "VAT Return Filing & Compliance", description: "VAT return preparation and filing" },
+      { name: "VAT Advisory & Health Checks", description: "VAT consultation and compliance review" },
+      { name: "Corporate Tax Registration", description: "Corporate tax registration and setup" },
+      { name: "CT Return Filing & Advisory", description: "Corporate tax return filing and advice" },
+      { name: "QFZP/Exempt Status Planning", description: "Qualifying free zone person status planning" },
+      { name: "Tax Structuring & Optimization", description: "Tax planning and optimization strategies" }
     ]
   },
   {
@@ -87,22 +52,7 @@ const serviceCategories = [
     ]
   },
   {
-    title: "Taxation Services",
-    icon: Banknote,
-    color: "text-emerald-600",
-    bgColor: "bg-emerald-50",
-    services: [
-      { name: "VAT Registration & Deregistration", description: "Value Added Tax registration services" },
-      { name: "VAT Return Filing & Compliance", description: "VAT return preparation and filing" },
-      { name: "VAT Advisory & Health Checks", description: "VAT consultation and compliance review" },
-      { name: "Corporate Tax Registration", description: "Corporate tax registration and setup" },
-      { name: "CT Return Filing & Advisory", description: "Corporate tax return filing and advice" },
-      { name: "QFZP/Exempt Status Planning", description: "Qualifying free zone person status planning" },
-      { name: "Tax Structuring & Optimization", description: "Tax planning and optimization strategies" }
-    ]
-  },
-  {
-    title: "Payroll & HR Compliance",
+    title: "Payroll & HR",
     icon: Users,
     color: "text-purple-600",
     bgColor: "bg-purple-50",
@@ -114,10 +64,26 @@ const serviceCategories = [
     ]
   },
   {
-    title: "Audit & Assurance",
+    title: "Legal & Compliance",
     icon: Scale,
     color: "text-red-600",
     bgColor: "bg-red-50",
+    services: [
+      { name: "Labour Card & WPS Setup", description: "Labour card and wage protection system setup" },
+      { name: "Company Immigration & Labour File Opening", description: "Immigration and labour file establishment" },
+      { name: "GOSI Registration (if applicable)", description: "General Organization for Social Insurance registration" },
+      { name: "Renewal Reminders & Compliance Tracking", description: "Compliance monitoring and renewal tracking" },
+      { name: "E-Signature Card Application", description: "Digital signature card processing" },
+      { name: "ESR, UBO & AML Reporting", description: "Economic substance, beneficial ownership, and anti-money laundering reporting" },
+      { name: "Economic Substance Notifications & Reports", description: "Economic substance regulation compliance" },
+      { name: "Corporate Governance Support", description: "Corporate governance advisory and support" }
+    ]
+  },
+  {
+    title: "Payment & Accounting",
+    icon: CreditCard,
+    color: "text-blue-600",
+    bgColor: "bg-blue-50",
     services: [
       { name: "External Audit Coordination", description: "External audit coordination and support" },
       { name: "Internal Audit & Risk Reviews", description: "Internal audit and risk assessment services" },
@@ -126,20 +92,33 @@ const serviceCategories = [
     ]
   },
   {
-    title: "Regulatory Compliance & Filings",
-    icon: FileText,
-    color: "text-indigo-600",
-    bgColor: "bg-indigo-50",
+    title: "Company Setup & Licenses",
+    icon: Building2,
+    color: "text-brand-blue",
+    bgColor: "bg-blue-50",
     services: [
-      { name: "ESR, UBO & AML Reporting", description: "Economic substance, beneficial ownership, and anti-money laundering reporting" },
-      { name: "Economic Substance Notifications & Reports", description: "Economic substance regulation compliance" },
-      { name: "Corporate Governance Support", description: "Corporate governance advisory and support" },
-      { name: "Annual License Renewal Support", description: "License renewal coordination and support" }
+      { name: "Trade License Application & Renewals", description: "Complete trade license processing and renewals" },
+      { name: "Name Reservation & Initial Approvals", description: "Business name registration and approval" },
+      { name: "Drafting & Notarization of MOA/LSA Agreements", description: "Legal document preparation and notarization" },
+      { name: "Chamber of Commerce Registration", description: "Registration with local chamber of commerce" },
+      { name: "DED & Free Zone License Processes", description: "Department of Economic Development licensing" }
     ]
   },
   {
-    title: "Advisory & Strategic Consulting",
-    icon: Lightbulb,
+    title: "Government Approvals & Certificates",
+    icon: Award,
+    color: "text-pink-600",
+    bgColor: "bg-pink-50",
+    services: [
+      { name: "Coordination with MOHRE, GDRFA, DED, MOFA", description: "Government department coordination" },
+      { name: "Document Clearance with Government Departments", description: "Official document processing" },
+      { name: "Municipality Approvals & Permits", description: "Local authority permits and approvals" },
+      { name: "Health Authority Licensing (DHA/DOH/MOH)", description: "Health sector licensing and permits" }
+    ]
+  },
+  {
+    title: "Advisory & Growth",
+    icon: TrendingUp,
     color: "text-yellow-600",
     bgColor: "bg-yellow-50",
     services: [
@@ -150,7 +129,19 @@ const serviceCategories = [
     ]
   },
   {
-    title: "Other Support Services",
+    title: "Attestation & Consular",
+    icon: FileText,
+    color: "text-brand-green",
+    bgColor: "bg-green-50",
+    services: [
+      { name: "Attestation of Educational, Commercial & POA Documents", description: "Document attestation services" },
+      { name: "MOFA Attestation", description: "Ministry of Foreign Affairs attestation" },
+      { name: "Consulate/Embassy Legalization", description: "Diplomatic legalization services" },
+      { name: "Legal Translation & Notarization Support", description: "Translation and notarization services" }
+    ]
+  },
+  {
+    title: "Other Services",
     icon: Briefcase,
     color: "text-gray-600",
     bgColor: "bg-gray-50",
@@ -193,18 +184,17 @@ const Services = () => {
 
   const handleCategoryClick = (categoryTitle: string) => {
     const categoryMap: { [key: string]: string } = {
-      "Company Formation & Licensing": "company-formation",
-      "Immigration & Visa Services": "visa-immigration", 
-      "Government Liaison & Approvals": "government-liaison-approvals",
-      "Attestation & Legalization": "attestation-legalization",
-      "Corporate Compliance": "corporate-compliance",
+      "Visa & Immigration": "visa-immigration", 
+      "Taxation": "taxation-services",
       "Accounting & Bookkeeping": "accounting-bookkeeping",
-      "Taxation Services": "taxation-services",
-      "Payroll & HR Compliance": "payroll-hr-compliance",
-      "Audit & Assurance": "audit-assurance",
-      "Regulatory Compliance & Filings": "regulatory-compliance-filings",
-      "Advisory & Strategic Consulting": "advisory-strategic-consulting",
-      "Other Support Services": "other-support-services"
+      "Payroll & HR": "payroll-hr-compliance",
+      "Legal & Compliance": "legal-compliance",
+      "Payment & Accounting": "audit-assurance",
+      "Company Setup & Licenses": "company-formation",
+      "Government Approvals & Certificates": "government-liaison-approvals",
+      "Advisory & Growth": "advisory-strategic-consulting",
+      "Attestation & Consular": "attestation-legalization",
+      "Other Services": "other-support-services"
     };
     
     const categoryId = categoryMap[categoryTitle];
