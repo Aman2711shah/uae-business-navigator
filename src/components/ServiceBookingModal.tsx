@@ -451,13 +451,28 @@ const ServiceBookingModal = ({ isOpen, onClose, subService, parentService }: Ser
                   <Button 
                     size="lg" 
                     className="w-full"
-                    onClick={() => {
-                      // TODO: Integrate with payment gateway
-                      toast({
-                        title: "Payment Integration",
-                        description: "Payment gateway integration coming soon.",
-                        variant: "default"
-                      });
+                    onClick={async () => {
+                      try {
+                        const { data, error } = await supabase.functions.invoke('create-checkout-session', {
+                          body: { submissionId }
+                        });
+                        
+                        if (error) throw error;
+                        
+                        if (data.checkoutUrl) {
+                          // Open Stripe checkout in a new tab
+                          window.open(data.checkoutUrl, '_blank');
+                        } else {
+                          throw new Error('No checkout URL returned');
+                        }
+                      } catch (error) {
+                        console.error('Payment error:', error);
+                        toast({
+                          title: "Payment Error",
+                          description: "Failed to initiate payment. Please try again.",
+                          variant: "destructive"
+                        });
+                      }
                     }}
                   >
                     Proceed to Payment
