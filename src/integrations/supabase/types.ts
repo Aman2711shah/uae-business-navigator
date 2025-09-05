@@ -677,6 +677,163 @@ export type Database = {
         }
         Relationships: []
       }
+      services: {
+        Row: {
+          created_at: string | null
+          id: string
+          name: string
+        }
+        Insert: {
+          created_at?: string | null
+          id?: string
+          name: string
+        }
+        Update: {
+          created_at?: string | null
+          id?: string
+          name?: string
+        }
+        Relationships: []
+      }
+      sub_services: {
+        Row: {
+          created_at: string | null
+          currency: string | null
+          id: string
+          metadata: Json | null
+          name: string
+          price: number | null
+          required_documents: string[] | null
+          service_id: string
+          timeline: string | null
+        }
+        Insert: {
+          created_at?: string | null
+          currency?: string | null
+          id?: string
+          metadata?: Json | null
+          name: string
+          price?: number | null
+          required_documents?: string[] | null
+          service_id: string
+          timeline?: string | null
+        }
+        Update: {
+          created_at?: string | null
+          currency?: string | null
+          id?: string
+          metadata?: Json | null
+          name?: string
+          price?: number | null
+          required_documents?: string[] | null
+          service_id?: string
+          timeline?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "sub_services_service_id_fkey"
+            columns: ["service_id"]
+            isOneToOne: false
+            referencedRelation: "services"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      submission_documents: {
+        Row: {
+          content_type: string | null
+          field_name: string
+          file_name: string
+          id: string
+          size_bytes: number | null
+          storage_path: string
+          submission_id: string
+          uploaded_at: string
+        }
+        Insert: {
+          content_type?: string | null
+          field_name: string
+          file_name: string
+          id?: string
+          size_bytes?: number | null
+          storage_path: string
+          submission_id: string
+          uploaded_at?: string
+        }
+        Update: {
+          content_type?: string | null
+          field_name?: string
+          file_name?: string
+          id?: string
+          size_bytes?: number | null
+          storage_path?: string
+          submission_id?: string
+          uploaded_at?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "submission_documents_submission_id_fkey"
+            columns: ["submission_id"]
+            isOneToOne: false
+            referencedRelation: "submissions"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      submissions: {
+        Row: {
+          contact_info: Json
+          created_at: string
+          id: string
+          notes: string | null
+          service_id: string
+          status: string
+          sub_service_id: string | null
+          total_price: number | null
+          updated_at: string
+          user_id: string | null
+        }
+        Insert: {
+          contact_info?: Json
+          created_at?: string
+          id?: string
+          notes?: string | null
+          service_id: string
+          status?: string
+          sub_service_id?: string | null
+          total_price?: number | null
+          updated_at?: string
+          user_id?: string | null
+        }
+        Update: {
+          contact_info?: Json
+          created_at?: string
+          id?: string
+          notes?: string | null
+          service_id?: string
+          status?: string
+          sub_service_id?: string | null
+          total_price?: number | null
+          updated_at?: string
+          user_id?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "submissions_service_id_fkey"
+            columns: ["service_id"]
+            isOneToOne: false
+            referencedRelation: "services"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "submissions_sub_service_id_fkey"
+            columns: ["sub_service_id"]
+            isOneToOne: false
+            referencedRelation: "sub_services"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       timeline_estimates: {
         Row: {
           created_at: string
