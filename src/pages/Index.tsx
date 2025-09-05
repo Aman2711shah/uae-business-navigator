@@ -5,7 +5,7 @@ import SpecialOffer from "@/components/SpecialOffer";
 import QuickActions from "@/components/QuickActions";
 import BottomNavigation from "@/components/BottomNavigation";
 import { WelcomeModal } from "@/components/onboarding/WelcomeModal";
-import { ChatbotWidget } from "@/components/chatbot/ChatbotWidget";
+
 import { useAuth } from "@/contexts/AuthContext";
 
 const Index = () => {

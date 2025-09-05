@@ -9,7 +9,7 @@ import { useToast } from '@/hooks/use-toast';
 import { Shield, Users, Database, AlertTriangle, FileText, Calendar } from 'lucide-react';
 import { Navigate } from 'react-router-dom';
 import { AdminBootstrap } from '@/components/admin/AdminBootstrap';
-import { ChatbotWidget } from '@/components/chatbot/ChatbotWidget';
+
 import { AnalyticsSettings } from '@/components/admin/AnalyticsSettings';
 import { SecurityDashboard } from '@/components/admin/SecurityDashboard';
 import { SecurityLogger } from '@/components/admin/SecurityLogger';
@@ -309,7 +309,7 @@ export default function Admin() {
         </Button>
       </div>
       
-      <ChatbotWidget />
+      
     </div>
   );
 }
