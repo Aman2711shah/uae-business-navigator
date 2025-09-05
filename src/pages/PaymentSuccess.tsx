@@ -33,17 +33,20 @@ const PaymentSuccess = () => {
 
   const verifyPayment = async () => {
     try {
+      // Call our edge function to verify payment
       const { data, error } = await supabase.functions.invoke('verify-payment', {
         body: { sessionId }
       });
 
       if (error) throw error;
 
-      if (data.success) {
+      if (data.success && data.submission) {
         setSubmission(data.submission);
+        
+        // Show success message with submission ID
         toast({
-          title: "Payment Successful!",
-          description: "Your service application has been confirmed.",
+          title: "Payment Received!",
+          description: `Your request (ID: ${data.submission.id}) is confirmed.`,
           variant: "default"
         });
       } else {
@@ -53,7 +56,7 @@ const PaymentSuccess = () => {
       console.error('Payment verification error:', error);
       toast({
         title: "Verification Error",
-        description: "Failed to verify payment. Please contact support.",
+        description: "Failed to verify payment. Please contact support if you were charged.",
         variant: "destructive"
       });
     } finally {
@@ -90,10 +93,10 @@ const PaymentSuccess = () => {
           <CardContent className="p-6 text-center">
             <CheckCircle className="h-16 w-16 text-green-600 mx-auto mb-4" />
             <h2 className="text-2xl font-bold text-green-800 mb-2">
-              Payment Confirmed!
+              Payment Received!
             </h2>
             <p className="text-green-700 mb-4">
-              Thank you for your payment. Your service application is now being processed.
+              Your request (ID: {submission?.id}) is confirmed and being processed.
             </p>
             
             {submission && (

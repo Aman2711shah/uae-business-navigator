@@ -11,6 +11,9 @@ import { Progress } from "@/components/ui/progress";
 import { useToast } from "@/hooks/use-toast";
 import { supabase } from "@/integrations/supabase/client";
 
+// Stripe publishable key - safe to store in frontend
+const STRIPE_PUBLISHABLE_KEY = "pk_test_51QbSLNEGPBCOzNUW7vYvQ1nZdWTXCMhZjRYpGc8E3cBG8QrEOLKJcUvWGpMgdGp2x3vg2h7yF2JmZJ8hN3aK4mP4900123456789"; // Replace with your actual publishable key
+
 interface SubService {
   id: string;
   name: string;
@@ -453,18 +456,27 @@ const ServiceBookingModal = ({ isOpen, onClose, subService, parentService }: Ser
                     className="w-full"
                     onClick={async () => {
                       try {
+                        // Call our Supabase edge function to create checkout session
                         const { data, error } = await supabase.functions.invoke('create-checkout-session', {
                           body: { submissionId }
                         });
                         
                         if (error) throw error;
                         
+                        // Option 1: Direct redirect to checkout URL (recommended)
                         if (data.checkoutUrl) {
-                          // Open Stripe checkout in a new tab
-                          window.open(data.checkoutUrl, '_blank');
-                        } else {
-                          throw new Error('No checkout URL returned');
+                          window.location.href = data.checkoutUrl;
+                          return;
                         }
+                        
+                        // Option 2: Use Stripe.js as fallback
+                        if (data.sessionId && (window as any).Stripe) {
+                          const stripe = (window as any).Stripe(STRIPE_PUBLISHABLE_KEY);
+                          await stripe.redirectToCheckout({ sessionId: data.sessionId });
+                          return;
+                        }
+                        
+                        throw new Error('No checkout URL or session ID returned');
                       } catch (error) {
                         console.error('Payment error:', error);
                         toast({
