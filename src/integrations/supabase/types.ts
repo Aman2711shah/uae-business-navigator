@@ -127,6 +127,133 @@ export type Database = {
         }
         Relationships: []
       }
+      comments: {
+        Row: {
+          content: string
+          created_at: string | null
+          id: string
+          parent_comment_id: string | null
+          post_id: string
+          profile_id: string
+        }
+        Insert: {
+          content: string
+          created_at?: string | null
+          id?: string
+          parent_comment_id?: string | null
+          post_id: string
+          profile_id: string
+        }
+        Update: {
+          content?: string
+          created_at?: string | null
+          id?: string
+          parent_comment_id?: string | null
+          post_id?: string
+          profile_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "comments_parent_comment_id_fkey"
+            columns: ["parent_comment_id"]
+            isOneToOne: false
+            referencedRelation: "comments"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "comments_post_id_fkey"
+            columns: ["post_id"]
+            isOneToOne: false
+            referencedRelation: "posts"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "comments_profile_id_fkey"
+            columns: ["profile_id"]
+            isOneToOne: false
+            referencedRelation: "profiles"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      communities: {
+        Row: {
+          cover_url: string | null
+          created_at: string | null
+          created_by: string | null
+          description: string | null
+          id: string
+          industry_tag: string | null
+          member_count: number | null
+          name: string
+          slug: string | null
+          updated_at: string | null
+        }
+        Insert: {
+          cover_url?: string | null
+          created_at?: string | null
+          created_by?: string | null
+          description?: string | null
+          id?: string
+          industry_tag?: string | null
+          member_count?: number | null
+          name: string
+          slug?: string | null
+          updated_at?: string | null
+        }
+        Update: {
+          cover_url?: string | null
+          created_at?: string | null
+          created_by?: string | null
+          description?: string | null
+          id?: string
+          industry_tag?: string | null
+          member_count?: number | null
+          name?: string
+          slug?: string | null
+          updated_at?: string | null
+        }
+        Relationships: []
+      }
+      community_members: {
+        Row: {
+          community_id: string
+          id: string
+          joined_at: string | null
+          profile_id: string
+          role: string | null
+        }
+        Insert: {
+          community_id: string
+          id?: string
+          joined_at?: string | null
+          profile_id: string
+          role?: string | null
+        }
+        Update: {
+          community_id?: string
+          id?: string
+          joined_at?: string | null
+          profile_id?: string
+          role?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "community_members_community_id_fkey"
+            columns: ["community_id"]
+            isOneToOne: false
+            referencedRelation: "communities"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "community_members_profile_id_fkey"
+            columns: ["profile_id"]
+            isOneToOne: false
+            referencedRelation: "profiles"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       community_posts: {
         Row: {
           body: string
@@ -304,6 +431,39 @@ export type Database = {
           },
         ]
       }
+      flags: {
+        Row: {
+          created_at: string | null
+          details: string | null
+          entity_id: string
+          entity_type: string
+          id: string
+          reason: string | null
+          reported_by: string | null
+          status: string | null
+        }
+        Insert: {
+          created_at?: string | null
+          details?: string | null
+          entity_id: string
+          entity_type: string
+          id?: string
+          reason?: string | null
+          reported_by?: string | null
+          status?: string | null
+        }
+        Update: {
+          created_at?: string | null
+          details?: string | null
+          entity_id?: string
+          entity_type?: string
+          id?: string
+          reason?: string | null
+          reported_by?: string | null
+          status?: string | null
+        }
+        Relationships: []
+      }
       freezone_costs: {
         Row: {
           additional_fee: number
@@ -412,6 +572,154 @@ export type Database = {
         }
         Relationships: []
       }
+      likes: {
+        Row: {
+          created_at: string | null
+          id: string
+          post_id: string
+          profile_id: string
+        }
+        Insert: {
+          created_at?: string | null
+          id?: string
+          post_id: string
+          profile_id: string
+        }
+        Update: {
+          created_at?: string | null
+          id?: string
+          post_id?: string
+          profile_id?: string
+        }
+        Relationships: []
+      }
+      marketplace_images: {
+        Row: {
+          content_type: string | null
+          created_at: string | null
+          file_name: string | null
+          id: string
+          item_id: string
+          size_bytes: number | null
+          storage_path: string
+        }
+        Insert: {
+          content_type?: string | null
+          created_at?: string | null
+          file_name?: string | null
+          id?: string
+          item_id: string
+          size_bytes?: number | null
+          storage_path: string
+        }
+        Update: {
+          content_type?: string | null
+          created_at?: string | null
+          file_name?: string | null
+          id?: string
+          item_id?: string
+          size_bytes?: number | null
+          storage_path?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "marketplace_images_item_id_fkey"
+            columns: ["item_id"]
+            isOneToOne: false
+            referencedRelation: "marketplace_items"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      marketplace_items: {
+        Row: {
+          created_at: string | null
+          currency: string | null
+          description: string | null
+          id: string
+          location: string | null
+          post_id: string | null
+          price: number | null
+          profile_id: string
+          status: string | null
+          title: string
+          updated_at: string | null
+        }
+        Insert: {
+          created_at?: string | null
+          currency?: string | null
+          description?: string | null
+          id?: string
+          location?: string | null
+          post_id?: string | null
+          price?: number | null
+          profile_id: string
+          status?: string | null
+          title: string
+          updated_at?: string | null
+        }
+        Update: {
+          created_at?: string | null
+          currency?: string | null
+          description?: string | null
+          id?: string
+          location?: string | null
+          post_id?: string | null
+          price?: number | null
+          profile_id?: string
+          status?: string | null
+          title?: string
+          updated_at?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "marketplace_items_post_id_fkey"
+            columns: ["post_id"]
+            isOneToOne: false
+            referencedRelation: "posts"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "marketplace_items_profile_id_fkey"
+            columns: ["profile_id"]
+            isOneToOne: false
+            referencedRelation: "profiles"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      notifications: {
+        Row: {
+          created_at: string | null
+          id: string
+          payload: Json
+          profile_id: string
+          read: boolean | null
+        }
+        Insert: {
+          created_at?: string | null
+          id?: string
+          payload: Json
+          profile_id: string
+          read?: boolean | null
+        }
+        Update: {
+          created_at?: string | null
+          id?: string
+          payload?: Json
+          profile_id?: string
+          read?: boolean | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "notifications_profile_id_fkey"
+            columns: ["profile_id"]
+            isOneToOne: false
+            referencedRelation: "profiles"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       packages: {
         Row: {
           activities_allowed: number
@@ -462,6 +770,44 @@ export type Database = {
           updated_at?: string | null
         }
         Relationships: []
+      }
+      post_attachments: {
+        Row: {
+          content_type: string | null
+          created_at: string | null
+          file_name: string | null
+          id: string
+          post_id: string
+          size_bytes: number | null
+          storage_path: string
+        }
+        Insert: {
+          content_type?: string | null
+          created_at?: string | null
+          file_name?: string | null
+          id?: string
+          post_id: string
+          size_bytes?: number | null
+          storage_path: string
+        }
+        Update: {
+          content_type?: string | null
+          created_at?: string | null
+          file_name?: string | null
+          id?: string
+          post_id?: string
+          size_bytes?: number | null
+          storage_path?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "post_attachments_post_id_fkey"
+            columns: ["post_id"]
+            isOneToOne: false
+            referencedRelation: "posts"
+            referencedColumns: ["id"]
+          },
+        ]
       }
       post_comments: {
         Row: {
@@ -527,31 +873,103 @@ export type Database = {
           },
         ]
       }
+      posts: {
+        Row: {
+          comments_count: number | null
+          community_id: string | null
+          content: string | null
+          created_at: string | null
+          id: string
+          is_marketplace: boolean | null
+          likes_count: number | null
+          metadata: Json | null
+          pinned: boolean | null
+          profile_id: string
+          title: string | null
+          updated_at: string | null
+        }
+        Insert: {
+          comments_count?: number | null
+          community_id?: string | null
+          content?: string | null
+          created_at?: string | null
+          id?: string
+          is_marketplace?: boolean | null
+          likes_count?: number | null
+          metadata?: Json | null
+          pinned?: boolean | null
+          profile_id: string
+          title?: string | null
+          updated_at?: string | null
+        }
+        Update: {
+          comments_count?: number | null
+          community_id?: string | null
+          content?: string | null
+          created_at?: string | null
+          id?: string
+          is_marketplace?: boolean | null
+          likes_count?: number | null
+          metadata?: Json | null
+          pinned?: boolean | null
+          profile_id?: string
+          title?: string | null
+          updated_at?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "posts_community_id_fkey"
+            columns: ["community_id"]
+            isOneToOne: false
+            referencedRelation: "communities"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "posts_profile_id_fkey"
+            columns: ["profile_id"]
+            isOneToOne: false
+            referencedRelation: "profiles"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       profiles: {
         Row: {
           avatar_url: string | null
+          bio: string | null
           created_at: string
+          display_name: string | null
           email: string | null
           full_name: string | null
+          headline: string | null
           id: string
+          services: string[] | null
           updated_at: string
           user_id: string
         }
         Insert: {
           avatar_url?: string | null
+          bio?: string | null
           created_at?: string
+          display_name?: string | null
           email?: string | null
           full_name?: string | null
+          headline?: string | null
           id?: string
+          services?: string[] | null
           updated_at?: string
           user_id: string
         }
         Update: {
           avatar_url?: string | null
+          bio?: string | null
           created_at?: string
+          display_name?: string | null
           email?: string | null
           full_name?: string | null
+          headline?: string | null
           id?: string
+          services?: string[] | null
           updated_at?: string
           user_id?: string
         }
