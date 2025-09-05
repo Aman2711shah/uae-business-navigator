@@ -18,17 +18,17 @@ All colors MUST be HSL.
     --popover: 0 0% 100%;              /* White popover */
     --popover-foreground: 210 25% 40%; /* Readable blue-grey popover text */
 
-    /* Professional Green Primary Palette - Psychology: Growth, Trust, Harmony */
-    --primary: 142 76% 36%;            /* Professional forest green #16A085 */
+    /* Professional Purple Primary Palette - Psychology: Trust, Creativity, Premium */
+    --primary: 262 83% 58%;            /* Professional purple #7C3AED */
     --primary-foreground: 0 0% 100%;   /* White text on primary */
-    --primary-hover: 142 76% 32%;      /* Darker green hover */
-    --primary-light: 142 76% 50%;      /* Light green #1ABC9C */
-    --primary-glow: 142 76% 70%;       /* Soft glow green #52C4A0 */
+    --primary-hover: 262 83% 52%;      /* Darker purple hover */
+    --primary-light: 262 83% 70%;      /* Light purple #A78BFA */
+    --primary-glow: 262 83% 85%;       /* Soft glow purple #C4B5FD */
 
-    /* Professional Emerald Secondary - Psychology: Success, Prosperity */
-    --secondary: 160 84% 39%;          /* Professional emerald #10B981 */
+    /* Professional Indigo Secondary - Psychology: Wisdom, Innovation */
+    --secondary: 243 75% 59%;          /* Professional indigo #6366F1 */
     --secondary-foreground: 0 0% 100%;
-    --secondary-accent: 160 84% 55%;   /* Light emerald #34D399 */
+    --secondary-accent: 243 75% 70%;   /* Light indigo #818CF8 */
 
     --muted: 200 40% 94%;              /* Light blue-grey muted #f0f4f8 */
     --muted-foreground: 210 15% 45%;   /* Soft blue-grey text #6b7684 */
@@ -52,20 +52,20 @@ All colors MUST be HSL.
     --nav-selected: 200 100% 60%;      /* Light blue for selected tabs */
     --nav-unselected: 210 15% 60%;     /* Muted blue-grey for unselected */
     
-    /* Professional Green Gradients & Depth */
-    --gradient-primary: linear-gradient(135deg, hsl(142 76% 36%), hsl(142 76% 32%));
-    --gradient-card: linear-gradient(135deg, hsl(0 0% 100%), hsl(142 20% 98%));
-    --gradient-blue: linear-gradient(135deg, hsl(142 76% 36%), hsl(142 76% 50%));
-    --gradient-button: linear-gradient(135deg, hsl(142 76% 36%), hsl(142 76% 32%));
-    --gradient-hover: linear-gradient(135deg, hsl(142 76% 32%), hsl(142 76% 28%));
-    --gradient-soft: linear-gradient(135deg, hsl(142 76% 85%), hsl(142 76% 90%));
+    /* Professional Purple Gradients & Depth */
+    --gradient-primary: linear-gradient(135deg, hsl(262 83% 58%), hsl(262 83% 52%));
+    --gradient-card: linear-gradient(135deg, hsl(0 0% 100%), hsl(262 20% 98%));
+    --gradient-blue: linear-gradient(135deg, hsl(262 83% 58%), hsl(262 83% 70%));
+    --gradient-button: linear-gradient(135deg, hsl(262 83% 58%), hsl(262 83% 52%));
+    --gradient-hover: linear-gradient(135deg, hsl(262 83% 52%), hsl(262 83% 48%));
+    --gradient-soft: linear-gradient(135deg, hsl(262 83% 85%), hsl(262 83% 90%));
     
-    /* Green 3D Shadow System */
-    --shadow-card: 0 4px 12px rgba(22, 160, 133, 0.08), 0 2px 4px rgba(22, 160, 133, 0.05);
-    --shadow-lg: 0 8px 25px rgba(22, 160, 133, 0.12), 0 4px 10px rgba(22, 160, 133, 0.08);
-    --shadow-glow: 0 0 30px hsl(142 76% 50% / 0.3), 0 0 60px hsl(142 76% 70% / 0.15);
-    --shadow-button: 0 2px 8px rgba(22, 160, 133, 0.15), 0 1px 3px rgba(22, 160, 133, 0.1);
-    --shadow-button-hover: 0 4px 15px rgba(22, 160, 133, 0.25), 0 2px 8px rgba(22, 160, 133, 0.15);
+    /* Purple 3D Shadow System */
+    --shadow-card: 0 4px 12px rgba(124, 58, 237, 0.08), 0 2px 4px rgba(124, 58, 237, 0.05);
+    --shadow-lg: 0 8px 25px rgba(124, 58, 237, 0.12), 0 4px 10px rgba(124, 58, 237, 0.08);
+    --shadow-glow: 0 0 30px hsl(262 83% 70% / 0.3), 0 0 60px hsl(262 83% 85% / 0.15);
+    --shadow-button: 0 2px 8px rgba(124, 58, 237, 0.15), 0 1px 3px rgba(124, 58, 237, 0.1);
+    --shadow-button-hover: 0 4px 15px rgba(124, 58, 237, 0.25), 0 2px 8px rgba(124, 58, 237, 0.15);
     --shadow-inset: inset 0 1px 2px rgba(255, 255, 255, 0.8);
     
     /* Enhanced Animations */
