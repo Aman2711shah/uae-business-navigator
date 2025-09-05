@@ -169,13 +169,35 @@ const ServiceDetailSupabase = () => {
           <CardHeader>
             <CardTitle className="flex items-center gap-2">
               <FileText className="h-5 w-5 text-primary" />
-              Available Service Options
+              Service Overview
             </CardTitle>
           </CardHeader>
           <CardContent>
             <p className="text-muted-foreground leading-relaxed">
-              Select from the following {service.name.toLowerCase()} options to get started with your application.
+              Choose the right service package to get started. Each option is tailored to your business needs with full support from our experts.
             </p>
+            
+            {/* Add specific service descriptions */}
+            {service.name === "VAT Services" && (
+              <div className="mt-6 space-y-4">
+                <div className="p-4 bg-muted/20 rounded-lg">
+                  <h4 className="font-semibold text-foreground mb-2">VAT Registration & Deregistration</h4>
+                  <p className="text-sm text-muted-foreground">Full support to register or deregister your VAT with FTA, including consultation, filing, and document review.</p>
+                </div>
+                <div className="p-4 bg-muted/20 rounded-lg">
+                  <h4 className="font-semibold text-foreground mb-2">VAT Amendment</h4>
+                  <p className="text-sm text-muted-foreground">Hassle-free updates to your VAT profile (license, activity, address) with expert handling of compliance paperwork.</p>
+                </div>
+                <div className="p-4 bg-muted/20 rounded-lg">
+                  <h4 className="font-semibold text-foreground mb-2">VAT Return Filing</h4>
+                  <p className="text-sm text-muted-foreground">Accurate quarterly VAT return preparation and submission, ensuring compliance and avoiding penalties.</p>
+                </div>
+                <div className="p-4 bg-muted/20 rounded-lg">
+                  <h4 className="font-semibold text-foreground mb-2">VAT Refund Request</h4>
+                  <p className="text-sm text-muted-foreground">Assistance with VAT refund applications, including eligibility check, filing, and follow-up with authorities.</p>
+                </div>
+              </div>
+            )}
           </CardContent>
         </Card>
 

@@ -431,12 +431,12 @@ const ServiceBookingModal = ({ isOpen, onClose, subService, parentService }: Ser
                   Your service application has been submitted and is now being processed.
                 </p>
                 
-                <div className="bg-white rounded-lg p-4 mb-4">
+                <div className="bg-white rounded-lg p-4 mb-6">
                   <p className="text-sm text-muted-foreground">Application ID</p>
                   <p className="font-mono text-lg font-semibold">{submissionId}</p>
                 </div>
 
-                <div className="text-left space-y-2 text-sm">
+                <div className="text-left space-y-2 text-sm mb-6">
                   <h4 className="font-semibold">What happens next?</h4>
                   <ul className="list-disc list-inside text-muted-foreground space-y-1">
                     <li>Our team will review your application within 24 hours</li>
@@ -444,6 +444,43 @@ const ServiceBookingModal = ({ isOpen, onClose, subService, parentService }: Ser
                     <li>Any additional requirements will be communicated promptly</li>
                     <li>You'll receive regular updates on your application status</li>
                   </ul>
+                </div>
+
+                {/* Final Actions */}
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                  <Button 
+                    size="lg" 
+                    className="w-full"
+                    onClick={() => {
+                      // TODO: Integrate with payment gateway
+                      toast({
+                        title: "Payment Integration",
+                        description: "Payment gateway integration coming soon.",
+                        variant: "default"
+                      });
+                    }}
+                  >
+                    Proceed to Payment
+                  </Button>
+                  
+                  <Button 
+                    size="lg" 
+                    variant="outline" 
+                    className="w-full"
+                    onClick={() => {
+                      // Option 1: Direct phone call
+                      // window.location.href = `tel:+971501234567`;
+                      
+                      // Option 2: Callback request form (for demo)
+                      toast({
+                        title: "Callback Requested",
+                        description: "Our business advisor will call you within 30 minutes.",
+                        variant: "default"
+                      });
+                    }}
+                  >
+                    Call Business Setup Advisor
+                  </Button>
                 </div>
               </CardContent>
             </Card>
