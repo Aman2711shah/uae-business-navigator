@@ -12,7 +12,10 @@ import Index from "./pages/Index";
 import Auth from "./pages/Auth";
 import Admin from "./pages/Admin";
 import Services from "./pages/Services";
+import ServicesSupabase from "./pages/ServicesSupabase";
 import ServiceDetail from "./pages/ServiceDetail";
+import ServiceDetailSupabase from "./pages/ServiceDetailSupabase";
+import SubServiceDetail from "./pages/SubServiceDetail";
 import ServiceCategoryDetail from "./pages/ServiceCategoryDetail";
 import ApplicationProcess from "./pages/ApplicationProcess";
 import Community from "./pages/Community";
@@ -45,8 +48,11 @@ const App = () => {
               <Route path="/auth" element={<Auth />} />
               <Route path="/" element={<ProtectedRoute><Index /></ProtectedRoute>} />
               <Route path="/admin" element={<ProtectedRoute><Admin /></ProtectedRoute>} />
-              <Route path="/services" element={<ProtectedRoute><Services /></ProtectedRoute>} />
+              <Route path="/services" element={<ProtectedRoute><ServicesSupabase /></ProtectedRoute>} />
+              <Route path="/services-old" element={<ProtectedRoute><Services /></ProtectedRoute>} />
               <Route path="/service/:serviceId" element={<ProtectedRoute><ServiceDetail /></ProtectedRoute>} />
+              <Route path="/service-detail/:serviceId" element={<ProtectedRoute><ServiceDetailSupabase /></ProtectedRoute>} />
+              <Route path="/sub-service-detail/:subServiceId" element={<ProtectedRoute><SubServiceDetail /></ProtectedRoute>} />
               <Route path="/service-category/:categoryId" element={<ProtectedRoute><ServiceCategoryDetail /></ProtectedRoute>} />
               <Route path="/application-process/:categoryId" element={<ProtectedRoute><ApplicationProcess /></ProtectedRoute>} />
               <Route path="/company-formation/:serviceId" element={<ProtectedRoute><CompanyFormationProcess /></ProtectedRoute>} />
