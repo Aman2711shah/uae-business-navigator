@@ -1,20 +1,16 @@
-import { useState, useRef } from 'react';
-import { useForm } from 'react-hook-form';
-import { zodResolver } from '@hookform/resolvers/zod';
-import { z } from 'zod';
-import { X, Image, Send, Hash, Upload, Trash2 } from 'lucide-react';
-import { Dialog, DialogContent, DialogHeader, DialogTitle } from '@/components/ui/dialog';
-import { Button } from '@/components/ui/button';
-import { Input } from '@/components/ui/input';
-import { Textarea } from '@/components/ui/textarea';
-import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from '@/components/ui/form';
-import { Badge } from '@/components/ui/badge';
-import { supabase } from '@/integrations/supabase/client';
-import { useToast } from '@/hooks/use-toast';
-import { useSecureContent } from '@/hooks/useSecureContent';
-import { communityPostSchema } from '@/lib/validations';
-
-type FormData = z.infer<typeof communityPostSchema>;
+import { useState } from "react";
+import { X, Image, DollarSign, Hash } from "lucide-react";
+import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/ui/dialog";
+import { Button } from "@/components/ui/button";
+import { Textarea } from "@/components/ui/textarea";
+import { Input } from "@/components/ui/input";
+import { Label } from "@/components/ui/label";
+import { Switch } from "@/components/ui/switch";
+import { Badge } from "@/components/ui/badge";
+import { supabase } from "@/integrations/supabase/client";
+import { useToast } from "@/hooks/use-toast";
+import { useAuth } from "@/contexts/AuthContext";
+import UserAvatar from "./UserAvatar";
 
 interface CreatePostModalProps {
   isOpen: boolean;
@@ -24,30 +20,25 @@ interface CreatePostModalProps {
 }
 
 export default function CreatePostModal({ isOpen, onClose, industry, onPostCreated }: CreatePostModalProps) {
-  const [isLoading, setIsLoading] = useState(false);
-  const [tagInput, setTagInput] = useState('');
+  const [content, setContent] = useState("");
+  const [title, setTitle] = useState("");
   const [tags, setTags] = useState<string[]>([]);
+  const [tagInput, setTagInput] = useState("");
+  const [isMarketplace, setIsMarketplace] = useState(false);
+  const [price, setPrice] = useState("");
+  const [currency, setCurrency] = useState("USD");
   const [selectedImage, setSelectedImage] = useState<File | null>(null);
   const [imagePreview, setImagePreview] = useState<string | null>(null);
-  const fileInputRef = useRef<HTMLInputElement>(null);
-  const { toast } = useToast();
-  const { validateAndSanitizePost, validateFileUpload } = useSecureContent();
+  const [loading, setLoading] = useState(false);
 
-  const form = useForm<FormData>({
-    resolver: zodResolver(communityPostSchema),
-    defaultValues: {
-      title: '',
-      content: '',
-      tags: [],
-      industryTag: industry,
-    },
-  });
+  const { user } = useAuth();
+  const { toast } = useToast();
 
   const addTag = (tag: string) => {
     const trimmedTag = tag.trim().toLowerCase();
     if (trimmedTag && !tags.includes(trimmedTag) && tags.length < 5) {
       setTags([...tags, trimmedTag]);
-      setTagInput('');
+      setTagInput("");
     }
   };
 
@@ -65,12 +56,10 @@ export default function CreatePostModal({ isOpen, onClose, industry, onPostCreat
   const handleImageSelect = (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0];
     if (file) {
-      // Validate file upload
-      const validation = validateFileUpload(file);
-      if (!validation.isValid) {
+      if (file.size > 5 * 1024 * 1024) { // 5MB limit
         toast({
-          title: "Invalid file",
-          description: validation.errors.join(', '),
+          title: "File too large",
+          description: "Please select an image under 5MB",
           variant: "destructive"
         });
         return;
@@ -88,277 +77,328 @@ export default function CreatePostModal({ isOpen, onClose, industry, onPostCreat
   const removeImage = () => {
     setSelectedImage(null);
     setImagePreview(null);
-    if (fileInputRef.current) {
-      fileInputRef.current.value = '';
-    }
   };
 
-  const onSubmit = async (data: FormData) => {
-    setIsLoading(true);
+  const uploadImage = async (file: File): Promise<string> => {
+    const fileExt = file.name.split('.').pop();
+    const fileName = `${Date.now()}-${Math.random().toString(36).substring(2)}.${fileExt}`;
+    const filePath = `post-attachments/${fileName}`;
+
+    const { error: uploadError } = await supabase.storage
+      .from('post-attachments')
+      .upload(filePath, file);
+
+    if (uploadError) throw uploadError;
+
+    const { data: { publicUrl } } = supabase.storage
+      .from('post-attachments')
+      .getPublicUrl(filePath);
+
+    return publicUrl;
+  };
+
+  const handleSubmit = async () => {
+    if (!content.trim()) {
+      toast({
+        title: "Content required",
+        description: "Please enter some content for your post",
+        variant: "destructive"
+      });
+      return;
+    }
+
+    if (!user) {
+      toast({
+        title: "Authentication required",
+        description: "Please log in to create a post",
+        variant: "destructive"
+      });
+      return;
+    }
+
+    setLoading(true);
+
     try {
-      const { data: { user } } = await supabase.auth.getUser();
-      if (!user) throw new Error('Not authenticated');
+      // Get user profile
+      const { data: profile, error: profileError } = await supabase
+        .from('profiles')
+        .select('*')
+        .eq('user_id', user.id)
+        .single();
 
-      // Validate and sanitize content with security checks
-      const validation = await validateAndSanitizePost(
-        data.title,
-        data.content,
-        user.id,
-        tags
-      );
-
-      if (!validation.isValid) {
-        return; // Error already shown by the hook
-      }
+      if (profileError) throw profileError;
 
       let imageUrl = null;
-      
-      // Upload image if selected
       if (selectedImage) {
-        // Additional security check for image upload
-        const fileValidation = validateFileUpload(selectedImage);
-        if (!fileValidation.isValid) {
-          throw new Error(`Invalid file: ${fileValidation.errors.join(', ')}`);
-        }
-
-        const fileExt = selectedImage.name.split('.').pop();
-        const fileName = `${user.id}/${Date.now()}.${fileExt}`;
-        
-        const { data: uploadData, error: uploadError } = await supabase.storage
-          .from('community-images')
-          .upload(fileName, selectedImage);
-        
-        if (uploadError) throw uploadError;
-        
-        const { data: publicUrlData } = supabase.storage
-          .from('community-images')
-          .getPublicUrl(fileName);
-        
-        imageUrl = publicUrlData.publicUrl;
+        imageUrl = await uploadImage(selectedImage);
       }
 
-      const { data: post, error } = await supabase
-        .from('community_posts')
+      // Prepare post metadata
+      const metadata: any = {};
+      if (isMarketplace && price) {
+        metadata.price = parseFloat(price);
+        metadata.currency = currency;
+      }
+
+      // Create post
+      const { data: newPost, error: postError } = await supabase
+        .from('posts')
         .insert({
-          user_id: user.id,
-          title: validation.title,
-          body: validation.content,
-          industry_tag: industry,
-          tags: validation.tags,
-          image_url: imageUrl,
+          title: title.trim() || null,
+          content: content.trim(),
+          profile_id: profile.id,
+          is_marketplace: isMarketplace,
+          metadata: Object.keys(metadata).length > 0 ? metadata : null
         })
         .select('*')
         .single();
 
-      if (error) throw error;
+      if (postError) throw postError;
 
-      // Fetch user profiles for the new post
-      const [profileData, communityUserData] = await Promise.all([
-        supabase
-          .from('profiles')
-          .select('full_name')
-          .eq('user_id', user.id)
-          .maybeSingle(),
-        supabase
-          .from('community_users')
-          .select('username, company_name, business_stage')
-          .eq('user_id', user.id)
-          .maybeSingle()
-      ]);
+      // Upload attachment if image exists
+      if (imageUrl) {
+        await supabase
+          .from('post_attachments')
+          .insert({
+            post_id: newPost.id,
+            storage_path: imageUrl,
+            content_type: selectedImage?.type || 'image/jpeg',
+            file_name: selectedImage?.name || 'image'
+          });
+      }
 
-      const postWithProfile = {
-        ...post,
-        profiles: profileData.data,
-        community_users: communityUserData.data
+      // Create marketplace item if this is a marketplace post
+      if (isMarketplace && price) {
+        await supabase
+          .from('marketplace_items')
+          .insert({
+            title: title || content.substring(0, 100),
+            description: content,
+            price: parseFloat(price),
+            currency,
+            profile_id: profile.id,
+            post_id: newPost.id,
+            status: 'available'
+          });
+      }
+
+      // Prepare the complete post object with profile data
+      const completePost = {
+        ...newPost,
+        profiles: {
+          display_name: profile.display_name,
+          full_name: profile.full_name,
+          avatar_url: profile.avatar_url
+        },
+        tags: tags
       };
 
+      onPostCreated(completePost);
+      handleClose();
+
       toast({
-        title: "Post created securely!",
-        description: "Your post has been shared with the community.",
+        title: "Post created",
+        description: "Your post has been shared with the community"
       });
 
-      onPostCreated(postWithProfile);
-      form.reset();
-      setTags([]);
-      setTagInput('');
-      setSelectedImage(null);
-      setImagePreview(null);
-      onClose();
-    } catch (error: any) {
+    } catch (error) {
       console.error('Error creating post:', error);
       toast({
-        title: "Failed to create post",
-        description: error.message || "Please try again.",
+        title: "Error",
+        description: "Failed to create post. Please try again.",
         variant: "destructive"
       });
     } finally {
-      setIsLoading(false);
+      setLoading(false);
     }
   };
 
   const handleClose = () => {
-    form.reset();
+    setContent("");
+    setTitle("");
     setTags([]);
-    setTagInput('');
-    setSelectedImage(null);
-    setImagePreview(null);
+    setTagInput("");
+    setIsMarketplace(false);
+    setPrice("");
+    setCurrency("USD");
+    removeImage();
     onClose();
   };
 
   return (
     <Dialog open={isOpen} onOpenChange={handleClose}>
-      <DialogContent className="max-w-2xl max-h-[90vh] overflow-y-auto">
+      <DialogContent className="max-w-lg max-h-[90vh] overflow-y-auto">
         <DialogHeader>
-          <DialogTitle className="flex items-center gap-2">
-            <Send className="h-5 w-5 text-primary" />
-            Create Post in {industry}
-          </DialogTitle>
+          <DialogTitle>Create Post</DialogTitle>
         </DialogHeader>
 
-        <Form {...form}>
-          <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-4">
-            {/* Title */}
-            <FormField
-              control={form.control}
-              name="title"
-              render={({ field }) => (
-                <FormItem>
-                  <FormLabel>Post Title *</FormLabel>
-                  <FormControl>
-                    <Input 
-                      placeholder="What's your question or topic?" 
-                      {...field}
-                      className="text-lg"
-                    />
-                  </FormControl>
-                  <FormMessage />
-                </FormItem>
-              )}
-            />
+        <div className="space-y-4">
+          {/* User Info */}
+          <div className="flex items-center space-x-3">
+            <UserAvatar size="md" />
+            <div>
+              <p className="font-medium text-sm">Posting to {industry}</p>
+              <p className="text-xs text-muted-foreground">Community</p>
+            </div>
+          </div>
 
-            {/* Body */}
-            <FormField
-              control={form.control}
-              name="content"
-              render={({ field }) => (
-                <FormItem>
-                  <FormLabel>Content *</FormLabel>
-                  <FormControl>
-                    <Textarea 
-                      placeholder="Share your thoughts, ask questions, or provide insights..."
-                      className="min-h-[150px] resize-none"
-                      {...field}
-                    />
-                  </FormControl>
-                  <FormMessage />
-                  <p className="text-sm text-muted-foreground">
-                    {field.value?.length || 0}/10000 characters
-                  </p>
-                </FormItem>
-              )}
+          {/* Title (optional) */}
+          <div>
+            <Label htmlFor="title">Title (optional)</Label>
+            <Input
+              id="title"
+              placeholder="Give your post a title..."
+              value={title}
+              onChange={(e) => setTitle(e.target.value)}
+              maxLength={200}
             />
+          </div>
 
-            {/* Image Upload */}
-            <div className="space-y-2">
-              <FormLabel className="flex items-center gap-2">
-                <Image className="h-4 w-4" />
-                Image (Optional)
-              </FormLabel>
-              
+          {/* Content */}
+          <div>
+            <Label htmlFor="content">Content</Label>
+            <Textarea
+              id="content"
+              placeholder="Share an update, ask a question, or post an opportunity..."
+              value={content}
+              onChange={(e) => setContent(e.target.value)}
+              rows={4}
+              maxLength={5000}
+            />
+            <p className="text-xs text-muted-foreground mt-1">
+              {content.length}/5000 characters
+            </p>
+          </div>
+
+          {/* Image Upload */}
+          <div>
+            <Label>Attach Image</Label>
+            <div className="mt-2">
               {imagePreview ? (
                 <div className="relative">
                   <img 
                     src={imagePreview} 
                     alt="Preview" 
-                    className="w-full h-48 object-cover rounded-lg border border-border"
+                    className="w-full h-48 object-cover rounded-lg"
                   />
                   <Button
-                    type="button"
-                    variant="destructive"
                     size="sm"
-                    className="absolute top-2 right-2"
+                    variant="secondary"
                     onClick={removeImage}
+                    className="absolute top-2 right-2"
                   >
-                    <Trash2 className="h-4 w-4" />
+                    <X className="h-4 w-4" />
                   </Button>
                 </div>
               ) : (
                 <div className="border-2 border-dashed border-border rounded-lg p-6 text-center">
-                  <Upload className="h-8 w-8 mx-auto mb-2 text-muted-foreground" />
-                  <p className="text-sm text-muted-foreground mb-2">
-                    Click to upload an image
-                  </p>
-                  <Button
-                    type="button"
-                    variant="outline"
-                    size="sm"
-                    onClick={() => fileInputRef.current?.click()}
-                  >
-                    Choose Image
-                  </Button>
+                  <Image className="h-8 w-8 mx-auto mb-2 text-muted-foreground" />
                   <input
-                    ref={fileInputRef}
                     type="file"
                     accept="image/*"
-                    className="hidden"
                     onChange={handleImageSelect}
+                    className="hidden"
+                    id="image-upload"
                   />
+                  <Label htmlFor="image-upload" className="cursor-pointer">
+                    <span className="text-sm text-primary hover:underline">
+                      Click to upload an image
+                    </span>
+                  </Label>
+                  <p className="text-xs text-muted-foreground mt-1">
+                    Max file size: 5MB
+                  </p>
                 </div>
               )}
             </div>
+          </div>
 
-            {/* Tags */}
-            <div className="space-y-2">
-              <FormLabel className="flex items-center gap-2">
-                <Hash className="h-4 w-4" />
-                Tags (Optional)
-              </FormLabel>
-              <div className="flex flex-wrap gap-2 mb-2">
-                {tags.map(tag => (
-                  <Badge 
-                    key={tag} 
-                    variant="secondary" 
-                    className="cursor-pointer hover:bg-destructive hover:text-destructive-foreground"
-                    onClick={() => removeTag(tag)}
-                  >
-                    #{tag} <X className="ml-1 h-3 w-3" />
-                  </Badge>
-                ))}
+          {/* Marketplace Toggle */}
+          <div className="flex items-center space-x-2">
+            <Switch
+              id="marketplace"
+              checked={isMarketplace}
+              onCheckedChange={setIsMarketplace}
+            />
+            <Label htmlFor="marketplace">List as marketplace item</Label>
+          </div>
+
+          {/* Marketplace Details */}
+          {isMarketplace && (
+            <div className="space-y-3 p-3 bg-muted/50 rounded-lg">
+              <div className="grid grid-cols-2 gap-3">
+                <div>
+                  <Label htmlFor="price">Price</Label>
+                  <Input
+                    id="price"
+                    type="number"
+                    placeholder="0.00"
+                    value={price}
+                    onChange={(e) => setPrice(e.target.value)}
+                    min="0"
+                    step="0.01"
+                  />
+                </div>
+                <div>
+                  <Label htmlFor="currency">Currency</Label>
+                  <Input
+                    id="currency"
+                    value={currency}
+                    onChange={(e) => setCurrency(e.target.value.toUpperCase())}
+                    maxLength={3}
+                    placeholder="USD"
+                  />
+                </div>
               </div>
+            </div>
+          )}
+
+          {/* Tags */}
+          <div>
+            <Label htmlFor="tags">Tags</Label>
+            <div className="space-y-2">
               <Input
+                id="tags"
                 placeholder="Add tags (press Enter or comma to add)"
                 value={tagInput}
                 onChange={(e) => setTagInput(e.target.value)}
                 onKeyDown={handleTagInputKeyPress}
-                disabled={tags.length >= 5}
+                maxLength={50}
               />
-              <p className="text-sm text-muted-foreground">
-                Add up to 5 tags to help others find your post
+              {tags.length > 0 && (
+                <div className="flex flex-wrap gap-2">
+                  {tags.map((tag, index) => (
+                    <Badge key={index} variant="secondary" className="text-xs">
+                      #{tag}
+                      <button
+                        onClick={() => removeTag(tag)}
+                        className="ml-1 hover:text-destructive"
+                      >
+                        <X className="h-3 w-3" />
+                      </button>
+                    </Badge>
+                  ))}
+                </div>
+              )}
+              <p className="text-xs text-muted-foreground">
+                {tags.length}/5 tags
               </p>
             </div>
+          </div>
+        </div>
 
-            {/* Actions */}
-            <div className="flex gap-3 pt-4">
-              <Button
-                type="button"
-                variant="outline"
-                onClick={handleClose}
-                disabled={isLoading}
-                className="flex-1"
-              >
-                Cancel
-              </Button>
-              <Button
-                type="submit"
-                disabled={isLoading}
-                variant="cta"
-                className="flex-1"
-              >
-                {isLoading ? "Publishing..." : "Publish Post"}
-              </Button>
-            </div>
-          </form>
-        </Form>
+        {/* Actions */}
+        <div className="flex justify-between pt-4 border-t">
+          <Button variant="outline" onClick={handleClose}>
+            Cancel
+          </Button>
+          <Button 
+            onClick={handleSubmit} 
+            disabled={loading || !content.trim()}
+          >
+            {loading ? "Publishing..." : "Publish"}
+          </Button>
+        </div>
       </DialogContent>
     </Dialog>
   );

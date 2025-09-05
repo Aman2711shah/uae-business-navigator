@@ -21,6 +21,9 @@ import PaymentCancel from "./pages/PaymentCancel";
 import ServiceCategoryDetail from "./pages/ServiceCategoryDetail";
 import ApplicationProcess from "./pages/ApplicationProcess";
 import Community from "./pages/Community";
+import Communities from "./pages/Communities";
+import CommunityDetail from "./pages/CommunityDetail";
+import UserProfile from "./pages/UserProfile";
 import Growth from "./pages/Growth";
 import More from "./pages/More";
 import NotFound from "./pages/NotFound";
@@ -61,6 +64,9 @@ const App = () => {
               <Route path="/application-process/:categoryId" element={<ProtectedRoute><ApplicationProcess /></ProtectedRoute>} />
               <Route path="/company-formation/:serviceId" element={<ProtectedRoute><CompanyFormationProcess /></ProtectedRoute>} />
               <Route path="/community" element={<ProtectedRoute><Community /></ProtectedRoute>} />
+              <Route path="/communities" element={<ProtectedRoute><Communities /></ProtectedRoute>} />
+              <Route path="/communities/:slug" element={<ProtectedRoute><CommunityDetail /></ProtectedRoute>} />
+              <Route path="/profile/:userId" element={<ProtectedRoute><UserProfile /></ProtectedRoute>} />
               <Route path="/growth" element={<ProtectedRoute><Growth /></ProtectedRoute>} />
               <Route path="/more" element={<ProtectedRoute><More /></ProtectedRoute>} />
               <Route path="/business-setup" element={<ProtectedRoute><BusinessSetupFlow /></ProtectedRoute>} />
