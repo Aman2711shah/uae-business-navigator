@@ -13,10 +13,13 @@ const Index = () => {
   const { user } = useAuth();
 
   useEffect(() => {
-    // Show welcome modal on first login or if user hasn't seen it
+    // Show welcome modal only on first signup, not subsequent logins
     const hasSeenWelcome = localStorage.getItem('wazeet-welcome-shown');
-    if (user && !hasSeenWelcome) {
+    const hasShownWelcomeThisSession = sessionStorage.getItem('wazeet-welcome-this-session');
+    
+    if (user && !hasSeenWelcome && !hasShownWelcomeThisSession) {
       setShowWelcomeModal(true);
+      sessionStorage.setItem('wazeet-welcome-this-session', 'true');
     }
   }, [user]);
 
@@ -27,7 +30,7 @@ const Index = () => {
       <SpecialOffer />
       <QuickActions />
       <BottomNavigation />
-      <ChatbotWidget />
+      
       
       <WelcomeModal 
         isOpen={showWelcomeModal}

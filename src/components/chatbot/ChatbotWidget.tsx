@@ -8,7 +8,11 @@ import { ChatMessage } from "./ChatMessage";
 import { ChatInput } from "./ChatInput";
 import { TypingIndicator } from "./TypingIndicator";
 
-export const ChatbotWidget: React.FC = () => {
+interface ChatbotWidgetProps {
+  onClose?: () => void;
+}
+
+export const ChatbotWidget: React.FC<ChatbotWidgetProps> = ({ onClose }) => {
   const [isOpen, setIsOpen] = useState(false);
   const messagesEndRef = useRef<HTMLDivElement>(null);
   const {
@@ -27,7 +31,16 @@ export const ChatbotWidget: React.FC = () => {
     scrollToBottom();
   }, [messages]);
 
-  if (!isOpen) {
+  const handleClose = () => {
+    if (onClose) {
+      onClose();
+    } else {
+      setIsOpen(false);
+    }
+  };
+
+  // If used as standalone widget (when onClose is not provided)
+  if (!onClose && !isOpen) {
     return (
       <Button
         onClick={() => setIsOpen(true)}
@@ -39,8 +52,13 @@ export const ChatbotWidget: React.FC = () => {
     );
   }
 
+  // Don't render if used in bottom nav and not opened
+  if (onClose && !isOpen) {
+    return null;
+  }
+
   return (
-    <Card className="fixed bottom-6 right-6 w-80 md:w-96 max-h-[60vh] md:max-h-[90vh] shadow-2xl z-50 flex flex-col rounded-2xl border-2 bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/80">
+    <Card className="fixed bottom-20 right-4 w-80 md:w-96 max-h-[60vh] md:max-h-[70vh] shadow-2xl z-40 flex flex-col rounded-2xl border-2 bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/80">
       <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-3 px-4 pt-4 flex-shrink-0">
         <CardTitle className="text-sm font-medium flex items-center gap-2">
           <Bot className="h-4 w-4 text-primary" />
@@ -50,7 +68,7 @@ export const ChatbotWidget: React.FC = () => {
           variant="ghost" 
           size="icon" 
           className="h-6 w-6 hover:bg-muted"
-          onClick={() => setIsOpen(false)}
+          onClick={handleClose}
         >
           <X className="h-4 w-4" />
         </Button>

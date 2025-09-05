@@ -18,17 +18,17 @@ All colors MUST be HSL.
     --popover: 0 0% 100%;              /* White popover */
     --popover-foreground: 210 25% 40%; /* Readable blue-grey popover text */
 
-    /* Light Blue Primary Palette */
-    --primary: 200 100% 60%;           /* Light blue #33b5ff */
+    /* Professional Light Blue Primary Palette */
+    --primary: 206 84% 58%;            /* Professional light blue #3B9EF5 */
     --primary-foreground: 0 0% 100%;   /* White text on primary */
-    --primary-hover: 200 100% 55%;     /* Slightly darker blue hover */
-    --primary-light: 200 100% 85%;     /* Very light blue #cce7ff */
-    --primary-glow: 200 100% 75%;      /* Soft glow blue #99d6ff */
+    --primary-hover: 206 84% 52%;      /* Slightly darker blue hover */
+    --primary-light: 206 84% 70%;      /* Light blue #70BEFF */
+    --primary-glow: 206 84% 85%;       /* Soft glow blue #ACDCFF */
 
-    /* Secondary Light Blue Tones */
-    --secondary: 200 50% 95%;          /* Very light blue-grey #f2f7fb */
-    --secondary-foreground: 210 25% 40%;
-    --secondary-accent: 190 100% 50%;  /* Cyan accent #00bfff */
+    /* Professional Teal Secondary */
+    --secondary: 180 84% 55%;          /* Professional teal #2DD4BF */
+    --secondary-foreground: 0 0% 100%;
+    --secondary-accent: 180 84% 65%;   /* Light teal #5DDDD0 */
 
     --muted: 200 40% 94%;              /* Light blue-grey muted #f0f4f8 */
     --muted-foreground: 210 15% 45%;   /* Soft blue-grey text #6b7684 */
@@ -52,13 +52,13 @@ All colors MUST be HSL.
     --nav-selected: 200 100% 60%;      /* Light blue for selected tabs */
     --nav-unselected: 210 15% 60%;     /* Muted blue-grey for unselected */
     
-    /* 3D Gradients & Depth */
-    --gradient-primary: linear-gradient(135deg, hsl(200 100% 97%), hsl(200 80% 94%));
+    /* Professional Gradients & Depth */
+    --gradient-primary: linear-gradient(135deg, hsl(206 84% 58%), hsl(206 84% 52%));
     --gradient-card: linear-gradient(135deg, hsl(0 0% 100%), hsl(200 50% 98%));
-    --gradient-blue: linear-gradient(135deg, hsl(200 100% 65%), hsl(200 100% 55%));
-    --gradient-button: linear-gradient(135deg, hsl(200 100% 62%), hsl(200 100% 58%));
-    --gradient-hover: linear-gradient(135deg, hsl(200 100% 58%), hsl(200 100% 52%));
-    --gradient-soft: linear-gradient(135deg, hsl(200 100% 90%), hsl(200 100% 95%));
+    --gradient-blue: linear-gradient(135deg, hsl(206 84% 58%), hsl(206 84% 70%));
+    --gradient-button: linear-gradient(135deg, hsl(206 84% 58%), hsl(206 84% 52%));
+    --gradient-hover: linear-gradient(135deg, hsl(206 84% 52%), hsl(206 84% 48%));
+    --gradient-soft: linear-gradient(135deg, hsl(206 84% 90%), hsl(206 84% 95%));
     
     /* 3D Shadow System */
     --shadow-card: 0 4px 12px rgba(0, 150, 255, 0.08), 0 2px 4px rgba(0, 150, 255, 0.05);
