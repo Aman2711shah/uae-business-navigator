@@ -347,7 +347,7 @@ const CommunityDetail = () => {
       <CreatePostModal
         isOpen={showCreatePost}
         onClose={() => setShowCreatePost(false)}
-        community={community}
+        industry={community?.name || ""}
         onPostCreated={handlePostCreated}
       />
     </div>

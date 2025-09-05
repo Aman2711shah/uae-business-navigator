@@ -72,6 +72,8 @@ export default function IndustryFeed({ industry, onBack, currentUserId, userProf
           
           return {
             ...post,
+            profile_id: post.user_id, // Map user_id to profile_id for Post interface compatibility
+            content: post.body, // Map body to content for Post interface compatibility
             profiles: profileData.data,
             community_users: communityUserData.data
           };
@@ -105,8 +107,9 @@ export default function IndustryFeed({ industry, onBack, currentUserId, userProf
 
   const filteredPosts = posts.filter(post => {
     const matchesSearch = !searchTerm || 
-      post.title.toLowerCase().includes(searchTerm.toLowerCase()) ||
-      post.body.toLowerCase().includes(searchTerm.toLowerCase()) ||
+      (post.title && post.title.toLowerCase().includes(searchTerm.toLowerCase())) ||
+      (post.content && post.content.toLowerCase().includes(searchTerm.toLowerCase())) ||
+      (post.body && post.body.toLowerCase().includes(searchTerm.toLowerCase())) ||
       post.tags?.some(tag => tag.toLowerCase().includes(searchTerm.toLowerCase()));
     
     const matchesTag = !selectedTag || post.tags?.includes(selectedTag);
