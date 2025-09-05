@@ -1,9 +1,11 @@
 const CACHE_NAME = 'wazeet-v1';
+const OFFLINE_PAGE = '/offline.html';
 const urlsToCache = [
   '/',
   '/static/js/bundle.js',
   '/static/css/main.css',
-  '/manifest.json'
+  '/manifest.json',
+  OFFLINE_PAGE
 ];
 
 // Install event
@@ -16,16 +18,39 @@ self.addEventListener('install', (event) => {
   );
 });
 
-// Fetch event
+// Fetch event with offline support
 self.addEventListener('fetch', (event) => {
-  event.respondWith(
-    caches.match(event.request)
-      .then((response) => {
-        // Return cached version or fetch from network
-        return response || fetch(event.request);
+  if (event.request.mode === 'navigate') {
+    event.respondWith((async () => {
+      try {
+        // Try network first
+        const networkResp = await fetch(event.request);
+        return networkResp;
+      } catch (error) {
+        // If network fails, try cache
+        const cache = await caches.open(CACHE_NAME);
+        const cachedResp = await cache.match(event.request);
+        if (cachedResp) {
+          return cachedResp;
+        }
+        // If no cache, return offline page
+        return cache.match(OFFLINE_PAGE);
       }
-    )
-  );
+    })());
+  } else {
+    // For non-navigation requests, use cache-first strategy
+    event.respondWith(
+      caches.match(event.request)
+        .then((response) => {
+          return response || fetch(event.request).catch(() => {
+            // Store failed requests for background sync
+            if (event.request.method === 'POST') {
+              storeFailedRequest(event.request.clone());
+            }
+          });
+        })
+    );
+  }
 });
 
 // Activate event
@@ -60,6 +85,21 @@ async function doBackgroundSync() {
     await clearFailedRequests();
   } catch (error) {
     console.log('Background sync failed:', error);
+  }
+}
+
+async function storeFailedRequest(request) {
+  try {
+    const failedRequests = await getFailedRequests();
+    failedRequests.push({
+      url: request.url,
+      method: request.method,
+      body: await request.text(),
+      headers: [...request.headers.entries()]
+    });
+    localStorage.setItem('failedRequests', JSON.stringify(failedRequests));
+  } catch (error) {
+    console.log('Failed to store request:', error);
   }
 }
 
