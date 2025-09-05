@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { X, Upload, CheckCircle, AlertCircle, User, Mail, Phone, MessageSquare } from "lucide-react";
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/ui/dialog";
 import { Button } from "@/components/ui/button";
@@ -10,6 +10,7 @@ import { Badge } from "@/components/ui/badge";
 import { Progress } from "@/components/ui/progress";
 import { useToast } from "@/hooks/use-toast";
 import { supabase } from "@/integrations/supabase/client";
+import { useAuth } from "@/contexts/AuthContext";
 
 // Stripe publishable key - safe to store in frontend
 const STRIPE_PUBLISHABLE_KEY = "pk_test_51QbSLNEGPBCOzNUW7vYvQ1nZdWTXCMhZjRYpGc8E3cBG8QrEOLKJcUvWGpMgdGp2x3vg2h7yF2JmZJ8hN3aK4mP4900123456789"; // Replace with your actual publishable key
@@ -52,6 +53,7 @@ interface ServiceBookingModalProps {
 
 const ServiceBookingModal = ({ isOpen, onClose, subService, parentService }: ServiceBookingModalProps) => {
   const { toast } = useToast();
+  const { user, loading: authLoading } = useAuth();
   const [step, setStep] = useState(1); // 1: Contact Info, 2: Document Upload, 3: Confirmation
   const [contactInfo, setContactInfo] = useState<ContactInfo>({
     fullName: "",
@@ -62,6 +64,28 @@ const ServiceBookingModal = ({ isOpen, onClose, subService, parentService }: Ser
   const [documents, setDocuments] = useState<DocumentUpload[]>([]);
   const [submissionId, setSubmissionId] = useState<string | null>(null);
   const [submitting, setSubmitting] = useState(false);
+
+  // Check authentication and pre-fill user data
+  useEffect(() => {
+    if (isOpen && !authLoading) {
+      if (!user) {
+        toast({
+          title: "Authentication Required",
+          description: "Please sign in to submit a service application.",
+          variant: "destructive"
+        });
+        onClose();
+        return;
+      }
+      
+      // Pre-fill user information if available
+      setContactInfo(prev => ({
+        ...prev,
+        email: user.email || "",
+        fullName: user.user_metadata?.full_name || ""
+      }));
+    }
+  }, [isOpen, user, authLoading, onClose, toast]);
 
   // Initialize documents when modal opens
   useState(() => {
@@ -181,12 +205,17 @@ const ServiceBookingModal = ({ isOpen, onClose, subService, parentService }: Ser
         return;
       }
 
-      // Create submission record
+      // Create submission record with proper user authentication
       setSubmitting(true);
       try {
+        if (!user) {
+          throw new Error("User not authenticated");
+        }
+
         const { data, error } = await supabase
           .from('submissions')
           .insert({
+            user_id: user.id, // Ensure user_id is set for security
             service_id: parentService.id,
             sub_service_id: subService.id,
             contact_info: contactInfo as any,
