@@ -786,6 +786,11 @@ export type Database = {
           created_at: string
           id: string
           notes: string | null
+          payment_amount: number | null
+          payment_currency: string | null
+          payment_intent_id: string | null
+          payment_metadata: Json | null
+          payment_status: string | null
           service_id: string
           status: string
           sub_service_id: string | null
@@ -798,6 +803,11 @@ export type Database = {
           created_at?: string
           id?: string
           notes?: string | null
+          payment_amount?: number | null
+          payment_currency?: string | null
+          payment_intent_id?: string | null
+          payment_metadata?: Json | null
+          payment_status?: string | null
           service_id: string
           status?: string
           sub_service_id?: string | null
@@ -810,6 +820,11 @@ export type Database = {
           created_at?: string
           id?: string
           notes?: string | null
+          payment_amount?: number | null
+          payment_currency?: string | null
+          payment_intent_id?: string | null
+          payment_metadata?: Json | null
+          payment_status?: string | null
           service_id?: string
           status?: string
           sub_service_id?: string | null
