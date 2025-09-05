@@ -10,6 +10,14 @@
   "orientation": "portrait",
   "scope": "/",
   "dir": "ltr",
+  "iarc_rating_id": "e10+",
+  "prefer_related_applications": false,
+  "related_applications": [],
+  "scope_extensions": [
+    {
+      "origin": "https://wazeet.lovable.app"
+    }
+  ],
   "launch_handler": {
     "client_mode": ["navigate-existing", "auto"]
   },
