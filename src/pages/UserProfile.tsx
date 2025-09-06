@@ -11,19 +11,10 @@ import { useAuth } from "@/contexts/AuthContext";
 import { formatDistanceToNow } from "date-fns";
 import UserAvatar from "@/components/community/UserAvatar";
 import PostCard from "@/components/community/PostCard";
+import { getPublicProfile, getCurrentUserProfile, PublicProfile, PrivateProfile } from "@/lib/secure-profile";
 
-interface UserProfile {
-  id: string;
-  user_id: string;
-  display_name?: string;
-  full_name?: string;
-  email?: string;
-  headline?: string;
-  bio?: string;
-  services?: string[];
-  avatar_url?: string;
-  created_at: string;
-}
+// Use the secure profile types
+type UserProfileData = PublicProfile | PrivateProfile;
 
 interface MarketplaceItem {
   id: string;
@@ -42,7 +33,7 @@ const UserProfile = () => {
   const { user } = useAuth();
   const { toast } = useToast();
 
-  const [profile, setProfile] = useState<UserProfile | null>(null);
+  const [profile, setProfile] = useState<UserProfileData | null>(null);
   const [posts, setPosts] = useState([]);
   const [marketplaceItems, setMarketplaceItems] = useState<MarketplaceItem[]>([]);
   const [loading, setLoading] = useState(true);
@@ -60,14 +51,24 @@ const UserProfile = () => {
 
   const fetchProfile = async () => {
     try {
-      const { data, error } = await supabase
-        .from('profiles')
-        .select('*')
-        .eq('user_id', userId)
-        .single();
+      let profileData;
+      
+      // If viewing own profile, get private data; otherwise get public data
+      if (user?.id === userId) {
+        const { data, error } = await getCurrentUserProfile();
+        if (error) throw error;
+        profileData = data;
+      } else {
+        const { data, error } = await getPublicProfile(userId!);
+        if (error) throw error;
+        profileData = data;
+      }
 
-      if (error) throw error;
-      setProfile(data);
+      if (!profileData) {
+        throw new Error('Profile not found');
+      }
+      
+      setProfile(profileData);
     } catch (error) {
       console.error('Error fetching profile:', error);
       toast({
@@ -178,7 +179,9 @@ const UserProfile = () => {
     );
   }
 
-  const displayName = profile.display_name || profile.full_name || "Anonymous User";
+  const displayName = profile.display_name || 
+    ('full_name' in profile ? profile.full_name : null) || 
+    "Anonymous User";
   const joinDate = formatDistanceToNow(new Date(profile.created_at), { addSuffix: true });
 
   return (
