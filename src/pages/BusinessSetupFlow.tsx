@@ -1,5 +1,5 @@
-import React, { useState, useEffect } from "react";
-import { ArrowLeft, ArrowRight } from "lucide-react";
+import React, { useState, useEffect, useCallback } from "react";
+import { ArrowLeft, ArrowRight, Save } from "lucide-react";
 import { useNavigate } from "react-router-dom";
 import { Button } from "@/components/ui/button";
 import { useBusinessCosts } from "@/hooks/useBusinessCosts";
@@ -7,6 +7,7 @@ import { supabase } from "@/integrations/supabase/client";
 import { useToast } from "@/hooks/use-toast";
 import { businessActivities, businessSetupSteps } from "@/data/businessSetupData";
 import { BusinessSetupState } from "@/types/businessSetup";
+import { logger } from "@/lib/logger";
 import BusinessActivityStep from "@/components/business-setup/BusinessActivityStep";
 import ShareholdersStep from "@/components/business-setup/ShareholdersStep";
 import VisaRequirementsStep from "@/components/business-setup/VisaRequirementsStep";
@@ -21,6 +22,8 @@ const BusinessSetupFlow = () => {
     toast
   } = useToast();
   const [currentStep, setCurrentStep] = useState(1);
+  const [isLoadingCosts, setIsLoadingCosts] = useState(false);
+  const [isSaving, setIsSaving] = useState(false);
   const [state, setState] = useState<BusinessSetupState>({
     selectedActivities: [],
     shareholders: 1,
@@ -68,6 +71,7 @@ const BusinessSetupFlow = () => {
     }
   }, [state.searchTerm]);
   const calculateCost = async () => {
+    setIsLoadingCosts(true);
     try {
       // Fetch packages from Supabase
       const { data: packages, error } = await supabase
@@ -141,19 +145,27 @@ const BusinessSetupFlow = () => {
         }));
       }
     } catch (error) {
-      console.error('Error calculating costs:', error);
+      logger.error('Error calculating costs:', error);
+      toast({
+        title: "Calculation Error",
+        description: "Failed to calculate costs. Please try again.",
+        variant: "destructive"
+      });
+    } finally {
+      setIsLoadingCosts(false);
     }
   };
 
-  // Save selections to user profile
-  const saveToProfile = async () => {
+  // Auto-save functionality
+  const autoSave = useCallback(async () => {
+    if (state.selectedActivities.length === 0) return;
+    
+    setIsSaving(true);
     try {
       const {
-        data: {
-          user
-        }
+        data: { user }
       } = await supabase.auth.getUser();
-      if (!user) return;
+      
       const selectionData = {
         selectedActivities: state.selectedActivities,
         shareholders: state.shareholders,
@@ -167,14 +179,46 @@ const BusinessSetupFlow = () => {
 
       // Store in localStorage as a fallback and for immediate use
       localStorage.setItem('businessSetupSelections', JSON.stringify(selectionData));
+      
+      // Store in user profile if logged in (skip database for now)
+      if (user) {
+        logger.info('User profile update skipped - business_setup_data field needs migration');
+      }
+      
+      logger.info('Auto-saved business setup selections');
+    } catch (error) {
+      logger.error('Error auto-saving selections:', error);
+    } finally {
+      setIsSaving(false);
+    }
+  }, [state]);
+
+  // Manual save function
+  const saveToProfile = async () => {
+    setIsSaving(true);
+    try {
+      await autoSave();
       toast({
         title: "Selections Saved",
         description: "Your business setup preferences have been saved."
       });
     } catch (error) {
-      console.error('Error saving to profile:', error);
+      toast({
+        title: "Save Error",
+        description: "Failed to save selections. Please try again.",
+        variant: "destructive"
+      });
     }
   };
+
+  // Auto-save every 30 seconds if there are changes
+  useEffect(() => {
+    const interval = setInterval(() => {
+      autoSave();
+    }, 30000);
+
+    return () => clearInterval(interval);
+  }, [autoSave]);
 
   // Auto-calculate when dependencies change
   useEffect(() => {
@@ -211,10 +255,53 @@ const BusinessSetupFlow = () => {
       case 5:
         return state.entityType !== "";
       case 6:
-        return state.estimatedCost > 0;
+        return true; // Allow proceeding from cost estimation
       default:
         return true;
     }
+  };
+
+  const validateStep = (step: number): { isValid: boolean; errors: string[] } => {
+    const errors: string[] = [];
+    
+    switch (step) {
+      case 1:
+        if (state.selectedActivities.length === 0) {
+          errors.push('Please select at least one business activity');
+        }
+        if (state.selectedActivities.length > 5) {
+          errors.push('Please select no more than 5 business activities');
+        }
+        break;
+      case 2:
+        if (state.shareholders < 1) {
+          errors.push('At least one shareholder is required');
+        }
+        if (state.shareholders > 5) {
+          errors.push('Maximum 5 shareholders allowed');
+        }
+        break;
+      case 3:
+        if (state.totalVisas < 0) {
+          errors.push('Number of visas cannot be negative');
+        }
+        if (state.totalVisas > 5) {
+          errors.push('Maximum 5 visas allowed');
+        }
+        break;
+      case 4:
+        if (state.tenure < 1) {
+          errors.push('Please select a valid tenure');
+        }
+        break;
+      case 5:
+        if (!state.entityType) {
+          errors.push('Please select a legal entity type');
+        }
+        break;
+    }
+    
+    return { isValid: errors.length === 0, errors };
   };
   const updateState = (updates: Partial<BusinessSetupState>) => {
     setState(prev => ({
@@ -266,7 +353,17 @@ const BusinessSetupFlow = () => {
             <ArrowLeft className="h-5 w-5" />
           </Button>
           <h1 className="text-lg font-semibold text-foreground">Company Setup</h1>
-          <div className="w-10" />
+          <div className="flex items-center gap-2">
+            {isSaving && (
+              <div className="flex items-center gap-1 text-sm text-muted-foreground">
+                <Save className="h-3 w-3 animate-pulse" />
+                Saving...
+              </div>
+            )}
+            <Button variant="ghost" size="sm" onClick={saveToProfile} disabled={isSaving}>
+              <Save className="h-4 w-4" />
+            </Button>
+          </div>
         </div>
       </div>
 
@@ -345,8 +442,12 @@ const BusinessSetupFlow = () => {
               Back
             </Button>}
           
-          {currentStep < 7 ? <Button onClick={nextStep} disabled={!canProceed()} className="flex-1">
-              Next
+          {currentStep < 7 ? <Button 
+              onClick={nextStep} 
+              disabled={!canProceed() || isLoadingCosts} 
+              className="flex-1"
+            >
+              {isLoadingCosts ? "Loading..." : "Next"}
               <ArrowRight className="w-4 h-4 ml-2" />
             </Button> : <Button onClick={() => navigate("/")} className="flex-1">
               Complete Setup

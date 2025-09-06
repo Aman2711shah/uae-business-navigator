@@ -31,7 +31,7 @@ export const validatePasswordStrength = (password: string): {
   const errors: string[] = [];
   let score = 0;
   
-  // Enhanced password requirements
+  // Enhanced password requirements (consistent with validation.ts)
   if (password.length < 12) {
     errors.push('Password must be at least 12 characters long');
   } else {

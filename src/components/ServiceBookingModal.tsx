@@ -1,6 +1,6 @@
 import { useState, useEffect } from "react";
 import { X, Upload, CheckCircle, AlertCircle, User, Mail, Phone, MessageSquare } from "lucide-react";
-import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/ui/dialog";
+import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription } from "@/components/ui/dialog";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
@@ -11,6 +11,8 @@ import { Progress } from "@/components/ui/progress";
 import { useToast } from "@/hooks/use-toast";
 import { supabase } from "@/integrations/supabase/client";
 import { useAuth } from "@/contexts/AuthContext";
+import { logger } from "@/lib/logger";
+import { validateEmail, validateFile, normalizePhone, contactFormSchema } from "@/lib/validation";
 
 // Note: Add your Stripe publishable key here when ready to use Stripe.js fallback
 // const STRIPE_PUBLISHABLE_KEY = "pk_test_your_actual_key_here";
@@ -64,6 +66,8 @@ const ServiceBookingModal = ({ isOpen, onClose, subService, parentService }: Ser
   const [documents, setDocuments] = useState<DocumentUpload[]>([]);
   const [submissionId, setSubmissionId] = useState<string | null>(null);
   const [submitting, setSubmitting] = useState(false);
+  const [isLoading, setIsLoading] = useState(false);
+  const [validationErrors, setValidationErrors] = useState<Record<string, string>>({});
 
   // Check authentication and pre-fill user data
   useEffect(() => {
@@ -103,9 +107,21 @@ const ServiceBookingModal = ({ isOpen, onClose, subService, parentService }: Ser
   });
 
   const validateContactInfo = () => {
-    return contactInfo.fullName.trim() !== "" && 
-           contactInfo.email.trim() !== "" && 
-           /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(contactInfo.email);
+    const errors: Record<string, string> = {};
+    
+    try {
+      contactFormSchema.parse(contactInfo);
+      setValidationErrors({});
+      return true;
+    } catch (error: any) {
+      if (error.issues) {
+        error.issues.forEach((err: any) => {
+          errors[err.path[0]] = err.message;
+        });
+      }
+      setValidationErrors(errors);
+      return false;
+    }
   };
 
   const validateDocuments = () => {
@@ -117,10 +133,12 @@ const ServiceBookingModal = ({ isOpen, onClose, subService, parentService }: Ser
   };
 
   const handleFileSelect = (docIndex: number, file: File) => {
-    if (file.size > 10 * 1024 * 1024) { // 10MB limit
+    const validation = validateFile(file);
+    
+    if (!validation.isValid) {
       toast({
-        title: "File too large",
-        description: "Please select a file smaller than 10MB.",
+        title: "Invalid file",
+        description: validation.error,
         variant: "destructive"
       });
       return;
@@ -181,7 +199,7 @@ const ServiceBookingModal = ({ isOpen, onClose, subService, parentService }: Ser
       });
 
     } catch (error) {
-      console.error('Upload error:', error);
+      logger.error('Upload error:', error);
       setDocuments(prev => prev.map((d, i) => 
         i === docIndex ? { ...d, uploading: false } : d
       ));
@@ -207,10 +225,18 @@ const ServiceBookingModal = ({ isOpen, onClose, subService, parentService }: Ser
 
       // Create submission record with proper user authentication
       setSubmitting(true);
+      setIsLoading(true);
       try {
         if (!user) {
           throw new Error("User not authenticated");
         }
+
+        // Normalize phone number before saving
+        const phoneValidation = normalizePhone(contactInfo.phone);
+        const normalizedContactInfo = {
+          ...contactInfo,
+          phone: phoneValidation.formatted || contactInfo.phone
+        };
 
         const { data, error } = await supabase
           .from('submissions')
@@ -218,7 +244,7 @@ const ServiceBookingModal = ({ isOpen, onClose, subService, parentService }: Ser
             user_id: user.id, // Ensure user_id is set for security
             service_id: parentService.id,
             sub_service_id: subService.id,
-            contact_info: contactInfo as any,
+            contact_info: normalizedContactInfo as any,
             total_price: subService.price,
             notes: contactInfo.notes || null
           })
@@ -232,7 +258,7 @@ const ServiceBookingModal = ({ isOpen, onClose, subService, parentService }: Ser
         setSubmissionId(data.id);
         setStep(2);
       } catch (error) {
-        console.error('Submission error:', error);
+        logger.error('Submission error:', error);
         toast({
           title: "Submission failed",
           description: "Failed to create submission. Please try again.",
@@ -240,6 +266,7 @@ const ServiceBookingModal = ({ isOpen, onClose, subService, parentService }: Ser
         });
       } finally {
         setSubmitting(false);
+        setIsLoading(false);
       }
     } else if (step === 2) {
       if (!validateDocuments()) {
@@ -282,6 +309,9 @@ const ServiceBookingModal = ({ isOpen, onClose, subService, parentService }: Ser
               <X className="h-4 w-4" />
             </Button>
           </DialogTitle>
+          <DialogDescription>
+            Complete this form to apply for {subService.name}. We'll guide you through the process step by step.
+          </DialogDescription>
         </DialogHeader>
 
         {/* Progress Bar */}
@@ -312,7 +342,11 @@ const ServiceBookingModal = ({ isOpen, onClose, subService, parentService }: Ser
                       onChange={(e) => handleContactInfoChange('fullName', e.target.value)}
                       placeholder="Enter your full name"
                       className="mt-1"
+                      aria-describedby={validationErrors.fullName ? "fullName-error" : undefined}
                     />
+                    {validationErrors.fullName && (
+                      <p id="fullName-error" className="text-sm text-destructive mt-1">{validationErrors.fullName}</p>
+                    )}
                   </div>
                   
                   <div>
@@ -324,7 +358,11 @@ const ServiceBookingModal = ({ isOpen, onClose, subService, parentService }: Ser
                       onChange={(e) => handleContactInfoChange('email', e.target.value)}
                       placeholder="Enter your email"
                       className="mt-1"
+                      aria-describedby={validationErrors.email ? "email-error" : undefined}
                     />
+                    {validationErrors.email && (
+                      <p id="email-error" className="text-sm text-destructive mt-1">{validationErrors.email}</p>
+                    )}
                   </div>
                   
                   <div>
@@ -333,9 +371,13 @@ const ServiceBookingModal = ({ isOpen, onClose, subService, parentService }: Ser
                       id="phone"
                       value={contactInfo.phone}
                       onChange={(e) => handleContactInfoChange('phone', e.target.value)}
-                      placeholder="Enter your phone number"
+                      placeholder="Enter your phone number (e.g., +971501234567)"
                       className="mt-1"
+                      aria-describedby={validationErrors.phone ? "phone-error" : undefined}
                     />
+                    {validationErrors.phone && (
+                      <p id="phone-error" className="text-sm text-destructive mt-1">{validationErrors.phone}</p>
+                    )}
                   </div>
                 </div>
 
@@ -424,6 +466,7 @@ const ServiceBookingModal = ({ isOpen, onClose, subService, parentService }: Ser
                           }}
                           disabled={doc.uploaded}
                           className="flex-1"
+                          aria-label={`Upload ${doc.fieldName}`}
                         />
                         
                         {doc.file && !doc.uploaded && (
@@ -485,17 +528,18 @@ const ServiceBookingModal = ({ isOpen, onClose, subService, parentService }: Ser
                     className="w-full"
                     onClick={async () => {
                       try {
-                        console.log('Starting payment process for submission:', submissionId);
+                        setIsLoading(true);
+                        logger.info('Starting payment process for submission:', submissionId);
                         
                         // Call our Supabase edge function to create checkout session
                         const { data, error } = await supabase.functions.invoke('create-checkout-session', {
                           body: { submissionId }
                         });
                         
-                        console.log('Checkout session response:', { data, error });
+                        logger.info('Checkout session response:', { data, error });
                         
                         if (error) {
-                          console.error('Edge function error:', error);
+                          logger.error('Edge function error:', error);
                           throw new Error(error.message || 'Failed to create checkout session');
                         }
                         
@@ -519,12 +563,14 @@ const ServiceBookingModal = ({ isOpen, onClose, subService, parentService }: Ser
                         
                         throw new Error('No checkout URL or session ID returned from payment service');
                       } catch (error) {
-                        console.error('Payment error details:', error);
+                        logger.error('Payment error details:', error);
                         toast({
                           title: "Payment Error",
                           description: error instanceof Error ? error.message : "Failed to initiate payment. Please try again.",
                           variant: "destructive"
                         });
+                      } finally {
+                        setIsLoading(false);
                       }
                     }}
                   >

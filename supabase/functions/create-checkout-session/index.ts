@@ -7,6 +7,34 @@ const corsHeaders = {
   'Access-Control-Allow-Headers': 'authorization, x-client-info, apikey, content-type',
 };
 
+// Enhanced input validation
+const validateSubmissionId = (submissionId: any): string => {
+  if (!submissionId || typeof submissionId !== 'string') {
+    throw new Error('Invalid submission ID');
+  }
+  
+  // Basic UUID validation
+  const uuidRegex = /^[0-9a-f]{8}-[0-9a-f]{4}-[1-5][0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$/i;
+  if (!uuidRegex.test(submissionId)) {
+    throw new Error('Invalid submission ID format');
+  }
+  
+  return submissionId;
+};
+
+// Sanitize error messages for client
+const sanitizeError = (error: any): string => {
+  if (typeof error === 'string') {
+    return error.length > 100 ? 'An error occurred during payment processing' : error;
+  }
+  
+  if (error?.message) {
+    return error.message.length > 100 ? 'An error occurred during payment processing' : error.message;
+  }
+  
+  return 'An unexpected error occurred';
+};
+
 const logStep = (step: string, details?: any) => {
   const detailsStr = details ? ` - ${JSON.stringify(details)}` : '';
   console.log(`[CREATE-CHECKOUT-SESSION] ${step}${detailsStr}`);
@@ -18,12 +46,29 @@ serve(async (req) => {
     return new Response(null, { headers: corsHeaders });
   }
 
+  // Only allow POST requests
+  if (req.method !== 'POST') {
+    return new Response(JSON.stringify({ error: 'Method not allowed' }), {
+      headers: { ...corsHeaders, "Content-Type": "application/json" },
+      status: 405,
+    });
+  }
+
   try {
     logStep("Function started");
 
     const stripeKey = Deno.env.get("STRIPE_SECRET_KEY");
     if (!stripeKey) throw new Error("STRIPE_SECRET_KEY is not set");
     logStep("Stripe key verified");
+
+    // Verify JWT token for authentication
+    const authHeader = req.headers.get("Authorization");
+    if (!authHeader) {
+      return new Response(JSON.stringify({ error: 'Authentication required' }), {
+        headers: { ...corsHeaders, "Content-Type": "application/json" },
+        status: 401,
+      });
+    }
 
     // Create Supabase client with service role key for secure operations
     const supabaseClient = createClient(
@@ -32,11 +77,19 @@ serve(async (req) => {
       { auth: { persistSession: false } }
     );
 
-    const { submissionId } = await req.json();
-    if (!submissionId) {
-      throw new Error("Missing submissionId");
+    // Parse and validate request body
+    let requestBody;
+    try {
+      requestBody = await req.json();
+    } catch {
+      return new Response(JSON.stringify({ error: 'Invalid JSON payload' }), {
+        headers: { ...corsHeaders, "Content-Type": "application/json" },
+        status: 400,
+      });
     }
-    logStep("Request parsed", { submissionId });
+
+    const submissionId = validateSubmissionId(requestBody.submissionId);
+    logStep("Request parsed and validated", { submissionId });
 
     // Fetch submission from Supabase
     const { data: submission, error: submissionError } = await supabaseClient
@@ -138,10 +191,28 @@ serve(async (req) => {
 
   } catch (error) {
     const errorMessage = error instanceof Error ? error.message : String(error);
-    logStep("ERROR", { message: errorMessage });
-    return new Response(JSON.stringify({ error: errorMessage }), {
+    logStep("ERROR", { 
+      message: errorMessage,
+      stack: error instanceof Error ? error.stack : undefined,
+      type: error instanceof Error ? error.constructor.name : typeof error
+    });
+
+    // Determine appropriate HTTP status code
+    let statusCode = 500;
+    if (errorMessage.includes('not found') || errorMessage.includes('Invalid submission')) {
+      statusCode = 404;
+    } else if (errorMessage.includes('Authentication') || errorMessage.includes('Unauthorized')) {
+      statusCode = 401;
+    } else if (errorMessage.includes('Missing') || errorMessage.includes('Invalid')) {
+      statusCode = 400;
+    }
+
+    return new Response(JSON.stringify({ 
+      error: sanitizeError(error),
+      code: statusCode >= 500 ? 'INTERNAL_ERROR' : 'CLIENT_ERROR'
+    }), {
       headers: { ...corsHeaders, "Content-Type": "application/json" },
-      status: 500,
+      status: statusCode,
     });
   }
 });

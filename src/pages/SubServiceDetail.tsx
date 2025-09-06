@@ -1,4 +1,4 @@
-import { useEffect, useState } from "react";
+import { useEffect, useState, useRef } from "react";
 import { useParams, Link } from "react-router-dom";
 import { ArrowLeft, Clock, FileText, DollarSign, CheckCircle } from "lucide-react";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
@@ -8,6 +8,7 @@ import BottomNavigation from "@/components/BottomNavigation";
 import ServiceBookingModal from "@/components/ServiceBookingModal";
 import { supabase } from "@/integrations/supabase/client";
 import { useToast } from "@/hooks/use-toast";
+import { logger } from "@/lib/logger";
 
 interface SubService {
   id: string;
@@ -32,15 +33,31 @@ const SubServiceDetail = () => {
   const [parentService, setParentService] = useState<Service | null>(null);
   const [loading, setLoading] = useState(true);
   const [showBookingModal, setShowBookingModal] = useState(false);
+  const abortControllerRef = useRef<AbortController | null>(null);
 
   useEffect(() => {
     if (subServiceId) {
       fetchSubServiceDetails();
     }
+    
+    // Cleanup function to abort ongoing requests
+    return () => {
+      if (abortControllerRef.current) {
+        abortControllerRef.current.abort();
+      }
+    };
   }, [subServiceId]);
 
   const fetchSubServiceDetails = async () => {
     if (!subServiceId) return;
+
+    // Cancel any previous request
+    if (abortControllerRef.current) {
+      abortControllerRef.current.abort();
+    }
+
+    // Create new AbortController for this request
+    abortControllerRef.current = new AbortController();
 
     try {
       // Fetch sub-service details with parent service
@@ -53,8 +70,13 @@ const SubServiceDetail = () => {
         .eq('id', subServiceId)
         .single();
 
+      // Check if request was aborted
+      if (abortControllerRef.current?.signal.aborted) {
+        return;
+      }
+
       if (subServiceError) {
-        console.error('Error fetching sub-service:', subServiceError);
+        logger.error('Error fetching sub-service:', subServiceError);
         toast({
           title: "Error",
           description: "Failed to load service details.",
@@ -63,17 +85,30 @@ const SubServiceDetail = () => {
         return;
       }
 
+      if (!subServiceData) {
+        logger.warn('No sub-service data found for ID:', subServiceId);
+        setSubService(null);
+        setParentService(null);
+        return;
+      }
+
       setSubService(subServiceData);
-      setParentService(subServiceData.services);
+      setParentService(subServiceData.services || null);
     } catch (error) {
-      console.error('Error:', error);
-      toast({
-        title: "Error",
-        description: "Failed to load service details.",
-        variant: "destructive"
-      });
+      // Only log error if request wasn't aborted
+      if (!abortControllerRef.current?.signal.aborted) {
+        logger.error('Error:', error);
+        toast({
+          title: "Error",
+          description: "Failed to load service details.",
+          variant: "destructive"
+        });
+      }
     } finally {
-      setLoading(false);
+      // Only update loading state if request wasn't aborted
+      if (!abortControllerRef.current?.signal.aborted) {
+        setLoading(false);
+      }
     }
   };
 

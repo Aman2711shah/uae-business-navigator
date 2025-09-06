@@ -7,11 +7,15 @@ import { Label } from '@/components/ui/label';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { useSecureAuth } from '@/hooks/useSecureAuth';
+import { validateEmail, validatePassword, normalizePhone } from '@/lib/validation';
+import { logger } from '@/lib/logger';
 
 export default function Auth() {
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [fullName, setFullName] = useState('');
+  const [phone, setPhone] = useState('');
+  const [validationErrors, setValidationErrors] = useState<Record<string, string>>({});
   const { user } = useAuth();
   const navigate = useNavigate();
   const { secureSignUp, secureSignIn, isLoading } = useSecureAuth();
@@ -22,14 +26,59 @@ export default function Auth() {
     }
   }, [user, navigate]);
 
+  const validateForm = (isSignUp: boolean = false) => {
+    const errors: Record<string, string> = {};
+
+    // Validate email
+    const emailValidation = validateEmail(email);
+    if (!emailValidation.isValid) {
+      errors.email = emailValidation.error || 'Invalid email';
+    }
+
+    // Validate password
+    const passwordValidation = validatePassword(password);
+    if (!passwordValidation.isValid) {
+      errors.password = passwordValidation.errors[0] || 'Invalid password';
+    }
+
+    // For sign up, validate additional fields
+    if (isSignUp) {
+      if (!fullName.trim() || fullName.length < 2) {
+        errors.fullName = 'Full name must be at least 2 characters';
+      }
+
+      if (phone) {
+        const phoneValidation = normalizePhone(phone);
+        if (!phoneValidation.isValid) {
+          errors.phone = phoneValidation.error || 'Invalid phone number';
+        }
+      }
+    }
+
+    setValidationErrors(errors);
+    return Object.keys(errors).length === 0;
+  };
+
   const handleSignIn = async (e: React.FormEvent) => {
     e.preventDefault();
-    await secureSignIn(email, password);
+    if (!validateForm(false)) return;
+    
+    try {
+      await secureSignIn(email, password);
+    } catch (error) {
+      logger.error('Sign in error:', error);
+    }
   };
 
   const handleSignUp = async (e: React.FormEvent) => {
     e.preventDefault();
-    await secureSignUp(email, password, fullName);
+    if (!validateForm(true)) return;
+    
+    try {
+      await secureSignUp(email, password, fullName);
+    } catch (error) {
+      logger.error('Sign up error:', error);
+    }
   };
 
   return (
@@ -52,25 +101,33 @@ export default function Auth() {
               <form onSubmit={handleSignIn} className="space-y-4">
                 <div className="space-y-2">
                   <Label htmlFor="signin-email">Email</Label>
-                  <Input
-                    id="signin-email"
-                    type="email"
-                    placeholder="Enter your email"
-                    value={email}
-                    onChange={(e) => setEmail(e.target.value)}
-                    required
-                  />
-                </div>
-                <div className="space-y-2">
-                  <Label htmlFor="signin-password">Password</Label>
-                  <Input
-                    id="signin-password"
-                    type="password"
-                    placeholder="Enter your password"
-                    value={password}
-                    onChange={(e) => setPassword(e.target.value)}
-                    required
-                  />
+                    <Input
+                      id="signin-email"
+                      type="email"
+                      placeholder="Enter your email"
+                      value={email}
+                      onChange={(e) => setEmail(e.target.value)}
+                      required
+                      aria-describedby={validationErrors.email ? "signin-email-error" : undefined}
+                    />
+                    {validationErrors.email && (
+                      <p id="signin-email-error" className="text-sm text-destructive">{validationErrors.email}</p>
+                    )}
+                  </div>
+                  <div className="space-y-2">
+                    <Label htmlFor="signin-password">Password</Label>
+                    <Input
+                      id="signin-password"
+                      type="password"
+                      placeholder="Enter your password"
+                      value={password}
+                      onChange={(e) => setPassword(e.target.value)}
+                      required
+                      aria-describedby={validationErrors.password ? "signin-password-error" : undefined}
+                    />
+                    {validationErrors.password && (
+                      <p id="signin-password-error" className="text-sm text-destructive">{validationErrors.password}</p>
+                    )}
                 </div>
                 <Button type="submit" className="w-full" disabled={isLoading}>
                   {isLoading ? "Signing in..." : "Sign In"}
@@ -82,37 +139,63 @@ export default function Auth() {
               <form onSubmit={handleSignUp} className="space-y-4">
                 <div className="space-y-2">
                   <Label htmlFor="signup-name">Full Name</Label>
-                  <Input
-                    id="signup-name"
-                    type="text"
-                    placeholder="Enter your full name"
-                    value={fullName}
-                    onChange={(e) => setFullName(e.target.value)}
-                    required
-                  />
-                </div>
-                <div className="space-y-2">
-                  <Label htmlFor="signup-email">Email</Label>
-                  <Input
-                    id="signup-email"
-                    type="email"
-                    placeholder="Enter your email"
-                    value={email}
-                    onChange={(e) => setEmail(e.target.value)}
-                    required
-                  />
-                </div>
-                <div className="space-y-2">
-                  <Label htmlFor="signup-password">Password</Label>
-                  <Input
-                    id="signup-password"
-                    type="password"
-                    placeholder="Create a password"
-                    value={password}
-                    onChange={(e) => setPassword(e.target.value)}
-                    required
-                    minLength={6}
-                  />
+                    <Input
+                      id="signup-name"
+                      type="text"
+                      placeholder="Enter your full name"
+                      value={fullName}
+                      onChange={(e) => setFullName(e.target.value)}
+                      required
+                      aria-describedby={validationErrors.fullName ? "signup-name-error" : undefined}
+                    />
+                    {validationErrors.fullName && (
+                      <p id="signup-name-error" className="text-sm text-destructive">{validationErrors.fullName}</p>
+                    )}
+                  </div>
+                  <div className="space-y-2">
+                    <Label htmlFor="signup-email">Email</Label>
+                    <Input
+                      id="signup-email"
+                      type="email"
+                      placeholder="Enter your email"
+                      value={email}
+                      onChange={(e) => setEmail(e.target.value)}
+                      required
+                      aria-describedby={validationErrors.email ? "signup-email-error" : undefined}
+                    />
+                    {validationErrors.email && (
+                      <p id="signup-email-error" className="text-sm text-destructive">{validationErrors.email}</p>
+                    )}
+                  </div>
+                  <div className="space-y-2">
+                    <Label htmlFor="signup-phone">Phone Number (Optional)</Label>
+                    <Input
+                      id="signup-phone"
+                      type="tel"
+                      placeholder="Enter your phone number (e.g., +971501234567)"
+                      value={phone}
+                      onChange={(e) => setPhone(e.target.value)}
+                      aria-describedby={validationErrors.phone ? "signup-phone-error" : undefined}
+                    />
+                    {validationErrors.phone && (
+                      <p id="signup-phone-error" className="text-sm text-destructive">{validationErrors.phone}</p>
+                    )}
+                  </div>
+                  <div className="space-y-2">
+                    <Label htmlFor="signup-password">Password</Label>
+                    <Input
+                      id="signup-password"
+                      type="password"
+                      placeholder="Create a password (min 12 characters)"
+                      value={password}
+                      onChange={(e) => setPassword(e.target.value)}
+                      required
+                      minLength={12}
+                      aria-describedby={validationErrors.password ? "signup-password-error" : undefined}
+                    />
+                    {validationErrors.password && (
+                      <p id="signup-password-error" className="text-sm text-destructive">{validationErrors.password}</p>
+                    )}
                 </div>
                 <Button type="submit" className="w-full" disabled={isLoading}>
                   {isLoading ? "Creating account..." : "Sign Up"}

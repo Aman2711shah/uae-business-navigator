@@ -1,4 +1,5 @@
 import { supabase } from '@/integrations/supabase/client';
+import { logger } from './logger';
 
 export interface SecurityEvent {
   event_type: 'auth_failure' | 'suspicious_upload' | 'rate_limit_exceeded' | 'admin_action' | 'xss_attempt' | 'sql_injection_attempt';
@@ -9,20 +10,43 @@ export interface SecurityEvent {
   severity: 'low' | 'medium' | 'high' | 'critical';
 }
 
+// Filter out false positives for CSP and security headers
+const isSecurityHeaderEvent = (event: SecurityEvent): boolean => {
+  if (event.event_type !== 'xss_attempt') return false;
+  
+  const element = event.details?.element || '';
+  const securityHeaderPatterns = [
+    'Content-Security-Policy',
+    'X-Frame-Options',
+    'X-Content-Type-Options',
+    'Referrer-Policy',
+    'Permissions-Policy'
+  ];
+  
+  return securityHeaderPatterns.some(pattern => element.includes(pattern));
+};
+
 /**
  * Log security events for monitoring and analysis
+ * Filters out false positives from legitimate security headers
  */
 export async function logSecurityEvent(event: SecurityEvent): Promise<void> {
   try {
+    // Filter out false positives for security headers
+    if (isSecurityHeaderEvent(event)) {
+      logger.debug('Filtered out security header false positive:', event.details);
+      return;
+    }
+
     // Log to console for immediate debugging
-    console.warn('Security Event:', {
+    logger.security('Security Event:', {
       timestamp: new Date().toISOString(),
       ...event
     });
 
     // Store critical and high severity events in database for admin review
     if (event.severity === 'critical' || event.severity === 'high') {
-      console.error('CRITICAL SECURITY EVENT:', {
+      logger.error('CRITICAL SECURITY EVENT:', {
         timestamp: new Date().toISOString(),
         ...event
       });
