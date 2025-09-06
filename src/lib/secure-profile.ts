@@ -39,7 +39,7 @@ export const getPublicProfile = async (userId: string): Promise<{ data: PublicPr
         updated_at
       `)
       .eq('user_id', userId)
-      .single();
+      .maybeSingle(); // Use maybeSingle() instead of single() to handle no results gracefully
 
     return { data, error };
   } catch (error) {
