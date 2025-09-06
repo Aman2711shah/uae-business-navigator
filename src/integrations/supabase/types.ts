@@ -203,13 +203,6 @@ export type Database = {
             referencedRelation: "profiles"
             referencedColumns: ["id"]
           },
-          {
-            foreignKeyName: "comments_profile_id_fkey"
-            columns: ["profile_id"]
-            isOneToOne: false
-            referencedRelation: "safe_profiles"
-            referencedColumns: ["id"]
-          },
         ]
       }
       communities: {
@@ -286,13 +279,6 @@ export type Database = {
             columns: ["profile_id"]
             isOneToOne: false
             referencedRelation: "profiles"
-            referencedColumns: ["id"]
-          },
-          {
-            foreignKeyName: "community_members_profile_id_fkey"
-            columns: ["profile_id"]
-            isOneToOne: false
-            referencedRelation: "safe_profiles"
             referencedColumns: ["id"]
           },
         ]
@@ -768,13 +754,6 @@ export type Database = {
             referencedRelation: "profiles"
             referencedColumns: ["id"]
           },
-          {
-            foreignKeyName: "marketplace_items_profile_id_fkey"
-            columns: ["profile_id"]
-            isOneToOne: false
-            referencedRelation: "safe_profiles"
-            referencedColumns: ["id"]
-          },
         ]
       }
       notifications: {
@@ -805,13 +784,6 @@ export type Database = {
             columns: ["profile_id"]
             isOneToOne: false
             referencedRelation: "profiles"
-            referencedColumns: ["id"]
-          },
-          {
-            foreignKeyName: "notifications_profile_id_fkey"
-            columns: ["profile_id"]
-            isOneToOne: false
-            referencedRelation: "safe_profiles"
             referencedColumns: ["id"]
           },
         ]
@@ -1025,13 +997,6 @@ export type Database = {
             columns: ["profile_id"]
             isOneToOne: false
             referencedRelation: "profiles"
-            referencedColumns: ["id"]
-          },
-          {
-            foreignKeyName: "posts_profile_id_fkey"
-            columns: ["profile_id"]
-            isOneToOne: false
-            referencedRelation: "safe_profiles"
             referencedColumns: ["id"]
           },
         ]
@@ -1498,42 +1463,6 @@ export type Database = {
           office_location?: string | null
           updated_at?: string | null
           website_url?: string | null
-        }
-        Relationships: []
-      }
-      safe_profiles: {
-        Row: {
-          avatar_url: string | null
-          bio: string | null
-          created_at: string | null
-          display_name: string | null
-          headline: string | null
-          id: string | null
-          services: string[] | null
-          updated_at: string | null
-          user_id: string | null
-        }
-        Insert: {
-          avatar_url?: string | null
-          bio?: string | null
-          created_at?: string | null
-          display_name?: string | null
-          headline?: string | null
-          id?: string | null
-          services?: string[] | null
-          updated_at?: string | null
-          user_id?: string | null
-        }
-        Update: {
-          avatar_url?: string | null
-          bio?: string | null
-          created_at?: string | null
-          display_name?: string | null
-          headline?: string | null
-          id?: string | null
-          services?: string[] | null
-          updated_at?: string | null
-          user_id?: string | null
         }
         Relationships: []
       }
