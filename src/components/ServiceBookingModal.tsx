@@ -536,15 +536,7 @@ const ServiceBookingModal = ({ isOpen, onClose, subService, parentService }: Ser
                     variant="outline" 
                     className="w-full"
                     onClick={() => {
-                      // Option 1: Direct phone call
-                      // window.location.href = `tel:+971501234567`;
-                      
-                      // Option 2: Callback request form (for demo)
-                      toast({
-                        title: "Callback Requested",
-                        description: "Our business advisor will call you within 30 minutes.",
-                        variant: "default"
-                      });
+                      window.location.href = `tel:+971559986386`;
                     }}
                   >
                     Call Business Setup Advisor
