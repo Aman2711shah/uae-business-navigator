@@ -11,6 +11,7 @@ import { applyClientSecurityHeaders } from "./lib/csp";
 import Index from "./pages/Index";
 import Auth from "./pages/Auth";
 import Admin from "./pages/Admin";
+import Dashboard from "./pages/Dashboard";
 import Services from "./pages/Services";
 import ServicesSupabase from "./pages/ServicesSupabase";
 import ServiceDetail from "./pages/ServiceDetail";
@@ -52,6 +53,7 @@ const App = () => {
             <Routes>
               <Route path="/auth" element={<Auth />} />
               <Route path="/" element={<ProtectedRoute><Index /></ProtectedRoute>} />
+              <Route path="/dashboard" element={<ProtectedRoute><Dashboard /></ProtectedRoute>} />
               <Route path="/admin" element={<ProtectedRoute><Admin /></ProtectedRoute>} />
               <Route path="/services" element={<ProtectedRoute><ServicesSupabase /></ProtectedRoute>} />
               <Route path="/services-old" element={<ProtectedRoute><Services /></ProtectedRoute>} />

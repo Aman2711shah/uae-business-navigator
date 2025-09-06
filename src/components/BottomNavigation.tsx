@@ -1,11 +1,11 @@
-import { FileText, Users, TrendingUp, MoreHorizontal, Zap } from "lucide-react";
+import { FileText, Users, TrendingUp, MoreHorizontal, Zap, LayoutDashboard } from "lucide-react";
 import { useLocation, useNavigate } from "react-router-dom";
 
 const navItems = [
   { icon: Zap, label: "Home", path: "/" },
+  { icon: LayoutDashboard, label: "Dashboard", path: "/dashboard" },
   { icon: FileText, label: "Services", path: "/services" },
   { icon: Users, label: "Community", path: "/community" },
-  { icon: TrendingUp, label: "Growth", path: "/growth" },
   { icon: MoreHorizontal, label: "More", path: "/more" },
 ];
 
