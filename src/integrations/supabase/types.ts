@@ -14,6 +14,35 @@ export type Database = {
   }
   public: {
     Tables: {
+      addon_prices: {
+        Row: {
+          addon_key: string | null
+          freezone_id: string | null
+          id: string
+          price: number | null
+        }
+        Insert: {
+          addon_key?: string | null
+          freezone_id?: string | null
+          id?: string
+          price?: number | null
+        }
+        Update: {
+          addon_key?: string | null
+          freezone_id?: string | null
+          id?: string
+          price?: number | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "addon_prices_freezone_id_fkey"
+            columns: ["freezone_id"]
+            isOneToOne: false
+            referencedRelation: "freezones"
+            referencedColumns: ["freezone_id"]
+          },
+        ]
+      }
       applications: {
         Row: {
           application_id: string
@@ -542,6 +571,45 @@ export type Database = {
           office_location?: string | null
           updated_at?: string
           website_url?: string | null
+        }
+        Relationships: []
+      }
+      freezones: {
+        Row: {
+          admin_fee_percent: number | null
+          base_license_yearly: number | null
+          freezone_id: string | null
+          id: string
+          name: string | null
+          office_flex_fee_yearly: number | null
+          office_small_office_fee_yearly: number | null
+          requires_physical_office: boolean | null
+          vat_percent: number | null
+          visa_fee_per: number | null
+        }
+        Insert: {
+          admin_fee_percent?: number | null
+          base_license_yearly?: number | null
+          freezone_id?: string | null
+          id?: string
+          name?: string | null
+          office_flex_fee_yearly?: number | null
+          office_small_office_fee_yearly?: number | null
+          requires_physical_office?: boolean | null
+          vat_percent?: number | null
+          visa_fee_per?: number | null
+        }
+        Update: {
+          admin_fee_percent?: number | null
+          base_license_yearly?: number | null
+          freezone_id?: string | null
+          id?: string
+          name?: string | null
+          office_flex_fee_yearly?: number | null
+          office_small_office_fee_yearly?: number | null
+          requires_physical_office?: boolean | null
+          vat_percent?: number | null
+          visa_fee_per?: number | null
         }
         Relationships: []
       }
@@ -1204,51 +1272,63 @@ export type Database = {
           created_at: string
           id: string
           notes: string | null
+          payload: Json | null
           payment_amount: number | null
           payment_currency: string | null
           payment_intent_id: string | null
           payment_metadata: Json | null
           payment_status: string | null
+          request_id: string | null
           service_id: string
           status: string
           sub_service_id: string | null
           total_price: number | null
           updated_at: string
+          user_email: string | null
           user_id: string | null
+          user_name: string | null
         }
         Insert: {
           contact_info?: Json
           created_at?: string
           id?: string
           notes?: string | null
+          payload?: Json | null
           payment_amount?: number | null
           payment_currency?: string | null
           payment_intent_id?: string | null
           payment_metadata?: Json | null
           payment_status?: string | null
+          request_id?: string | null
           service_id: string
           status?: string
           sub_service_id?: string | null
           total_price?: number | null
           updated_at?: string
+          user_email?: string | null
           user_id?: string | null
+          user_name?: string | null
         }
         Update: {
           contact_info?: Json
           created_at?: string
           id?: string
           notes?: string | null
+          payload?: Json | null
           payment_amount?: number | null
           payment_currency?: string | null
           payment_intent_id?: string | null
           payment_metadata?: Json | null
           payment_status?: string | null
+          request_id?: string | null
           service_id?: string
           status?: string
           sub_service_id?: string | null
           total_price?: number | null
           updated_at?: string
+          user_email?: string | null
           user_id?: string | null
+          user_name?: string | null
         }
         Relationships: [
           {
