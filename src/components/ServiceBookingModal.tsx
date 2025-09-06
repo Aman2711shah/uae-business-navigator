@@ -12,8 +12,8 @@ import { useToast } from "@/hooks/use-toast";
 import { supabase } from "@/integrations/supabase/client";
 import { useAuth } from "@/contexts/AuthContext";
 
-// Stripe publishable key - safe to store in frontend
-const STRIPE_PUBLISHABLE_KEY = "pk_test_51QbSLNEGPBCOzNUW7vYvQ1nZdWTXCMhZjRYpGc8E3cBG8QrEOLKJcUvWGpMgdGp2x3vg2h7yF2JmZJ8hN3aK4mP4900123456789"; // Replace with your actual publishable key
+// Note: Add your Stripe publishable key here when ready to use Stripe.js fallback
+// const STRIPE_PUBLISHABLE_KEY = "pk_test_your_actual_key_here";
 
 interface SubService {
   id: string;
@@ -485,32 +485,44 @@ const ServiceBookingModal = ({ isOpen, onClose, subService, parentService }: Ser
                     className="w-full"
                     onClick={async () => {
                       try {
+                        console.log('Starting payment process for submission:', submissionId);
+                        
                         // Call our Supabase edge function to create checkout session
                         const { data, error } = await supabase.functions.invoke('create-checkout-session', {
                           body: { submissionId }
                         });
                         
-                        if (error) throw error;
+                        console.log('Checkout session response:', { data, error });
                         
-                        // Option 1: Direct redirect to checkout URL (recommended)
+                        if (error) {
+                          console.error('Edge function error:', error);
+                          throw new Error(error.message || 'Failed to create checkout session');
+                        }
+                        
+                        if (!data) {
+                          throw new Error('No response data from checkout session');
+                        }
+                        
+                        // Open Stripe checkout in a new tab (recommended for security)
                         if (data.checkoutUrl) {
-                          window.location.href = data.checkoutUrl;
+                          console.log('Redirecting to checkout URL:', data.checkoutUrl);
+                          window.open(data.checkoutUrl, '_blank');
                           return;
                         }
                         
-                        // Option 2: Use Stripe.js as fallback
-                        if (data.sessionId && (window as any).Stripe) {
-                          const stripe = (window as any).Stripe(STRIPE_PUBLISHABLE_KEY);
-                          await stripe.redirectToCheckout({ sessionId: data.sessionId });
+                        // Fallback: redirect in current window if new tab fails
+                        if (data.sessionId) {
+                          console.log('Using session ID fallback:', data.sessionId);
+                          window.location.href = `https://checkout.stripe.com/c/pay/${data.sessionId}`;
                           return;
                         }
                         
-                        throw new Error('No checkout URL or session ID returned');
+                        throw new Error('No checkout URL or session ID returned from payment service');
                       } catch (error) {
-                        console.error('Payment error:', error);
+                        console.error('Payment error details:', error);
                         toast({
                           title: "Payment Error",
-                          description: "Failed to initiate payment. Please try again.",
+                          description: error instanceof Error ? error.message : "Failed to initiate payment. Please try again.",
                           variant: "destructive"
                         });
                       }

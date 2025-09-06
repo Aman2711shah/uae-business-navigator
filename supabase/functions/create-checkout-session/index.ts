@@ -64,8 +64,14 @@ serve(async (req) => {
     const amountInFils = Math.round(Number(amountAED) * 100);
     const currency = submission.payment_currency || "aed";
 
+    logStep("Amount calculation", { 
+      originalAmount: amountAED, 
+      amountInFils, 
+      currency 
+    });
+
     if (amountInFils <= 0) {
-      throw new Error("Invalid amount");
+      throw new Error(`Invalid amount: ${amountAED} AED (${amountInFils} fils)`);
     }
 
     const stripe = new Stripe(stripeKey, { apiVersion: "2023-10-16" });
@@ -115,9 +121,16 @@ serve(async (req) => {
       logStep("Submission updated with payment info");
     }
 
+    logStep("Final response", { 
+      sessionId: session.id, 
+      checkoutUrl: session.url,
+      success: true 
+    });
+
     return new Response(JSON.stringify({ 
       sessionId: session.id, 
-      checkoutUrl: session.url 
+      checkoutUrl: session.url,
+      success: true
     }), {
       headers: { ...corsHeaders, "Content-Type": "application/json" },
       status: 200,
