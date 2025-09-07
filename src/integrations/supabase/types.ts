@@ -1229,6 +1229,45 @@ export type Database = {
         }
         Relationships: []
       }
+      sensitive_data_access_log: {
+        Row: {
+          access_granted: boolean
+          accessed_at: string
+          accessed_by: string | null
+          action: string
+          additional_metadata: Json | null
+          id: string
+          ip_address: string | null
+          record_id: string | null
+          table_name: string
+          user_agent: string | null
+        }
+        Insert: {
+          access_granted?: boolean
+          accessed_at?: string
+          accessed_by?: string | null
+          action: string
+          additional_metadata?: Json | null
+          id?: string
+          ip_address?: string | null
+          record_id?: string | null
+          table_name: string
+          user_agent?: string | null
+        }
+        Update: {
+          access_granted?: boolean
+          accessed_at?: string
+          accessed_by?: string | null
+          action?: string
+          additional_metadata?: Json | null
+          id?: string
+          ip_address?: string | null
+          record_id?: string | null
+          table_name?: string
+          user_agent?: string | null
+        }
+        Relationships: []
+      }
       service_requests: {
         Row: {
           created_at: string
@@ -1785,6 +1824,60 @@ export type Database = {
           user_id: string
         }[]
       }
+      get_lead_secure: {
+        Args: {
+          p_lead_id: string
+          p_requester_ip?: string
+          p_user_agent?: string
+        }
+        Returns: {
+          created_at: string
+          email: string
+          fields: Json
+          file_name: string
+          file_url: string
+          firstname: string
+          form_name: string
+          id: string
+          lastname: string
+          notes: string
+          phone: string
+          service: string
+          updated_at: string
+        }[]
+      }
+      get_leads_secure: {
+        Args: {
+          p_limit?: number
+          p_offset?: number
+          p_requester_ip?: string
+          p_search_term?: string
+          p_user_agent?: string
+        }
+        Returns: {
+          created_at: string
+          email: string
+          fields: Json
+          firstname: string
+          form_name: string
+          id: string
+          lastname: string
+          notes: string
+          phone: string
+          service: string
+          updated_at: string
+        }[]
+      }
+      get_leads_statistics: {
+        Args: Record<PropertyKey, never>
+        Returns: {
+          leads_this_month: number
+          leads_this_week: number
+          leads_today: number
+          top_services: string[]
+          total_leads: number
+        }[]
+      }
       has_role: {
         Args: {
           _role: Database["public"]["Enums"]["app_role"]
@@ -1803,9 +1896,29 @@ export type Database = {
         }
         Returns: undefined
       }
+      log_sensitive_data_access: {
+        Args: {
+          p_action?: string
+          p_ip_address?: string
+          p_metadata?: Json
+          p_record_id?: string
+          p_table_name: string
+          p_user_agent?: string
+        }
+        Returns: undefined
+      }
       setup_initial_admin: {
         Args: Record<PropertyKey, never>
         Returns: string
+      }
+      update_lead_secure: {
+        Args: {
+          p_lead_id: string
+          p_requester_ip?: string
+          p_updates: Json
+          p_user_agent?: string
+        }
+        Returns: undefined
       }
     }
     Enums: {
