@@ -1220,6 +1220,18 @@ export type Database = {
         }
         Relationships: []
       }
+      stripe_charges: {
+        Row: {
+          id: string | null
+        }
+        Insert: {
+          id?: string | null
+        }
+        Update: {
+          id?: string | null
+        }
+        Relationships: []
+      }
       sub_services: {
         Row: {
           created_at: string | null
