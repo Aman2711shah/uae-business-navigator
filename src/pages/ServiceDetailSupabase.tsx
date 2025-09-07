@@ -1,5 +1,5 @@
 import { useEffect, useState } from "react";
-import { useParams, Link } from "react-router-dom";
+import { useParams, Link, useNavigate } from "react-router-dom";
 import { ArrowLeft, Clock, FileText, ArrowRight } from "lucide-react";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
@@ -27,6 +27,7 @@ interface SubService {
 const ServiceDetailSupabase = () => {
   const { serviceId } = useParams<{ serviceId: string }>();
   const { toast } = useToast();
+  const navigate = useNavigate();
   const [service, setService] = useState<Service | null>(null);
   const [subServices, setSubServices] = useState<SubService[]>([]);
   const [loading, setLoading] = useState(true);
@@ -91,9 +92,8 @@ const ServiceDetailSupabase = () => {
   };
 
   const handleViewDetails = (subService: SubService) => {
-    // Navigate to sub-service detail page
-    // We'll implement this component next
-    window.location.href = `/sub-service-detail/${subService.id}`;
+    // Navigate to sub-service detail page using React Router
+    navigate(`/sub-service-detail/${subService.id}`);
   };
 
   if (loading) {
