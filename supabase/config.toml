@@ -42,3 +42,6 @@ verify_jwt = false
 
 [functions.profile-avatar]
 verify_jwt = false
+
+[functions.documents]
+verify_jwt = false

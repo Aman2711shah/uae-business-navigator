@@ -6,7 +6,7 @@ import SupportButton from "@/components/ui/support-button";
 import { BrowserRouter, Routes, Route } from "react-router-dom";
 import { AuthProvider } from "@/contexts/AuthContext";
 import { ProtectedRoute } from "@/components/auth/ProtectedRoute";
-import { useEffect } from "react";
+import { useEffect, lazy, Suspense } from "react";
 import { applyClientSecurityHeaders } from "./lib/csp";
 import Index from "./pages/Index";
 import Auth from "./pages/Auth";
@@ -37,6 +37,7 @@ import CompanyFormationProcess from "./pages/CompanyFormationProcess";
 import TrackApplication from "./pages/TrackApplication";
 import ServiceApplication from "./pages/ServiceApplication";
 import ProfileSettings from "./pages/ProfileSettings";
+const MyDocuments = lazy(() => import('./pages/MyDocuments'));
 
 const queryClient = new QueryClient();
 
@@ -82,6 +83,7 @@ const App = () => {
               <Route path="/growth/booking/:serviceId" element={<ProtectedRoute><GrowthBooking /></ProtectedRoute>} />
               <Route path="/service-application/:subServiceId?" element={<ProtectedRoute><ServiceApplication /></ProtectedRoute>} />
               <Route path="/profile-settings" element={<ProtectedRoute><ProfileSettings /></ProtectedRoute>} />
+              <Route path="/my-documents" element={<ProtectedRoute><Suspense fallback={<div>Loading...</div>}><MyDocuments /></Suspense></ProtectedRoute>} />
               {/* ADD ALL CUSTOM ROUTES ABOVE THE CATCH-ALL "*" ROUTE */}
               <Route path="*" element={<NotFound />} />
             </Routes>

@@ -16,7 +16,7 @@ const menuSections = [
       { icon: User, label: "Profile Settings", description: "Edit name, email, and profile", route: "/profile-settings" },
       { icon: Calendar, label: "My Bookings", description: "View appointments and consultations", route: "/growth/booking" },
       { icon: CreditCard, label: "Invoices & Payments", description: "Billing history and payments", route: "/services" },
-      { icon: FileText, label: "My Documents", description: "Uploaded licenses and documents", route: "/services" }
+      { icon: FileText, label: "My Documents", description: "Uploaded licenses and documents", route: "/my-documents" }
     ]
   },
   {
