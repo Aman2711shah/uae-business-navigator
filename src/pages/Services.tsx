@@ -1,4 +1,4 @@
-import { Building2, FileText, UserCheck, Scale, Calculator, Building, Users, Banknote, TrendingUp, Shield, Lightbulb, Globe, Monitor, Megaphone, Truck, Briefcase, ChevronRight, Search, CreditCard, Award, MapPin } from "lucide-react";
+import { Building2, FileText, UserCheck, Scale, Calculator, Building, Users, Banknote, TrendingUp, Shield, Lightbulb, Globe, Monitor, Megaphone, Truck, Briefcase, ChevronRight, Search, CreditCard, Award, MapPin, Scroll, MoreHorizontal } from "lucide-react";
 import { Card, CardContent } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
 import { Badge } from "@/components/ui/badge";
@@ -11,6 +11,7 @@ const serviceCategories = [
   {
     title: "Visa & Immigration",
     icon: UserCheck,
+    logo: "/src/assets/icons/visa-processing.png",
     color: "text-brand-purple",
     bgColor: "bg-purple-50",
     services: [
@@ -27,6 +28,7 @@ const serviceCategories = [
   {
     title: "Taxation",
     icon: Banknote,
+    logo: "/src/assets/icons/tax-corporate.png",
     color: "text-emerald-600",
     bgColor: "bg-emerald-50",
     services: [
@@ -42,6 +44,7 @@ const serviceCategories = [
   {
     title: "Accounting & Bookkeeping",
     icon: Calculator,
+    logo: "/src/assets/icons/invoices-payments.png",
     color: "text-brand-orange",
     bgColor: "bg-orange-50",
     services: [
@@ -54,6 +57,7 @@ const serviceCategories = [
   {
     title: "Payroll & HR",
     icon: Users,
+    logo: "/src/assets/icons/profile-settings.png",
     color: "text-purple-600",
     bgColor: "bg-purple-50",
     services: [
@@ -66,6 +70,7 @@ const serviceCategories = [
   {
     title: "Legal & Compliance",
     icon: Scale,
+    logo: "/src/assets/icons/trade-license.png",
     color: "text-red-600",
     bgColor: "bg-red-50",
     services: [
@@ -82,6 +87,7 @@ const serviceCategories = [
   {
     title: "Payment & Accounting",
     icon: CreditCard,
+    logo: "/src/assets/icons/banking.png",
     color: "text-blue-600",
     bgColor: "bg-blue-50",
     services: [
@@ -94,6 +100,7 @@ const serviceCategories = [
   {
     title: "Company Setup & Licenses",
     icon: Building2,
+    logo: "/src/assets/icons/start-company.png",
     color: "text-brand-blue",
     bgColor: "bg-blue-50",
     services: [
@@ -107,6 +114,7 @@ const serviceCategories = [
   {
     title: "Government Approvals & Certificates",
     icon: Award,
+    logo: "/src/assets/icons/freezone-info.png",
     color: "text-pink-600",
     bgColor: "bg-pink-50",
     services: [
@@ -119,6 +127,7 @@ const serviceCategories = [
   {
     title: "Advisory & Growth",
     icon: TrendingUp,
+    logo: "/src/assets/icons/business-growth.png",
     color: "text-yellow-600",
     bgColor: "bg-yellow-50",
     services: [
@@ -130,7 +139,8 @@ const serviceCategories = [
   },
   {
     title: "Attestation & Consular",
-    icon: FileText,
+    icon: Scroll,
+    logo: "/src/assets/icons/my-documents.png",
     color: "text-brand-green",
     bgColor: "bg-green-50",
     services: [
@@ -142,7 +152,8 @@ const serviceCategories = [
   },
   {
     title: "Other Services",
-    icon: Briefcase,
+    icon: MoreHorizontal,
+    logo: "/src/assets/icons/logistics.png",
     color: "text-gray-600",
     bgColor: "bg-gray-50",
     services: [
@@ -215,7 +226,7 @@ const Services = () => {
     <div className="min-h-screen bg-gradient-to-b from-background to-muted/20 pb-20">
       {/* Header */}
       <div className="bg-white border-b border-border p-4">
-        <h1 className="text-2xl font-bold text-foreground mb-4">Business Services</h1>
+        <h1 className="text-xl md:text-2xl font-bold text-foreground mb-4">Business Services</h1>
         
         {/* Search Bar */}
         <div className="relative">
@@ -224,7 +235,7 @@ const Services = () => {
             placeholder="Search services..." 
             value={searchTerm}
             onChange={(e) => setSearchTerm(e.target.value)}
-            className="pl-10 h-12 bg-muted/50 border-none rounded-xl"
+            className="pl-10 h-10 md:h-12 bg-muted/50 border-none rounded-xl text-sm md:text-base"
           />
         </div>
       </div>
@@ -244,18 +255,26 @@ const Services = () => {
               >
                 <div className="flex items-center justify-between">
                   <div className="flex items-center gap-3">
-                    <div className={`w-12 h-12 rounded-xl ${category.bgColor} flex items-center justify-center`}>
-                      <category.icon className={`h-6 w-6 ${category.color}`} />
+                    <div className={`w-12 h-12 rounded-xl ${category.bgColor} flex items-center justify-center overflow-hidden`}>
+                      {category.logo ? (
+                        <img 
+                          src={category.logo} 
+                          alt={category.title}
+                          className="w-8 h-8 object-contain"
+                        />
+                      ) : (
+                        <category.icon className={`h-6 w-6 ${category.color}`} />
+                      )}
                     </div>
-                    <div>
-                      <h3 className="font-semibold text-foreground">{category.title}</h3>
-                      <p className="text-sm text-muted-foreground">
+                    <div className="flex-1 min-w-0">
+                      <h3 className="font-semibold text-foreground text-sm md:text-base truncate">{category.title}</h3>
+                      <p className="text-xs md:text-sm text-muted-foreground">
                         {category.services.length} services available
                       </p>
                     </div>
                   </div>
                   <ChevronRight 
-                    className={`h-5 w-5 text-muted-foreground transition-transform duration-200 ${
+                    className={`h-4 w-4 md:h-5 md:w-5 text-muted-foreground transition-transform duration-200 flex-shrink-0 ${
                       selectedCategory === category.title ? 'rotate-90' : ''
                     }`} 
                   />
@@ -272,15 +291,15 @@ const Services = () => {
                       onClick={() => handleServiceClick(service, category.title)}
                     >
                       <div className="flex items-center justify-between">
-                        <div className="flex-1">
-                          <h4 className="font-medium text-foreground">{service.name}</h4>
-                          <p className="text-sm text-muted-foreground mt-1">{service.description}</p>
-                          <div className="flex gap-2 mt-2">
-                            <Badge variant="secondary" className="text-xs">Mainland</Badge>
-                            <Badge variant="secondary" className="text-xs">Free Zone</Badge>
+                        <div className="flex-1 min-w-0">
+                          <h4 className="font-medium text-foreground text-sm md:text-base">{service.name}</h4>
+                          <p className="text-xs md:text-sm text-muted-foreground mt-1 line-clamp-2">{service.description}</p>
+                          <div className="flex gap-1 md:gap-2 mt-2 flex-wrap">
+                            <Badge variant="secondary" className="text-xs px-2 py-0.5">Mainland</Badge>
+                            <Badge variant="secondary" className="text-xs px-2 py-0.5">Free Zone</Badge>
                           </div>
                         </div>
-                        <ChevronRight className="h-4 w-4 text-muted-foreground ml-2" />
+                        <ChevronRight className="h-4 w-4 text-muted-foreground ml-2 flex-shrink-0" />
                       </div>
                     </div>
                   ))}
