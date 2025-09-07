@@ -36,12 +36,19 @@ const SubServiceDetail = () => {
   const abortControllerRef = useRef<AbortController | null>(null);
 
   useEffect(() => {
-    if (subServiceId) {
-      fetchSubServiceDetails();
-    }
+    let isMounted = true;
     
-    // Cleanup function to abort ongoing requests
+    const fetchData = async () => {
+      if (subServiceId && isMounted) {
+        await fetchSubServiceDetails();
+      }
+    };
+    
+    fetchData();
+    
+    // Cleanup function
     return () => {
+      isMounted = false;
       if (abortControllerRef.current) {
         abortControllerRef.current.abort();
       }
@@ -65,7 +72,7 @@ const SubServiceDetail = () => {
         .from('sub_services')
         .select('id, name, price, currency, timeline, required_documents, service_id, metadata')
         .eq('id', subServiceId)
-        .single();
+        .maybeSingle();
 
       // Check if request was aborted
       if (abortControllerRef.current?.signal.aborted) {
@@ -79,6 +86,7 @@ const SubServiceDetail = () => {
           description: "Failed to load service details.",
           variant: "destructive"
         });
+        setLoading(false);
         return;
       }
 
@@ -86,6 +94,7 @@ const SubServiceDetail = () => {
         logger.warn('No sub-service data found for ID:', subServiceId);
         setSubService(null);
         setParentService(null);
+        setLoading(false);
         return;
       }
 
@@ -94,13 +103,19 @@ const SubServiceDetail = () => {
         .from('services')
         .select('id, name')
         .eq('id', subServiceData.service_id)
-        .single();
+        .maybeSingle();
+
+      // Check if request was aborted again
+      if (abortControllerRef.current?.signal.aborted) {
+        return;
+      }
 
       if (parentServiceError) {
         logger.error('Error fetching parent service:', parentServiceError);
         // Still set sub-service data even if parent service fails
         setSubService(subServiceData);
         setParentService(null);
+        setLoading(false);
         return;
       }
 
@@ -115,6 +130,7 @@ const SubServiceDetail = () => {
           description: "Failed to load service details.",
           variant: "destructive"
         });
+        setLoading(false);
       }
     } finally {
       // Only update loading state if request wasn't aborted
