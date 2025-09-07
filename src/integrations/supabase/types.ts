@@ -1616,28 +1616,6 @@ export type Database = {
       }
     }
     Views: {
-      application_payment_status: {
-        Row: {
-          charge_amount: number | null
-          charge_created: string | null
-          charge_currency: string | null
-          charge_id: string | null
-          charge_status: string | null
-          checkout_amount: number | null
-          checkout_created: string | null
-          checkout_currency: string | null
-          checkout_session_id: string | null
-          checkout_status: string | null
-          payment_intent_id: string | null
-          payment_status: string | null
-          request_id: string | null
-          submission_created: string | null
-          submission_status: string | null
-          user_email: string | null
-          user_name: string | null
-        }
-        Relationships: []
-      }
       freezone_public_info: {
         Row: {
           created_at: string | null
@@ -1699,8 +1677,30 @@ export type Database = {
         Args: Record<PropertyKey, never>
         Returns: string
       }
-      get_application_payment_status: {
+      get_application_payment_status_admin: {
         Args: { p_request_id: string }
+        Returns: {
+          charge_amount: number
+          charge_created: string
+          charge_currency: string
+          charge_id: string
+          charge_status: string
+          checkout_amount: number
+          checkout_created: string
+          checkout_currency: string
+          checkout_session_id: string
+          checkout_status: string
+          payment_intent_id: string
+          payment_status: string
+          request_id: string
+          submission_created: string
+          submission_status: string
+          user_email: string
+          user_name: string
+        }[]
+      }
+      get_application_payment_status_secure: {
+        Args: { p_request_id?: string }
         Returns: {
           charge_amount: number
           charge_created: string
