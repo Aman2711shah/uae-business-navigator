@@ -1,4 +1,5 @@
 import { useState } from "react";
+import { useToast } from "@/hooks/use-toast";
 import { 
   User, Calendar, FileText, CreditCard, Bell, Bookmark, Globe, 
   HelpCircle, MessageCircle, Star, Shield, Info, ChevronRight, Phone
@@ -12,7 +13,7 @@ const menuSections = [
   {
     title: "Account",
     items: [
-      { icon: User, label: "Profile Settings", description: "Edit name, email, and profile", route: "/dashboard" },
+      { icon: User, label: "Profile Settings", description: "Edit name, email, and profile", route: "/profile-settings" },
       { icon: Calendar, label: "My Bookings", description: "View appointments and consultations", route: "/growth/booking" },
       { icon: CreditCard, label: "Invoices & Payments", description: "Billing history and payments", route: "/services" },
       { icon: FileText, label: "My Documents", description: "Uploaded licenses and documents", route: "/services" }
@@ -45,7 +46,41 @@ const menuSections = [
 ];
 
 const More = () => {
-
+  const { toast } = useToast();
+  
+  // Configurable support phone number
+  const SUPPORT_PHONE = "+971559986386";
+  
+  const handleEmergencyCall = () => {
+    // Track analytics
+    if (typeof window !== 'undefined' && (window as any).analytics) {
+      (window as any).analytics.track('emergency_call_clicked', {
+        phone: SUPPORT_PHONE,
+        timestamp: Date.now()
+      });
+    }
+    
+    // Detect if mobile device
+    const isMobile = /Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(navigator.userAgent);
+    
+    if (isMobile) {
+      // On mobile, open dialer directly
+      window.location.href = `tel:${SUPPORT_PHONE}`;
+    } else {
+      // On desktop, show modal with number and copy functionality
+      navigator.clipboard.writeText(SUPPORT_PHONE).then(() => {
+        toast({
+          title: "Phone number copied!",
+          description: `Emergency support: ${SUPPORT_PHONE}\nCall this number for immediate assistance.`,
+        });
+      }).catch(() => {
+        toast({
+          title: "Emergency Support",
+          description: `Call: ${SUPPORT_PHONE}\nFor immediate assistance.`,
+        });
+      });
+    }
+  };
 
   return (
     <div className="min-h-screen bg-background pb-20">
@@ -91,6 +126,7 @@ const More = () => {
             <Button 
               className="w-full bg-destructive hover:bg-destructive/90 text-destructive-foreground"
               size="lg"
+              onClick={() => handleEmergencyCall()}
             >
               <Phone className="mr-2 h-5 w-5" />
               Emergency Support - Call Now
