@@ -1651,6 +1651,28 @@ export type Database = {
         Args: Record<PropertyKey, never>
         Returns: string
       }
+      get_application_payment_status: {
+        Args: { p_request_id: string }
+        Returns: {
+          charge_amount: number
+          charge_created: string
+          charge_currency: string
+          charge_id: string
+          charge_status: string
+          checkout_amount: number
+          checkout_created: string
+          checkout_currency: string
+          checkout_session_id: string
+          checkout_status: string
+          payment_intent_id: string
+          payment_status: string
+          request_id: string
+          submission_created: string
+          submission_status: string
+          user_email: string
+          user_name: string
+        }[]
+      }
       get_current_user_profile: {
         Args: Record<PropertyKey, never>
         Returns: {
