@@ -38,13 +38,92 @@ const SubServiceDetail = () => {
   useEffect(() => {
     let isMounted = true;
     
-    const fetchData = async () => {
-      if (subServiceId && isMounted) {
-        await fetchSubServiceDetails();
+    const fetchSubServiceDetails = async () => {
+      if (!subServiceId || !isMounted) return;
+
+      // Cancel any previous request
+      if (abortControllerRef.current) {
+        abortControllerRef.current.abort();
+      }
+
+      // Create new AbortController for this request
+      abortControllerRef.current = new AbortController();
+
+      try {
+        setLoading(true);
+        
+        // Fetch sub-service details
+        const { data: subServiceData, error: subServiceError } = await supabase
+          .from('sub_services')
+          .select('id, name, price, currency, timeline, required_documents, service_id, metadata')
+          .eq('id', subServiceId)
+          .maybeSingle();
+
+        // Check if request was aborted or component unmounted
+        if (abortControllerRef.current?.signal.aborted || !isMounted) {
+          return;
+        }
+
+        if (subServiceError) {
+          logger.error('Error fetching sub-service:', subServiceError);
+          if (isMounted) {
+            toast({
+              title: "Error",
+              description: "Failed to load service details.",
+              variant: "destructive"
+            });
+            setLoading(false);
+          }
+          return;
+        }
+
+        if (!subServiceData) {
+          logger.warn('No sub-service data found for ID:', subServiceId);
+          if (isMounted) {
+            setSubService(null);
+            setParentService(null);
+            setLoading(false);
+          }
+          return;
+        }
+
+        // Fetch parent service separately
+        const { data: parentServiceData, error: parentServiceError } = await supabase
+          .from('services')
+          .select('id, name')
+          .eq('id', subServiceData.service_id)
+          .maybeSingle();
+
+        // Check if request was aborted or component unmounted again
+        if (abortControllerRef.current?.signal.aborted || !isMounted) {
+          return;
+        }
+
+        if (parentServiceError) {
+          logger.error('Error fetching parent service:', parentServiceError);
+        }
+
+        // Only update state if component is still mounted
+        if (isMounted) {
+          setSubService(subServiceData);
+          setParentService(parentServiceData);
+          setLoading(false);
+        }
+      } catch (error) {
+        // Only handle error if request wasn't aborted and component is mounted
+        if (!abortControllerRef.current?.signal.aborted && isMounted) {
+          logger.error('Error:', error);
+          toast({
+            title: "Error",
+            description: "Failed to load service details.",
+            variant: "destructive"
+          });
+          setLoading(false);
+        }
       }
     };
     
-    fetchData();
+    fetchSubServiceDetails();
     
     // Cleanup function
     return () => {
@@ -53,92 +132,7 @@ const SubServiceDetail = () => {
         abortControllerRef.current.abort();
       }
     };
-  }, [subServiceId]);
-
-  const fetchSubServiceDetails = async () => {
-    if (!subServiceId) return;
-
-    // Cancel any previous request
-    if (abortControllerRef.current) {
-      abortControllerRef.current.abort();
-    }
-
-    // Create new AbortController for this request
-    abortControllerRef.current = new AbortController();
-
-    try {
-      // Fetch sub-service details
-      const { data: subServiceData, error: subServiceError } = await supabase
-        .from('sub_services')
-        .select('id, name, price, currency, timeline, required_documents, service_id, metadata')
-        .eq('id', subServiceId)
-        .maybeSingle();
-
-      // Check if request was aborted
-      if (abortControllerRef.current?.signal.aborted) {
-        return;
-      }
-
-      if (subServiceError) {
-        logger.error('Error fetching sub-service:', subServiceError);
-        toast({
-          title: "Error",
-          description: "Failed to load service details.",
-          variant: "destructive"
-        });
-        setLoading(false);
-        return;
-      }
-
-      if (!subServiceData) {
-        logger.warn('No sub-service data found for ID:', subServiceId);
-        setSubService(null);
-        setParentService(null);
-        setLoading(false);
-        return;
-      }
-
-      // Fetch parent service separately to avoid nested query issues
-      const { data: parentServiceData, error: parentServiceError } = await supabase
-        .from('services')
-        .select('id, name')
-        .eq('id', subServiceData.service_id)
-        .maybeSingle();
-
-      // Check if request was aborted again
-      if (abortControllerRef.current?.signal.aborted) {
-        return;
-      }
-
-      if (parentServiceError) {
-        logger.error('Error fetching parent service:', parentServiceError);
-        // Still set sub-service data even if parent service fails
-        setSubService(subServiceData);
-        setParentService(null);
-        setLoading(false);
-        return;
-      }
-
-      setSubService(subServiceData);
-      setParentService(parentServiceData);
-    } catch (error) {
-      // Only log error if request wasn't aborted
-      if (!abortControllerRef.current?.signal.aborted) {
-        logger.error('Error:', error);
-        toast({
-          title: "Error",
-          description: "Failed to load service details.",
-          variant: "destructive"
-        });
-        setLoading(false);
-      }
-    } finally {
-      // Only update loading state if request wasn't aborted
-      if (!abortControllerRef.current?.signal.aborted) {
-        setLoading(false);
-      }
-    }
-  };
+  }, [subServiceId, toast]);
 
   const handleStartService = () => {
     setShowBookingModal(true);
