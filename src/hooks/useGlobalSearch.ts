@@ -5,17 +5,8 @@ import { growthServices } from '@/data/growthData';
 // Service categories from Services page
 const serviceCategories = [
   {
-    title: "Company Formation & Licensing",
-    services: [
-      { name: "Trade License Application & Renewals", description: "Complete trade license processing and renewals" },
-      { name: "Name Reservation & Initial Approvals", description: "Business name registration and approval" },
-      { name: "Drafting & Notarization of MOA/LSA Agreements", description: "Legal document preparation and notarization" },
-      { name: "Chamber of Commerce Registration", description: "Registration with local chamber of commerce" },
-      { name: "DED & Free Zone License Processes", description: "Department of Economic Development licensing" }
-    ]
-  },
-  {
-    title: "Immigration & Visa Services",
+    title: "Visa & Immigration",
+    logo: "/src/assets/icons/visa-processing.png",
     services: [
       { name: "Establishment Card Application/Renewal", description: "Company establishment card processing" },
       { name: "Investor/Partner Visa Processing", description: "Investor and partner visa applications" },
@@ -28,7 +19,19 @@ const serviceCategories = [
     ]
   },
   {
+    title: "Company Formation & Licensing",
+    logo: "/src/assets/icons/start-company.png",
+    services: [
+      { name: "Trade License Application & Renewals", description: "Complete trade license processing and renewals" },
+      { name: "Name Reservation & Initial Approvals", description: "Business name registration and approval" },
+      { name: "Drafting & Notarization of MOA/LSA Agreements", description: "Legal document preparation and notarization" },
+      { name: "Chamber of Commerce Registration", description: "Registration with local chamber of commerce" },
+      { name: "DED & Free Zone License Processes", description: "Department of Economic Development licensing" }
+    ]
+  },
+  {
     title: "Government Liaison & Approvals",
+    logo: "/src/assets/icons/freezone-info.png",
     services: [
       { name: "Coordination with MOHRE, GDRFA, DED, MOFA", description: "Government department coordination" },
       { name: "Document Clearance with Government Departments", description: "Official document processing" },
@@ -38,6 +41,7 @@ const serviceCategories = [
   },
   {
     title: "Attestation & Legalization",
+    logo: "/src/assets/icons/my-documents.png",
     services: [
       { name: "Attestation of Educational, Commercial & POA Documents", description: "Document attestation services" },
       { name: "MOFA Attestation", description: "Ministry of Foreign Affairs attestation" },
