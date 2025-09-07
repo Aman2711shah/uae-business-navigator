@@ -174,7 +174,7 @@ export default function CommentSection({ postId, currentUserId }: CommentSection
                 size="sm"
                 onClick={handleSubmitComment}
                 disabled={!newComment.trim() || isSubmitting}
-                variant="cta"
+                variant="default"
               >
                 <Send className="h-3 w-3 mr-1" />
                 {isSubmitting ? "Posting..." : "Post"}

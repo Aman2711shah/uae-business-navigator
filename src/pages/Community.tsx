@@ -178,18 +178,36 @@ const Community = () => {
 
       {/* Content based on selection */}
       <div className="p-4">
-        <div className="text-center py-12">
-          <Users className="h-16 w-16 text-muted-foreground mx-auto mb-4" />
-          <h2 className="text-xl font-semibold text-foreground mb-2">
-            Welcome to the Community
-          </h2>
-          <p className="text-muted-foreground mb-6">
-            {userCommunityProfile ? 
-              "Select an industry above to start engaging with your communities" :
-              "Join industry communities to connect with like-minded professionals"
-            }
-          </p>
-          {userCommunityProfile && (
+        {!userCommunityProfile ? (
+          <div className="text-center py-12">
+            <Users className="h-16 w-16 text-muted-foreground mx-auto mb-4" />
+            <h2 className="text-xl font-semibold text-foreground mb-2">
+              Join the Community
+            </h2>
+            <p className="text-muted-foreground mb-6">
+              Connect with like-minded professionals in your industry. Share insights, ask questions, and grow your network.
+            </p>
+            <div className="grid grid-cols-2 md:grid-cols-4 gap-4 mt-8">
+              {industries.slice(0, 8).map((industry) => (
+                <Card key={industry.name} className="border-none shadow-sm hover:shadow-md transition-all">
+                  <CardContent className="p-4 text-center">
+                    <industry.icon className={`h-8 w-8 mx-auto mb-2 ${industry.color}`} />
+                    <h4 className="font-medium text-sm text-foreground">{industry.name}</h4>
+                    <p className="text-xs text-muted-foreground">{industry.count} members</p>
+                  </CardContent>
+                </Card>
+              ))}
+            </div>
+          </div>
+        ) : (
+          <div className="text-center py-12">
+            <Users className="h-16 w-16 text-muted-foreground mx-auto mb-4" />
+            <h2 className="text-xl font-semibold text-foreground mb-2">
+              Welcome to the Community
+            </h2>
+            <p className="text-muted-foreground mb-6">
+              Select an industry above to start engaging with your communities
+            </p>
             <div className="text-sm text-muted-foreground space-y-1">
               <p><strong>Business Stage:</strong> {userCommunityProfile.business_stage}</p>
               <p><strong>Company:</strong> {userCommunityProfile.company_name}</p>
@@ -199,8 +217,8 @@ const Community = () => {
                 </p>
               )}
             </div>
-          )}
-        </div>
+          </div>
+        )}
       </div>
 
       <BottomNavigation />

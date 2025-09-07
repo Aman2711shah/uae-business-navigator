@@ -21,7 +21,7 @@ export default function FeedEmptyState({ industry, hasFilters, onCreatePost }: F
         }
       </p>
       {!hasFilters && (
-        <Button variant="cta" onClick={onCreatePost}>
+        <Button onClick={onCreatePost}>
           <Plus className="h-4 w-4 mr-2" />
           Create First Post
         </Button>
