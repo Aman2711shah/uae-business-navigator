@@ -1,11 +1,10 @@
 import { useState } from "react";
-import { X, Image, DollarSign, Hash } from "lucide-react";
+import { X, Image, Hash } from "lucide-react";
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/ui/dialog";
 import { Button } from "@/components/ui/button";
 import { Textarea } from "@/components/ui/textarea";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
-import { Switch } from "@/components/ui/switch";
 import { Badge } from "@/components/ui/badge";
 import { supabase } from "@/integrations/supabase/client";
 import { useToast } from "@/hooks/use-toast";
@@ -24,9 +23,6 @@ export default function CreatePostModal({ isOpen, onClose, industry, onPostCreat
   const [title, setTitle] = useState("");
   const [tags, setTags] = useState<string[]>([]);
   const [tagInput, setTagInput] = useState("");
-  const [isMarketplace, setIsMarketplace] = useState(false);
-  const [price, setPrice] = useState("");
-  const [currency, setCurrency] = useState("USD");
   const [selectedImage, setSelectedImage] = useState<File | null>(null);
   const [imagePreview, setImagePreview] = useState<string | null>(null);
   const [loading, setLoading] = useState(false);
@@ -82,16 +78,16 @@ export default function CreatePostModal({ isOpen, onClose, industry, onPostCreat
   const uploadImage = async (file: File): Promise<string> => {
     const fileExt = file.name.split('.').pop();
     const fileName = `${Date.now()}-${Math.random().toString(36).substring(2)}.${fileExt}`;
-    const filePath = `post-attachments/${fileName}`;
+    const filePath = `community-images/${fileName}`;
 
     const { error: uploadError } = await supabase.storage
-      .from('post-attachments')
+      .from('community-images')
       .upload(filePath, file);
 
     if (uploadError) throw uploadError;
 
     const { data: { publicUrl } } = supabase.storage
-      .from('post-attachments')
+      .from('community-images')
       .getPublicUrl(filePath);
 
     return publicUrl;
@@ -119,78 +115,46 @@ export default function CreatePostModal({ isOpen, onClose, industry, onPostCreat
     setLoading(true);
 
     try {
-      // Get user profile
-      const { data: profile, error: profileError } = await supabase
+      // Get user profile (optional for community posts)
+      const { data: profile } = await supabase
         .from('profiles')
         .select('*')
         .eq('user_id', user.id)
-        .single();
-
-      if (profileError) throw profileError;
+        .maybeSingle();
 
       let imageUrl = null;
       if (selectedImage) {
         imageUrl = await uploadImage(selectedImage);
       }
 
-      // Prepare post metadata
-      const metadata: any = {};
-      if (isMarketplace && price) {
-        metadata.price = parseFloat(price);
-        metadata.currency = currency;
-      }
-
       // Create post
       const { data: newPost, error: postError } = await supabase
-        .from('posts')
+        .from('community_posts')
         .insert({
           title: title.trim() || null,
-          content: content.trim(),
-          profile_id: profile.id,
-          is_marketplace: isMarketplace,
-          metadata: Object.keys(metadata).length > 0 ? metadata : null
+          body: content.trim(),
+          industry_tag: industry,
+          user_id: user.id,
+          tags: tags,
+          image_url: imageUrl
         })
         .select('*')
         .single();
 
       if (postError) throw postError;
 
-      // Upload attachment if image exists
-      if (imageUrl) {
-        await supabase
-          .from('post_attachments')
-          .insert({
-            post_id: newPost.id,
-            storage_path: imageUrl,
-            content_type: selectedImage?.type || 'image/jpeg',
-            file_name: selectedImage?.name || 'image'
-          });
-      }
-
-      // Create marketplace item if this is a marketplace post
-      if (isMarketplace && price) {
-        await supabase
-          .from('marketplace_items')
-          .insert({
-            title: title || content.substring(0, 100),
-            description: content,
-            price: parseFloat(price),
-            currency,
-            profile_id: profile.id,
-            post_id: newPost.id,
-            status: 'available'
-          });
-      }
-
       // Prepare the complete post object with profile data
       const completePost = {
         ...newPost,
-        profiles: {
+        profile_id: user.id, // Map user_id to profile_id for Post interface compatibility
+        content: newPost.body, // Map body to content for Post interface compatibility
+        profiles: profile ? {
           display_name: profile.display_name,
           full_name: profile.full_name,
           avatar_url: profile.avatar_url
-        },
-        tags: tags
+        } : null,
+        tags: tags,
+        community_users: null
       };
 
       onPostCreated(completePost);
@@ -218,9 +182,6 @@ export default function CreatePostModal({ isOpen, onClose, industry, onPostCreat
     setTitle("");
     setTags([]);
     setTagInput("");
-    setIsMarketplace(false);
-    setPrice("");
-    setCurrency("USD");
     removeImage();
     onClose();
   };
@@ -312,46 +273,6 @@ export default function CreatePostModal({ isOpen, onClose, industry, onPostCreat
               )}
             </div>
           </div>
-
-          {/* Marketplace Toggle */}
-          <div className="flex items-center space-x-2">
-            <Switch
-              id="marketplace"
-              checked={isMarketplace}
-              onCheckedChange={setIsMarketplace}
-            />
-            <Label htmlFor="marketplace">List as marketplace item</Label>
-          </div>
-
-          {/* Marketplace Details */}
-          {isMarketplace && (
-            <div className="space-y-3 p-3 bg-muted/50 rounded-lg">
-              <div className="grid grid-cols-2 gap-3">
-                <div>
-                  <Label htmlFor="price">Price</Label>
-                  <Input
-                    id="price"
-                    type="number"
-                    placeholder="0.00"
-                    value={price}
-                    onChange={(e) => setPrice(e.target.value)}
-                    min="0"
-                    step="0.01"
-                  />
-                </div>
-                <div>
-                  <Label htmlFor="currency">Currency</Label>
-                  <Input
-                    id="currency"
-                    value={currency}
-                    onChange={(e) => setCurrency(e.target.value.toUpperCase())}
-                    maxLength={3}
-                    placeholder="USD"
-                  />
-                </div>
-              </div>
-            </div>
-          )}
 
           {/* Tags */}
           <div>

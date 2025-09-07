@@ -39,11 +39,13 @@ export default function PostCard({ post, currentUserId, onPostUpdate }: PostCard
 
     try {
       const { data, error } = await supabase
-        .from('likes')
+        .from('post_likes')
         .select('id')
         .eq('post_id', post.id)
-        .eq('profile_id', currentUserId)
+        .eq('user_id', currentUserId)
         .single();
+
+      setIsLiked(!!data);
 
       setIsLiked(!!data);
     } catch (error) {
@@ -70,10 +72,10 @@ export default function PostCard({ post, currentUserId, onPostUpdate }: PostCard
       if (isLiked) {
         // Unlike
         const { error } = await supabase
-          .from('likes')
+          .from('post_likes')
           .delete()
           .eq('post_id', post.id)
-          .eq('profile_id', currentUserId);
+          .eq('user_id', currentUserId);
 
         if (error) throw error;
 
@@ -82,10 +84,10 @@ export default function PostCard({ post, currentUserId, onPostUpdate }: PostCard
       } else {
         // Like
         const { error } = await supabase
-          .from('likes')
+          .from('post_likes')
           .insert({
             post_id: post.id,
-            profile_id: currentUserId
+            user_id: currentUserId
           });
 
         if (error) throw error;
@@ -192,7 +194,7 @@ export default function PostCard({ post, currentUserId, onPostUpdate }: PostCard
               <DropdownMenuItem>
                 Report post
               </DropdownMenuItem>
-              {currentUserId === post.profile_id && (
+              {currentUserId === post.user_id && (
                 <>
                   <DropdownMenuItem>
                     Edit post
