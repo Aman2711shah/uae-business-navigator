@@ -640,6 +640,54 @@ export type Database = {
         }
         Relationships: []
       }
+      leads: {
+        Row: {
+          created_at: string | null
+          email: string | null
+          fields: Json | null
+          file_name: string | null
+          file_url: string | null
+          firstname: string | null
+          form_name: string
+          id: string
+          lastname: string | null
+          notes: string | null
+          phone: string | null
+          service: string | null
+          updated_at: string | null
+        }
+        Insert: {
+          created_at?: string | null
+          email?: string | null
+          fields?: Json | null
+          file_name?: string | null
+          file_url?: string | null
+          firstname?: string | null
+          form_name: string
+          id?: string
+          lastname?: string | null
+          notes?: string | null
+          phone?: string | null
+          service?: string | null
+          updated_at?: string | null
+        }
+        Update: {
+          created_at?: string | null
+          email?: string | null
+          fields?: Json | null
+          file_name?: string | null
+          file_url?: string | null
+          firstname?: string | null
+          form_name?: string
+          id?: string
+          lastname?: string | null
+          notes?: string | null
+          phone?: string | null
+          service?: string | null
+          updated_at?: string | null
+        }
+        Relationships: []
+      }
       likes: {
         Row: {
           created_at: string | null

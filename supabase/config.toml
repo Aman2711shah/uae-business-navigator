@@ -22,8 +22,17 @@ verify_jwt = false
 [functions.submit-application]
 verify_jwt = false
 
+[functions.submit-lead]
+verify_jwt = false
+
 [functions.verify-payment]
 verify_jwt = false
 
 [functions.stripe-webhook]
+verify_jwt = false
+
+[functions.track-application]
+verify_jwt = false
+
+[functions.upload-documents]
 verify_jwt = false
