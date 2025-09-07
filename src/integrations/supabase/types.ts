@@ -788,6 +788,42 @@ export type Database = {
           },
         ]
       }
+      onboarding_submissions: {
+        Row: {
+          contact_info: Json
+          created_at: string
+          id: string
+          status: string
+          updated_at: string
+          uploaded_documents: Json
+          user_email: string
+          user_id: string | null
+          user_name: string
+        }
+        Insert: {
+          contact_info?: Json
+          created_at?: string
+          id?: string
+          status?: string
+          updated_at?: string
+          uploaded_documents?: Json
+          user_email: string
+          user_id?: string | null
+          user_name: string
+        }
+        Update: {
+          contact_info?: Json
+          created_at?: string
+          id?: string
+          status?: string
+          updated_at?: string
+          uploaded_documents?: Json
+          user_email?: string
+          user_id?: string | null
+          user_name?: string
+        }
+        Relationships: []
+      }
       packages: {
         Row: {
           activities_allowed: number

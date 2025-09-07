@@ -88,43 +88,41 @@ serve(async (req) => {
       });
     }
 
-    const submissionId = validateSubmissionId(requestBody.submissionId);
-    logStep("Request parsed and validated", { submissionId });
+    const onboardingId = validateSubmissionId(requestBody.onboardingId || requestBody.submissionId);
+    logStep("Request parsed and validated", { onboardingId });
 
-    // Fetch submission from Supabase
+    // Fetch onboarding submission from Supabase
     const { data: submission, error: submissionError } = await supabaseClient
-      .from('submissions')
+      .from('onboarding_submissions')
       .select('*')
-      .eq('id', submissionId)
+      .eq('id', onboardingId)
       .single();
 
     if (submissionError) {
-      logStep("Error fetching submission", submissionError);
-      throw new Error(`Failed to fetch submission: ${submissionError.message}`);
+      logStep("Error fetching onboarding submission", submissionError);
+      throw new Error(`Failed to fetch onboarding submission: ${submissionError.message}`);
     }
 
     if (!submission) {
-      throw new Error("Submission not found");
+      throw new Error("Onboarding submission not found");
     }
-    logStep("Submission found", { 
+    logStep("Onboarding submission found", { 
       id: submission.id, 
-      totalPrice: submission.total_price,
-      currency: submission.payment_currency 
+      userName: submission.user_name,
+      userEmail: submission.user_email
     });
 
-    const amountAED = submission.total_price || 0;
-    // Stripe expects amount in cents (or smallest currency unit). For AED, use 100 fils = 1 AED.
-    const amountInFils = Math.round(Number(amountAED) * 100);
-    const currency = submission.payment_currency || "aed";
+    // Use fixed amount for service application processing
+    const amountUSD = requestBody.amount || 4999; // Default $49.99
+    const currency = requestBody.currency || "usd";
 
     logStep("Amount calculation", { 
-      originalAmount: amountAED, 
-      amountInFils, 
+      amount: amountUSD, 
       currency 
     });
 
-    if (amountInFils <= 0) {
-      throw new Error(`Invalid amount: ${amountAED} AED (${amountInFils} fils)`);
+    if (amountUSD <= 0) {
+      throw new Error(`Invalid amount: ${amountUSD}`);
     }
 
     const stripe = new Stripe(stripeKey, { apiVersion: "2023-10-16" });
@@ -137,41 +135,35 @@ serve(async (req) => {
         price_data: {
           currency: currency.toLowerCase(),
           product_data: { 
-            name: `Payment for Service Application`,
-            description: `Submission ID: ${submissionId}`
+            name: `Service Application Processing`,
+            description: `Processing fee for ${submission.user_name}`
           },
-          unit_amount: amountInFils
+          unit_amount: amountUSD
         },
         quantity: 1
       }],
-      metadata: { submissionId },
-      success_url: `${req.headers.get("origin")}/payment-success?session_id={CHECKOUT_SESSION_ID}&submission_id=${submissionId}`,
-      cancel_url: `${req.headers.get("origin")}/service-application/${submissionId}?cancelled=true`,
+      metadata: { onboardingId },
+      success_url: `${req.headers.get("origin")}/payment-success?session_id={CHECKOUT_SESSION_ID}&onboarding_id=${onboardingId}`,
+      cancel_url: `${req.headers.get("origin")}/service-application?cancelled=true`,
     });
 
-    logStep("Checkout session created", { sessionId: session.id, amount: amountInFils });
+    logStep("Checkout session created", { sessionId: session.id, amount: amountUSD });
 
-    // Update submission with payment information
+    // Update onboarding submission with payment information
     const { error: updateError } = await supabaseClient
-      .from('submissions')
+      .from('onboarding_submissions')
       .update({
-        payment_intent_id: session.payment_intent || session.id,
-        payment_status: "pending",
-        payment_amount: amountAED,
-        payment_currency: currency,
-        payment_metadata: {
-          stripe_session_id: session.id,
-          created_at: new Date().toISOString()
-        }
+        status: "payment_pending",
+        updated_at: new Date().toISOString()
       })
-      .eq('id', submissionId);
+      .eq('id', onboardingId);
 
     if (updateError) {
-      logStep("Error updating submission", updateError);
+      logStep("Error updating onboarding submission", updateError);
       // Don't throw here - the session was created successfully
-      console.warn("Failed to update submission with payment info:", updateError);
+      console.warn("Failed to update onboarding submission with payment info:", updateError);
     } else {
-      logStep("Submission updated with payment info");
+      logStep("Onboarding submission updated with payment info");
     }
 
     logStep("Final response", { 
@@ -182,7 +174,7 @@ serve(async (req) => {
 
     return new Response(JSON.stringify({ 
       sessionId: session.id, 
-      checkoutUrl: session.url,
+      url: session.url,
       success: true
     }), {
       headers: { ...corsHeaders, "Content-Type": "application/json" },

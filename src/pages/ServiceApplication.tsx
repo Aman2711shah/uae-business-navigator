@@ -157,35 +157,29 @@ const ServiceApplication: React.FC = () => {
         storagePath: uploadResults[i]?.path
       })));
 
-      // Create submission record
+      // Prepare form data for submission
       const formData = form.getValues();
-      const { data: submission, error: submissionError } = await supabase
-        .from('submissions')
-        .insert({
-          user_id: user.id,
-          service_id: subServiceId || '',
-          user_name: formData.name,
-          user_email: formData.email,
-          contact_info: {
+      
+      // Call the upload-documents edge function to create onboarding submission
+      const { data: submissionData, error: submissionError } = await supabase.functions.invoke('upload-documents', {
+        body: {
+          userName: formData.name,
+          userEmail: formData.email,
+          contactInfo: {
             phone: formData.phone,
             company: formData.company,
             businessActivity: formData.businessActivity,
             notes: formData.notes
           },
-          status: 'pending',
-          payload: {
-            documents: uploadResults,
-            formData
-          }
-        })
-        .select()
-        .single();
+          documents: uploadResults
+        }
+      });
 
       if (submissionError) {
-        throw new Error('Failed to create submission record');
+        throw new Error(submissionError.message || 'Failed to create submission record');
       }
 
-      setSubmissionId(submission.id);
+      setSubmissionId(submissionData.onboardingId);
       setAllFilesUploaded(true);
       
       toast({
@@ -195,9 +189,10 @@ const ServiceApplication: React.FC = () => {
 
     } catch (error) {
       console.error('Upload error:', error);
+      const errorMessage = error instanceof Error ? error.message : 'Failed to upload documents. Please try again.';
       toast({
         title: "Upload Failed",
-        description: "Failed to upload documents. Please try again.",
+        description: errorMessage,
         variant: "destructive"
       });
     } finally {
@@ -222,7 +217,7 @@ const ServiceApplication: React.FC = () => {
     try {
       const { data, error } = await supabase.functions.invoke('create-checkout-session', {
         body: {
-          submissionId,
+          onboardingId: submissionId,
           customerEmail: user.email,
           amount: 4999, // $49.99 - you can adjust this based on the service
           currency: 'usd'
@@ -244,9 +239,10 @@ const ServiceApplication: React.FC = () => {
 
     } catch (error) {
       console.error('Payment error:', error);
+      const errorMessage = error instanceof Error ? error.message : 'Failed to setup payment. Please try again.';
       toast({
         title: "Payment Setup Failed",
-        description: "Failed to setup payment. Please try again.",
+        description: errorMessage,
         variant: "destructive"
       });
     } finally {
