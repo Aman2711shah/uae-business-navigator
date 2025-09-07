@@ -146,8 +146,9 @@ const MyDocuments = () => {
 
   const deleteDocument = async (document: UserDocument) => {
     try {
-      const { error } = await supabase.functions.invoke(`documents/${document.id}`, {
+      const { error } = await supabase.functions.invoke('documents', {
         method: 'DELETE',
+        body: { document_id: document.id },
         headers: {
           Authorization: `Bearer ${(await supabase.auth.getSession()).data.session?.access_token}`
         }

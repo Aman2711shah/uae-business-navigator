@@ -114,25 +114,25 @@ Deno.serve(async (req) => {
       );
     }
 
-    // DELETE /documents/:id - Delete document
+    // DELETE /documents - Delete document
     if (method === 'DELETE') {
-      const pathParts = url.pathname.split('/');
-      const documentId = pathParts[pathParts.length - 1];
+      const body = await req.json();
+      const { document_id } = body;
 
-      if (!documentId) {
+      if (!document_id) {
         return new Response(
           JSON.stringify({ error: 'Document ID required' }),
           { status: 400, headers: { ...corsHeaders, 'Content-Type': 'application/json' } }
         );
       }
 
-      console.log('Deleting document:', documentId);
+      console.log('Deleting document:', document_id);
 
       // First get the document to find the storage path
       const { data: document, error: fetchError } = await supabase
         .from('user_documents')
         .select('storage_path')
-        .eq('id', documentId)
+        .eq('id', document_id)
         .eq('user_id', user.id)
         .single();
 
@@ -157,7 +157,7 @@ Deno.serve(async (req) => {
       const { error: dbError } = await supabase
         .from('user_documents')
         .delete()
-        .eq('id', documentId)
+        .eq('id', document_id)
         .eq('user_id', user.id);
 
       if (dbError) {
