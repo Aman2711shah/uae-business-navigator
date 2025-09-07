@@ -6,6 +6,7 @@ import { ApplicationStatus, RecentApplication } from "@/types/trackApplication";
 import { TrackApplicationSearch } from "@/components/track-application/TrackApplicationSearch";
 import { RecentApplications } from "@/components/track-application/RecentApplications";
 import { ApplicationDetails } from "@/components/track-application/ApplicationDetails";
+import { supabase } from "@/integrations/supabase/client";
 
 
 const TrackApplication = () => {
@@ -51,52 +52,45 @@ const TrackApplication = () => {
     setError('');
     
     try {
-      // Simulate API call - in real app, this would fetch from database
-      setTimeout(() => {
-        // Mock data for demonstration
-        const mockApplication: ApplicationStatus = {
-          id: idToSearch,
-          status: 'under_review',
-          submittedAt: new Date().toISOString(),
-          lastUpdated: new Date().toISOString(),
-          jurisdictionType: 'freezone',
-          selectedZone: 'IFZA',
-          packageName: 'Standard Package',
-          contactDetails: {
-            fullName: 'John Doe',
-            email: 'john.doe@example.com',
-            phone: '+971501234567'
-          },
-          timeline: [
-            {
-              step: 'Application Submitted',
-              status: 'completed',
-              date: new Date().toISOString(),
-              description: 'Your application has been successfully submitted'
-            },
-            {
-              step: 'Document Verification',
-              status: 'current',
-              description: 'Our team is reviewing your submitted documents'
-            },
-            {
-              step: 'Authority Approval',
-              status: 'pending',
-              description: 'Application will be submitted to relevant authorities'
-            },
-            {
-              step: 'License Issuance',
-              status: 'pending',
-              description: 'Trade license will be issued upon approval'
-            }
-          ]
-        };
-        
-        setApplication(mockApplication);
-        setLoading(false);
-      }, 1500);
+      // Call track-application edge function
+      const response = await fetch(`https://ajxbjxoujummahqcctuo.supabase.co/functions/v1/track-application?requestId=${encodeURIComponent(idToSearch)}`, {
+        method: 'GET',
+        headers: {
+          'Authorization': `Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImFqeGJqeG91anVtbWFocWNjdHVvIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NTIwMTI4NTYsImV4cCI6MjA2NzU4ODg1Nn0.AO8Ylfjf7bWoGtA1fVZCniQS7vl2IjwHvIjIMQG4f2Q`,
+          'Content-Type': 'application/json'
+        }
+      });
+
+      if (!response.ok) {
+        const errorData = await response.json();
+        throw new Error(errorData.error || 'Failed to fetch application details');
+      }
+
+      const data = await response.json();
+
+      // Convert API response to ApplicationStatus format
+      const applicationData: ApplicationStatus = {
+        id: data.id,
+        status: data.status === 'pending' ? 'under_review' : data.status,
+        submittedAt: data.submittedAt,
+        lastUpdated: data.lastUpdated,
+        jurisdictionType: 'freezone',
+        selectedZone: 'General',
+        packageName: 'Service Application',
+        contactDetails: {
+          fullName: data.contactName,
+          email: 'Contact support for details',
+          phone: 'Contact support for details'
+        },
+        timeline: data.timeline
+      };
+      
+      setApplication(applicationData);
     } catch (err) {
-      setError('Failed to fetch application details. Please try again.');
+      console.error('Track application error:', err);
+      const errorMessage = err instanceof Error ? err.message : 'Failed to fetch application details. Please try again.';
+      setError(errorMessage);
+    } finally {
       setLoading(false);
     }
   };

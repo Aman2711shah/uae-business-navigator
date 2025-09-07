@@ -54,6 +54,7 @@ const ServiceApplication: React.FC = () => {
   const [uploadProgress, setUploadProgress] = useState(0);
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [submissionId, setSubmissionId] = useState<string | null>(null);
+  const [requestId, setRequestId] = useState<string | null>(null);
   const [allFilesUploaded, setAllFilesUploaded] = useState(false);
   const [hasFailedUploads, setHasFailedUploads] = useState(false);
 
@@ -190,11 +191,12 @@ const ServiceApplication: React.FC = () => {
       }
 
       setSubmissionId(submissionData.onboardingId);
+      setRequestId(submissionData.requestId);
       setAllFilesUploaded(true);
       
       toast({
         title: "Documents Uploaded Successfully",
-        description: "Your documents have been uploaded and your application has been submitted.",
+        description: `Your documents have been uploaded and your application has been submitted. Request ID: ${submissionData.requestId}`,
       });
 
     } catch (error) {
@@ -573,11 +575,41 @@ const ServiceApplication: React.FC = () => {
               </CardTitle>
             </CardHeader>
             <CardContent>
-              <p className="text-green-700 mb-4">
-                Your application has been submitted successfully. Choose your next step:
-              </p>
+              <div className="space-y-4">
+                <p className="text-green-700">
+                  Your application has been submitted successfully. 
+                </p>
+                
+                {requestId && (
+                  <div className="bg-white p-3 rounded-lg border">
+                    <div className="flex items-center justify-between">
+                      <div>
+                        <p className="text-sm font-medium text-gray-700">Request ID</p>
+                        <p className="text-lg font-mono font-semibold text-gray-900">{requestId}</p>
+                      </div>
+                      <Button
+                        variant="outline"
+                        size="sm"
+                        onClick={() => {
+                          navigator.clipboard.writeText(requestId);
+                          toast({
+                            title: "Copied!",
+                            description: "Request ID copied to clipboard",
+                          });
+                        }}
+                      >
+                        Copy
+                      </Button>
+                    </div>
+                  </div>
+                )}
+                
+                <p className="text-green-700 text-sm">
+                  Choose your next step:
+                </p>
+              </div>
               
-              <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mt-4">
                 <Button
                   variant="outline"
                   onClick={handleCallAdvisor}

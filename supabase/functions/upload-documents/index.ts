@@ -146,6 +146,18 @@ serve(async (req) => {
       }
     }
 
+    // Generate request ID using database function
+    const { data: requestIdData, error: requestIdError } = await supabaseService
+      .rpc('generate_request_id');
+    
+    if (requestIdError) {
+      logError("Request ID generation", requestIdError);
+      return new Response(JSON.stringify({ error: "Failed to generate request ID" }), {
+        status: 500,
+        headers: { ...corsHeaders, "Content-Type": "application/json" },
+      });
+    }
+
     // Create onboarding submission record using service role
     const { data: onboardingData, error: onboardingError } = await supabaseService
       .from('onboarding_submissions')
@@ -155,6 +167,7 @@ serve(async (req) => {
         user_email: userEmail,
         contact_info: contactInfo,
         uploaded_documents: documents,
+        request_id: requestIdData,
         status: 'pending'
       })
       .select()
@@ -183,6 +196,7 @@ serve(async (req) => {
 
     return new Response(JSON.stringify({ 
       onboardingId: onboardingData.id,
+      requestId: onboardingData.request_id,
       uploaded: documents 
     }), {
       status: 200,

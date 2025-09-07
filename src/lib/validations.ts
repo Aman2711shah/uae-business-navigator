@@ -204,6 +204,25 @@ export const createCheckoutSessionSchema = z.object({
   currency: z.string().length(3, 'Currency must be 3 characters').optional()
 });
 
+export const trackApplicationRequestSchema = z.object({
+  requestId: z.string().regex(/^WZT-\d{8}-\d{4}$/, 'Invalid request ID format')
+});
+
+export const trackApplicationResponseSchema = z.object({
+  id: z.string().uuid(),
+  requestId: z.string(),
+  status: z.enum(['pending', 'processing', 'completed', 'approved', 'rejected']),
+  submittedAt: z.string().datetime(),
+  lastUpdated: z.string().datetime(),
+  contactName: z.string(),
+  timeline: z.array(z.object({
+    step: z.string(),
+    status: z.enum(['completed', 'current', 'pending']),
+    date: z.string().datetime().optional(),
+    description: z.string()
+  }))
+});
+
 // Validation error formatter
 export const formatValidationErrors = (error: z.ZodError): string => {
   return error.issues.map(err => err.message).join(', ');
