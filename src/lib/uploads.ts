@@ -4,7 +4,17 @@ import { validateFile, type UploadResult } from './validations';
 const DOCUMENTS_BUCKET = 'service-uploads';
 
 /**
- * Upload multiple files to Supabase Storage
+ * Sanitize filename by removing special characters and replacing spaces
+ */
+const sanitizeFilename = (filename: string): string => {
+  return filename
+    .replace(/\s+/g, '_')
+    .replace(/[^a-zA-Z0-9._-]/g, '')
+    .toLowerCase();
+};
+
+/**
+ * Upload multiple files to Supabase Storage with enhanced error handling
  * @param userId - The user ID to organize files by
  * @param files - Array of files to upload
  * @param onProgress - Callback for upload progress (fileIndex, progress)
@@ -20,14 +30,15 @@ export const uploadDocuments = async (
   for (let i = 0; i < files.length; i++) {
     const file = files[i];
     
+    // Client-side validation
     const validation = validateFile(file);
     if (!validation.isValid) {
       throw new Error(`Invalid file ${file.name}: ${validation.error}`);
     }
 
-    // Generate unique file path
+    // Generate unique file path with sanitized name
     const timestamp = Date.now();
-    const sanitizedName = file.name.replace(/[^a-zA-Z0-9.-]/g, '_');
+    const sanitizedName = sanitizeFilename(file.name);
     const filePath = `${userId}/${timestamp}_${sanitizedName}`;
 
     try {
@@ -43,7 +54,20 @@ export const uploadDocuments = async (
         });
 
       if (error) {
-        throw new Error(`Upload failed for ${file.name}: ${error.message}`);
+        // Provide specific error messages based on error codes
+        let errorMessage = `Upload failed for ${file.name}`;
+        if (error.message.includes('413')) {
+          errorMessage = `File ${file.name} is too large. Maximum size is 10MB.`;
+        } else if (error.message.includes('403')) {
+          errorMessage = `Upload forbidden for ${file.name}. Please check file permissions.`;
+        } else if (error.message.includes('401')) {
+          errorMessage = `Authentication failed. Please log in and try again.`;
+        } else if (error.message.includes('Bucket policy')) {
+          errorMessage = `Bucket policy forbids upload of ${file.name}. Please contact support.`;
+        } else {
+          errorMessage = `${errorMessage}: ${error.message}`;
+        }
+        throw new Error(errorMessage);
       }
 
       // Update progress to 50% after upload
@@ -67,6 +91,7 @@ export const uploadDocuments = async (
 
     } catch (error) {
       console.error(`Error uploading file ${file.name}:`, error);
+      onProgress?.(i, 0); // Reset progress on error
       throw error;
     }
   }

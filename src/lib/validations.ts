@@ -182,3 +182,29 @@ export const validateFile = (file: File): { isValid: boolean; error?: string } =
 
   return { isValid: true };
 };
+
+// Upload Documents Request Schema
+export const uploadDocumentsRequestSchema = z.object({
+  userName: z.string().min(1, 'User name is required'),
+  userEmail: z.string().email('Valid email is required'),
+  contactInfo: z.object({
+    phone: z.string().min(1, 'Phone is required'),
+    company: z.string().optional(),
+    businessActivity: z.string().min(1, 'Business activity is required'),
+    notes: z.string().optional()
+  }),
+  documents: z.array(uploadResultSchema).min(1, 'At least one document is required')
+});
+
+// Create Checkout Session Schema
+export const createCheckoutSessionSchema = z.object({
+  onboardingId: z.string().uuid('Invalid onboarding ID'),
+  customerEmail: z.string().email('Valid email is required'),
+  amount: z.number().positive('Amount must be positive').optional(),
+  currency: z.string().length(3, 'Currency must be 3 characters').optional()
+});
+
+// Validation error formatter
+export const formatValidationErrors = (error: z.ZodError): string => {
+  return error.issues.map(err => err.message).join(', ');
+};

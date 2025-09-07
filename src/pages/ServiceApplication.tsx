@@ -27,6 +27,7 @@ interface UploadedFile {
   progress?: number;
   error?: string;
   storagePath?: string;
+  retrying?: boolean;
 }
 
 const CONTACT_PHONE = '+971559986386';
@@ -54,8 +55,9 @@ const ServiceApplication: React.FC = () => {
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [submissionId, setSubmissionId] = useState<string | null>(null);
   const [allFilesUploaded, setAllFilesUploaded] = useState(false);
+  const [hasFailedUploads, setHasFailedUploads] = useState(false);
 
-  // Check for cancelled payment
+  // Check for cancelled payment and missing env vars
   useEffect(() => {
     const urlParams = new URLSearchParams(location.search);
     if (urlParams.get('cancelled') === 'true') {
@@ -64,6 +66,14 @@ const ServiceApplication: React.FC = () => {
         description: "Your payment was cancelled. You can try again when you're ready.",
         variant: "destructive"
       });
+    }
+
+    // Check for missing environment variables
+    if (!import.meta.env.VITE_SUPABASE_URL) {
+      console.warn('Missing VITE_SUPABASE_URL environment variable');
+    }
+    if (!import.meta.env.VITE_SUPABASE_ANON_KEY) {
+      console.warn('Missing VITE_SUPABASE_ANON_KEY environment variable');
     }
   }, [location.search, toast]);
 
@@ -195,6 +205,67 @@ const ServiceApplication: React.FC = () => {
         description: errorMessage,
         variant: "destructive"
       });
+    } finally {
+      setIsUploading(false);
+    }
+  };
+
+  const handleRetryFailedUploads = async () => {
+    if (!user) return;
+
+    const failedFiles = selectedFiles.filter(file => file.error && !file.uploaded);
+    if (failedFiles.length === 0) return;
+
+    setIsUploading(true);
+    setHasFailedUploads(false);
+
+    try {
+      const filesToRetry = failedFiles.map(f => f.file);
+      
+      const onProgress = (fileIndex: number, progress: number) => {
+        const actualIndex = selectedFiles.findIndex(f => f.file === filesToRetry[fileIndex]);
+        if (actualIndex !== -1) {
+          setSelectedFiles(prev => prev.map((file, i) => 
+            i === actualIndex ? { ...file, progress, error: undefined, retrying: true } : file
+          ));
+        }
+      };
+
+      const uploadResults = await uploadDocuments(user.id, filesToRetry, onProgress);
+
+      setSelectedFiles(prev => prev.map((file, i) => {
+        const retryIndex = filesToRetry.findIndex(f => f === file.file);
+        if (retryIndex !== -1) {
+          return {
+            ...file,
+            uploaded: true,
+            progress: 100,
+            storagePath: uploadResults[retryIndex]?.path,
+            error: undefined,
+            retrying: false
+          };
+        }
+        return file;
+      }));
+
+      toast({
+        title: "Retry Successful",
+        description: `Successfully uploaded ${failedFiles.length} file(s).`,
+      });
+
+    } catch (error) {
+      console.error('Retry upload error:', error);
+      const errorMessage = error instanceof Error ? error.message : 'Retry failed. Please try again.';
+      toast({
+        title: "Retry Failed",
+        description: errorMessage,
+        variant: "destructive"
+      });
+      setHasFailedUploads(true);
+      
+      setSelectedFiles(prev => prev.map(file => 
+        file.retrying ? { ...file, error: errorMessage, retrying: false, progress: 0 } : file
+      ));
     } finally {
       setIsUploading(false);
     }
@@ -400,29 +471,48 @@ const ServiceApplication: React.FC = () => {
                 <div className="space-y-2">
                   <h4 className="font-medium">Selected Files:</h4>
                   {selectedFiles.map((file, index) => (
-                    <div key={index} className="flex items-center justify-between p-3 bg-muted/20 rounded-lg">
-                      <div className="flex items-center gap-3">
-                        <FileText className="h-4 w-4 text-primary" />
-                        <div>
-                          <p className="text-sm font-medium">{file.name}</p>
-                          <p className="text-xs text-muted-foreground">
-                            {formatFileSize(file.size)}
-                          </p>
+                    <div key={index} className="flex items-center justify-between p-3 bg-muted/20 rounded-lg border">
+                      <div className="flex items-center gap-3 flex-1 min-w-0">
+                        <FileText className="h-4 w-4 text-primary flex-shrink-0" />
+                        <div className="flex-1 min-w-0">
+                          <p className="text-sm font-medium truncate" title={file.name}>{file.name}</p>
+                          <div className="flex items-center gap-2">
+                            <p className="text-xs text-muted-foreground">
+                              {formatFileSize(file.size)}
+                            </p>
+                            {file.error && (
+                              <p className="text-xs text-destructive" role="alert" title={file.error}>
+                                {file.error}
+                              </p>
+                            )}
+                          </div>
                         </div>
                       </div>
                       
                       <div className="flex items-center gap-2">
-                        {file.uploaded ? (
-                          <CheckCircle className="h-4 w-4 text-green-600" />
-                        ) : isUploading && file.progress !== undefined ? (
+                        {/* Per-file progress bar */}
+                        {(isUploading || file.retrying) && file.progress !== undefined && !file.uploaded && !file.error && (
                           <div className="w-16">
                             <Progress value={file.progress} className="h-2" />
+                            <p className="text-xs text-center mt-1">{Math.round(file.progress)}%</p>
                           </div>
-                        ) : (
+                        )}
+                        
+                        {/* Status icons */}
+                        {file.error ? (
+                          <AlertCircle className="h-4 w-4 text-destructive" />
+                        ) : file.uploaded ? (
+                          <CheckCircle className="h-4 w-4 text-green-600" />
+                        ) : null}
+                        
+                        {/* Remove button */}
+                        {!file.uploaded && !isUploading && !file.retrying && (
                           <Button
                             variant="ghost"
                             size="sm"
                             onClick={() => removeFile(index)}
+                            className="h-8 w-8 p-0"
+                            aria-label={`Remove ${file.name}`}
                           >
                             <X className="h-4 w-4" />
                           </Button>
@@ -444,17 +534,31 @@ const ServiceApplication: React.FC = () => {
                 </div>
               )}
 
-              {/* Upload Button */}
-              {selectedFiles.length > 0 && !allFilesUploaded && (
-                <Button
-                  onClick={handleUploadDocuments}
-                  disabled={isUploading || !isFormValid}
-                  className="w-full"
-                >
-                  {isUploading ? 'Uploading...' : 'Upload Documents'}
-                  <Upload className="h-4 w-4 ml-2" />
-                </Button>
-              )}
+              {/* Upload/Retry Buttons */}
+              <div className="flex flex-col gap-2">
+                {selectedFiles.length > 0 && !allFilesUploaded && (
+                  <Button
+                    onClick={handleUploadDocuments}
+                    disabled={isUploading || !isFormValid}
+                    className="w-full"
+                  >
+                    {isUploading ? 'Uploading...' : 'Upload Documents'}
+                    <Upload className="h-4 w-4 ml-2" />
+                  </Button>
+                )}
+                
+                {hasFailedUploads && (
+                  <Button
+                    onClick={handleRetryFailedUploads}
+                    disabled={isUploading}
+                    variant="outline"
+                    className="w-full"
+                  >
+                    {isUploading ? 'Retrying...' : 'Retry Failed Uploads'}
+                    <Upload className="h-4 w-4 ml-2" />
+                  </Button>
+                )}
+              </div>
             </div>
           </CardContent>
         </Card>
