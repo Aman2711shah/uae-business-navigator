@@ -793,6 +793,7 @@ export type Database = {
           contact_info: Json
           created_at: string
           id: string
+          request_id: string | null
           status: string
           updated_at: string
           uploaded_documents: Json
@@ -804,6 +805,7 @@ export type Database = {
           contact_info?: Json
           created_at?: string
           id?: string
+          request_id?: string | null
           status?: string
           updated_at?: string
           uploaded_documents?: Json
@@ -815,6 +817,7 @@ export type Database = {
           contact_info?: Json
           created_at?: string
           id?: string
+          request_id?: string | null
           status?: string
           updated_at?: string
           uploaded_documents?: Json
@@ -1522,6 +1525,10 @@ export type Database = {
       create_initial_admin: {
         Args: { admin_email: string }
         Returns: undefined
+      }
+      generate_request_id: {
+        Args: Record<PropertyKey, never>
+        Returns: string
       }
       get_current_user_profile: {
         Args: Record<PropertyKey, never>
