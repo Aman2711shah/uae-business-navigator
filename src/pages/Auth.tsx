@@ -64,7 +64,10 @@ export default function Auth() {
     if (!validateForm(false)) return;
     
     try {
-      await secureSignIn(email, password);
+      const result = await secureSignIn(email, password);
+      if (!result.error) {
+        navigate('/', { replace: true });
+      }
     } catch (error) {
       logger.error('Sign in error:', error);
     }
@@ -75,7 +78,11 @@ export default function Auth() {
     if (!validateForm(true)) return;
     
     try {
-      await secureSignUp(email, password, fullName);
+      const result = await secureSignUp(email, password, fullName);
+      if (!result.error) {
+        // Success - user can now sign in immediately
+        navigate('/', { replace: true });
+      }
     } catch (error) {
       logger.error('Sign up error:', error);
     }
@@ -87,7 +94,7 @@ export default function Auth() {
         <CardHeader className="text-center">
           <CardTitle className="text-2xl font-bold">Register</CardTitle>
           <CardDescription>
-            Access your business setup and growth tools
+            Access your business setup and growth tools. No email verification required.
           </CardDescription>
         </CardHeader>
         <CardContent>
