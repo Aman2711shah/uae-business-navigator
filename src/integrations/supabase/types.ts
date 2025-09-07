@@ -1222,13 +1222,100 @@ export type Database = {
       }
       stripe_charges: {
         Row: {
-          id: string | null
+          amount: number | null
+          created: string | null
+          currency: string | null
+          customer: string | null
+          description: string | null
+          id: string
+          metadata: Json | null
+          payment_intent: string | null
+          status: string | null
         }
         Insert: {
-          id?: string | null
+          amount?: number | null
+          created?: string | null
+          currency?: string | null
+          customer?: string | null
+          description?: string | null
+          id: string
+          metadata?: Json | null
+          payment_intent?: string | null
+          status?: string | null
         }
         Update: {
-          id?: string | null
+          amount?: number | null
+          created?: string | null
+          currency?: string | null
+          customer?: string | null
+          description?: string | null
+          id?: string
+          metadata?: Json | null
+          payment_intent?: string | null
+          status?: string | null
+        }
+        Relationships: []
+      }
+      stripe_checkout_sessions: {
+        Row: {
+          amount_subtotal: number | null
+          amount_total: number | null
+          created: string | null
+          currency: string | null
+          customer: string | null
+          id: string
+          metadata: Json | null
+          payment_intent: string | null
+          status: string | null
+        }
+        Insert: {
+          amount_subtotal?: number | null
+          amount_total?: number | null
+          created?: string | null
+          currency?: string | null
+          customer?: string | null
+          id: string
+          metadata?: Json | null
+          payment_intent?: string | null
+          status?: string | null
+        }
+        Update: {
+          amount_subtotal?: number | null
+          amount_total?: number | null
+          created?: string | null
+          currency?: string | null
+          customer?: string | null
+          id?: string
+          metadata?: Json | null
+          payment_intent?: string | null
+          status?: string | null
+        }
+        Relationships: []
+      }
+      stripe_payment_intents: {
+        Row: {
+          amount: number | null
+          created: string | null
+          currency: string | null
+          id: string
+          metadata: Json | null
+          status: string | null
+        }
+        Insert: {
+          amount?: number | null
+          created?: string | null
+          currency?: string | null
+          id: string
+          metadata?: Json | null
+          status?: string | null
+        }
+        Update: {
+          amount?: number | null
+          created?: string | null
+          currency?: string | null
+          id?: string
+          metadata?: Json | null
+          status?: string | null
         }
         Relationships: []
       }
@@ -1481,6 +1568,28 @@ export type Database = {
       }
     }
     Views: {
+      application_payment_status: {
+        Row: {
+          charge_amount: number | null
+          charge_created: string | null
+          charge_currency: string | null
+          charge_id: string | null
+          charge_status: string | null
+          checkout_amount: number | null
+          checkout_created: string | null
+          checkout_currency: string | null
+          checkout_session_id: string | null
+          checkout_status: string | null
+          payment_intent_id: string | null
+          payment_status: string | null
+          request_id: string | null
+          submission_created: string | null
+          submission_status: string | null
+          user_email: string | null
+          user_name: string | null
+        }
+        Relationships: []
+      }
       freezone_public_info: {
         Row: {
           created_at: string | null
