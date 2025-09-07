@@ -60,13 +60,10 @@ const SubServiceDetail = () => {
     abortControllerRef.current = new AbortController();
 
     try {
-      // Fetch sub-service details with parent service
+      // Fetch sub-service details
       const { data: subServiceData, error: subServiceError } = await supabase
         .from('sub_services')
-        .select(`
-          id, name, price, currency, timeline, required_documents, service_id, metadata,
-          services!inner(id, name)
-        `)
+        .select('id, name, price, currency, timeline, required_documents, service_id, metadata')
         .eq('id', subServiceId)
         .single();
 
@@ -92,8 +89,23 @@ const SubServiceDetail = () => {
         return;
       }
 
+      // Fetch parent service separately to avoid nested query issues
+      const { data: parentServiceData, error: parentServiceError } = await supabase
+        .from('services')
+        .select('id, name')
+        .eq('id', subServiceData.service_id)
+        .single();
+
+      if (parentServiceError) {
+        logger.error('Error fetching parent service:', parentServiceError);
+        // Still set sub-service data even if parent service fails
+        setSubService(subServiceData);
+        setParentService(null);
+        return;
+      }
+
       setSubService(subServiceData);
-      setParentService(subServiceData.services || null);
+      setParentService(parentServiceData);
     } catch (error) {
       // Only log error if request wasn't aborted
       if (!abortControllerRef.current?.signal.aborted) {
