@@ -145,8 +145,8 @@ serve(async (req) => {
         quantity: 1
       }],
       metadata: { submissionId },
-      success_url: `${req.headers.get("origin")}/payment-success?session_id={CHECKOUT_SESSION_ID}`,
-      cancel_url: `${req.headers.get("origin")}/payment-cancel?submission_id=${submissionId}`,
+      success_url: `${req.headers.get("origin")}/payment-success?session_id={CHECKOUT_SESSION_ID}&submission_id=${submissionId}`,
+      cancel_url: `${req.headers.get("origin")}/service-application/${submissionId}?cancelled=true`,
     });
 
     logStep("Checkout session created", { sessionId: session.id, amount: amountInFils });

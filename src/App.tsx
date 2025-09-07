@@ -35,6 +35,7 @@ import TradeLicenseApplication from "./pages/TradeLicenseApplication";
 import TradeApplicationFlow from "./pages/TradeApplicationFlow";
 import CompanyFormationProcess from "./pages/CompanyFormationProcess";
 import TrackApplication from "./pages/TrackApplication";
+import ServiceApplication from "./pages/ServiceApplication";
 
 const queryClient = new QueryClient();
 
@@ -78,6 +79,7 @@ const App = () => {
               <Route path="/company-formation" element={<ProtectedRoute><CompanyFormationProcess /></ProtectedRoute>} />
               <Route path="/growth/service/:serviceId" element={<ProtectedRoute><GrowthServiceDetail /></ProtectedRoute>} />
               <Route path="/growth/booking/:serviceId" element={<ProtectedRoute><GrowthBooking /></ProtectedRoute>} />
+              <Route path="/service-application/:subServiceId?" element={<ProtectedRoute><ServiceApplication /></ProtectedRoute>} />
               {/* ADD ALL CUSTOM ROUTES ABOVE THE CATCH-ALL "*" ROUTE */}
               <Route path="*" element={<NotFound />} />
             </Routes>

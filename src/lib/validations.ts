@@ -108,3 +108,77 @@ export const sanitizePhone = (phone: string): string => {
     .trim()
     .substring(0, 20); // Reasonable phone length limit
 };
+
+// Service Application Form Schema
+export const serviceApplicationSchema = z.object({
+  name: z.string()
+    .min(2, 'Name must be at least 2 characters')
+    .max(100, 'Name must be less than 100 characters'),
+  
+  email: z.string()
+    .email('Please enter a valid email address'),
+  
+  phone: z.string()
+    .min(1, 'Phone number is required')
+    .regex(/^\+?[\d\s-()]+$/, 'Please enter a valid phone number'),
+  
+  company: z.string()
+    .max(200, 'Company name must be less than 200 characters')
+    .optional(),
+  
+  businessActivity: z.string()
+    .min(1, 'Business activity is required')
+    .max(500, 'Business activity must be less than 500 characters'),
+  
+  notes: z.string()
+    .max(1000, 'Notes must be less than 1000 characters')
+    .optional()
+});
+
+export type ServiceApplicationFormData = z.infer<typeof serviceApplicationSchema>;
+
+// File Upload Schema
+export const fileUploadSchema = z.object({
+  name: z.string(),
+  size: z.number().max(10 * 1024 * 1024, 'File size must be less than 10MB'),
+  type: z.union([
+    z.literal('application/pdf'),
+    z.literal('image/png'), 
+    z.literal('image/jpeg')
+  ])
+});
+
+export type FileUploadData = z.infer<typeof fileUploadSchema>;
+
+// Document Upload Result Schema
+export const uploadResultSchema = z.object({
+  name: z.string(),
+  path: z.string(),
+  size: z.number(),
+  type: z.string(),
+  url: z.string().optional()
+});
+
+export type UploadResult = z.infer<typeof uploadResultSchema>;
+
+// Validate file before upload
+export const validateFile = (file: File): { isValid: boolean; error?: string } => {
+  const MAX_SIZE = 10 * 1024 * 1024; // 10MB
+  const ALLOWED_TYPES = ['application/pdf', 'image/png', 'image/jpeg'];
+
+  if (!ALLOWED_TYPES.includes(file.type)) {
+    return {
+      isValid: false,
+      error: 'File must be PDF, PNG, or JPEG format'
+    };
+  }
+
+  if (file.size > MAX_SIZE) {
+    return {
+      isValid: false,
+      error: 'File size must be less than 10MB'
+    };
+  }
+
+  return { isValid: true };
+};

@@ -1,5 +1,5 @@
 import { useEffect, useState, useRef } from "react";
-import { useParams, Link } from "react-router-dom";
+import { useParams, Link, useNavigate } from "react-router-dom";
 import { ArrowLeft, Clock, FileText, DollarSign, CheckCircle } from "lucide-react";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
@@ -29,10 +29,10 @@ interface Service {
 const SubServiceDetail = () => {
   const { subServiceId } = useParams<{ subServiceId: string }>();
   const { toast } = useToast();
+  const navigate = useNavigate();
   const [subService, setSubService] = useState<SubService | null>(null);
   const [parentService, setParentService] = useState<Service | null>(null);
   const [loading, setLoading] = useState(true);
-  const [showBookingModal, setShowBookingModal] = useState(false);
   const abortControllerRef = useRef<AbortController | null>(null);
 
   useEffect(() => {
@@ -134,9 +134,7 @@ const SubServiceDetail = () => {
     };
   }, [subServiceId, toast]);
 
-  const handleStartService = () => {
-    setShowBookingModal(true);
-  };
+  // Remove the handleStartService function since we're using navigate directly
 
   if (loading) {
     return (
@@ -312,22 +310,12 @@ const SubServiceDetail = () => {
             <p className="text-muted-foreground mb-4">
               Begin your application process and we'll guide you through every step
             </p>
-            <Button size="lg" className="w-full" onClick={handleStartService}>
+            <Button size="lg" className="w-full" onClick={() => navigate(`/service-application/${subService.id}`)}>
               Start Service Application
             </Button>
           </CardContent>
         </Card>
       </div>
-
-      {/* Service Booking Modal */}
-      {showBookingModal && (
-        <ServiceBookingModal
-          isOpen={showBookingModal}
-          onClose={() => setShowBookingModal(false)}
-          subService={subService}
-          parentService={parentService}
-        />
-      )}
 
       <BottomNavigation />
     </div>
