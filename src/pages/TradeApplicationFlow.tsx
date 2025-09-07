@@ -74,7 +74,7 @@ const TradeApplicationFlow = () => {
       
       // Fetch freezone information
       const { data: freezoneData, error: freezoneError } = await supabase
-        .from('freezone_public_info')
+        .from('freezone_info')
         .select('*')
         .eq('freezone_name', applicationData.freezoneName)
         .single();

@@ -60,7 +60,7 @@ const PackageReviewStep: React.FC<PackageReviewStepProps> = ({
     try {
       setLoading(true);
       const { data, error } = await supabase
-        .from('freezone_public_info')
+        .from('freezone_info')
         .select('*')
         .eq('freezone_name', selectedFreezone)
         .single();

@@ -60,7 +60,7 @@ const FreezoneSelectionStep: React.FC<FreezoneSelectionStepProps> = ({
     try {
       setLoading(true);
       const { data, error } = await supabase
-        .from('freezone_public_info')
+        .from('freezone_info')
         .select('*');
 
       if (error) throw error;

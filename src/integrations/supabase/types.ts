@@ -1703,42 +1703,7 @@ export type Database = {
       }
     }
     Views: {
-      freezone_public_info: {
-        Row: {
-          created_at: string | null
-          description: string | null
-          faqs: Json | null
-          freezone_name: string | null
-          id: string | null
-          key_benefits: string[] | null
-          office_location: string | null
-          updated_at: string | null
-          website_url: string | null
-        }
-        Insert: {
-          created_at?: string | null
-          description?: string | null
-          faqs?: Json | null
-          freezone_name?: string | null
-          id?: string | null
-          key_benefits?: string[] | null
-          office_location?: string | null
-          updated_at?: string | null
-          website_url?: string | null
-        }
-        Update: {
-          created_at?: string | null
-          description?: string | null
-          faqs?: Json | null
-          freezone_name?: string | null
-          id?: string | null
-          key_benefits?: string[] | null
-          office_location?: string | null
-          updated_at?: string | null
-          website_url?: string | null
-        }
-        Relationships: []
-      }
+      [_ in never]: never
     }
     Functions: {
       assign_user_role: {
