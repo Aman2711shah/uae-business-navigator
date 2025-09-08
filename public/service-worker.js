@@ -1,4 +1,4 @@
-const CACHE_NAME = 'wazeet-v1';
+const CACHE_NAME = 'uae-business-navigator-v1';
 const OFFLINE_PAGE = '/offline.html';
 const urlsToCache = [
   '/',
@@ -154,7 +154,7 @@ self.addEventListener('push', (event) => {
   };
 
   event.waitUntil(
-    self.registration.showNotification('Wazeet', options)
+    self.registration.showNotification('UAE Business Navigator', options)
   );
 });
 

@@ -28,7 +28,7 @@ async function requestPWAPermissions(registration: ServiceWorkerRegistration) {
   }
 
   // Request periodic background sync permission
-  if ('periodicSync' in registration) {
+  if ('periodicSync' in registration && registration.active) {
     try {
       await (registration as any).periodicSync.register('content-sync', {
         minInterval: 24 * 60 * 60 * 1000, // 24 hours

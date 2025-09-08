@@ -19,8 +19,16 @@ const isSecurityHeaderEvent = (event: SecurityEvent): boolean => {
     'Content-Security-Policy',
     'X-Frame-Options',
     'X-Content-Type-Options',
+    'X-XSS-Protection',
+    'Strict-Transport-Security',
     'Referrer-Policy',
-    'Permissions-Policy'
+    'Permissions-Policy',
+    '<meta name="referrer"',
+    '<meta http-equiv="Content-Security-Policy"',
+    '<meta http-equiv="X-Frame-Options"',
+    '<meta http-equiv="X-Content-Type-Options"',
+    'name="referrer"',
+    'http-equiv='
   ];
   
   return securityHeaderPatterns.some(pattern => element.includes(pattern));
