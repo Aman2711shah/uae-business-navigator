@@ -3,19 +3,23 @@
 export const SECURITY_HEADERS = {
   'Content-Security-Policy': [
     "default-src 'self'",
-    "script-src 'self' 'unsafe-inline' 'unsafe-eval' https:",
-    "style-src 'self' 'unsafe-inline' https:",
+    "script-src 'self' https://js.stripe.com https://checkout.stripe.com",
+    "style-src 'self' 'unsafe-inline' https://fonts.googleapis.com",
     "img-src 'self' data: https:",
-    "font-src 'self' https:",
-    "connect-src 'self' https://ajxbjxoujummahqcctuo.supabase.co wss://ajxbjxoujummahqcctuo.supabase.co",
+    "font-src 'self' https://fonts.gstatic.com",
+    "connect-src 'self' https://ajxbjxoujummahqcctuo.supabase.co wss://ajxbjxoujummahqcctuo.supabase.co https://api.stripe.com",
+    "frame-src 'self' https://js.stripe.com https://hooks.stripe.com",
     "frame-ancestors 'none'",
     "base-uri 'self'",
-    "form-action 'self'"
+    "form-action 'self'",
+    "upgrade-insecure-requests"
   ].join('; '),
   'X-Frame-Options': 'DENY',
   'X-Content-Type-Options': 'nosniff',
+  'X-XSS-Protection': '1; mode=block',
   'Referrer-Policy': 'strict-origin-when-cross-origin',
-  'Permissions-Policy': 'camera=(), microphone=(), geolocation=()'
+  'Permissions-Policy': 'camera=(), microphone=(), geolocation=(), payment=()',
+  'Strict-Transport-Security': 'max-age=31536000; includeSubDomains'
 };
 
 export const validateEmailFormat = (email: string): boolean => {

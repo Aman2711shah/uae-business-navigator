@@ -45,20 +45,37 @@ serve(async (req) => {
   try {
     logStep("Function started");
 
+    // Get client IP for rate limiting and security logging
+    const clientIP = req.headers.get('x-forwarded-for') || req.headers.get('x-real-ip') || 'unknown';
+    
+    // Parse request body with size limit
+    const bodyText = await req.text();
+    if (bodyText.length > 50000) { // 50KB limit
+      logStep("Request too large", { size: bodyText.length });
+      return new Response(JSON.stringify({ 
+        ok: false,
+        error: "Request body too large (max 50KB)" 
+      }), {
+        headers: { ...corsHeaders, "Content-Type": "application/json" },
+        status: 413,
+      });
+    }
+
     // Parse request body
     let requestData: SubmitApplicationRequest;
     try {
-      requestData = await req.json();
+      requestData = JSON.parse(bodyText);
       logStep("Request parsed", { 
         hasEmail: !!requestData.user_email,
         hasName: !!requestData.user_name,
-        hasPayload: !!requestData.payload 
+        hasPayload: !!requestData.payload,
+        clientIP: clientIP
       });
     } catch (error) {
       logStep("JSON parse error", error);
       return new Response(JSON.stringify({ 
         ok: false,
-        error: "Invalid JSON body" 
+        error: "Invalid JSON format" 
       }), {
         headers: { ...corsHeaders, "Content-Type": "application/json" },
         status: 400,
@@ -101,6 +118,22 @@ serve(async (req) => {
       });
     }
 
+    // Sanitize inputs
+    const sanitizedEmail = requestData.user_email.trim().toLowerCase().substring(0, 254);
+    const sanitizedName = requestData.user_name ? requestData.user_name.trim().substring(0, 100) : null;
+    
+    // Additional payload validation
+    if (typeof requestData.payload !== 'object' || Array.isArray(requestData.payload)) {
+      logStep("Validation error: payload must be an object");
+      return new Response(JSON.stringify({ 
+        ok: false,
+        error: "Payload must be a valid object" 
+      }), {
+        headers: { ...corsHeaders, "Content-Type": "application/json" },
+        status: 400,
+      });
+    }
+
     // Generate human-readable request ID
     const now = new Date();
     const dateStr = now.toISOString().slice(0, 10).replace(/-/g, ''); // YYYYMMDD
@@ -116,11 +149,11 @@ serve(async (req) => {
       { auth: { persistSession: false } }
     );
 
-    // Insert into submissions table
+    // Insert into submissions table with sanitized data
     const submissionData: Partial<SubmissionRecord> = {
       request_id: requestId,
-      user_email: requestData.user_email,
-      user_name: requestData.user_name || null,
+      user_email: sanitizedEmail,
+      user_name: sanitizedName,
       payload: requestData.payload,
     };
 
@@ -176,9 +209,14 @@ serve(async (req) => {
   } catch (error) {
     const errorMessage = error instanceof Error ? error.message : String(error);
     logStep("ERROR", { message: errorMessage });
+    
+    // Don't expose internal details in production
+    const isDev = Deno.env.get('ENVIRONMENT') === 'development';
+    
     return new Response(JSON.stringify({ 
       ok: false,
-      error: errorMessage 
+      error: "Internal server error",
+      details: isDev ? errorMessage : undefined
     }), {
       headers: { ...corsHeaders, "Content-Type": "application/json" },
       status: 500,
