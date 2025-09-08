@@ -80,8 +80,8 @@ export default function Auth() {
     try {
       const result = await secureSignUp(email, password, fullName);
       if (!result.error) {
-        // Success - user can now sign in immediately
-        navigate('/', { replace: true });
+        // Success - but user needs to confirm email before signing in
+        // Don't navigate automatically, let them know to check email
       }
     } catch (error) {
       logger.error('Sign up error:', error);
@@ -94,7 +94,7 @@ export default function Auth() {
         <CardHeader className="text-center">
           <CardTitle className="text-2xl font-bold">Register</CardTitle>
           <CardDescription>
-            Access your business setup and growth tools. No email verification required.
+            Access your business setup and growth tools. Check your email after signing up.
           </CardDescription>
         </CardHeader>
         <CardContent>
