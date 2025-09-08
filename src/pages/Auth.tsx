@@ -7,7 +7,8 @@ import { Label } from '@/components/ui/label';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { useSecureAuth } from '@/hooks/useSecureAuth';
-import { validateEmail, validatePassword, normalizePhone } from '@/lib/validation';
+import { validateEmailFormat, validatePasswordStrength } from '@/lib/security';
+import { normalizePhone } from '@/lib/validation';
 import { logger } from '@/lib/logger';
 
 export default function Auth() {
@@ -30,13 +31,12 @@ export default function Auth() {
     const errors: Record<string, string> = {};
 
     // Validate email
-    const emailValidation = validateEmail(email);
-    if (!emailValidation.isValid) {
-      errors.email = emailValidation.error || 'Invalid email';
+    if (!validateEmailFormat(email)) {
+      errors.email = 'Please enter a valid email address';
     }
 
     // Validate password
-    const passwordValidation = validatePassword(password);
+    const passwordValidation = validatePasswordStrength(password);
     if (!passwordValidation.isValid) {
       errors.password = passwordValidation.errors[0] || 'Invalid password';
     }
