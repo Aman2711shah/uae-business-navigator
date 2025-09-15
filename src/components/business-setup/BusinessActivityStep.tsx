@@ -11,7 +11,7 @@ const BusinessActivityStep: React.FC<StepProps> = ({ state, setState }) => {
       setState({
         selectedActivities: state.selectedActivities.filter(a => a !== activity)
       });
-    } else if (state.selectedActivities.length < 3) {
+    } else if (state.selectedActivities.length < 5) {
       setState({
         selectedActivities: [...state.selectedActivities, activity]
       });
@@ -22,7 +22,7 @@ const BusinessActivityStep: React.FC<StepProps> = ({ state, setState }) => {
     <div className="space-y-6">
       <div className="text-center">
         <h2 className="text-2xl font-bold text-foreground mb-2">Select Business Activities</h2>
-        <p className="text-muted-foreground">Choose up to 3 business activities for your company</p>
+        <p className="text-muted-foreground">Choose up to 5 business activities for your company</p>
       </div>
       
       {/* Search Bar */}
