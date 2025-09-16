@@ -38,13 +38,11 @@ export default function Auth() {
     // Validate password
     const passwordValidation = validatePasswordStrength(password);
 if (!passwordValidation.isValid) {
-  // Replace technical/common-word error with a user-friendly one
-  const firstError = passwordValidation.errors[0] || 'Invalid password';
-  if (firstError.toLowerCase().includes('common')) {
-    errors.password = 'Please choose a stronger password (avoid dictionary words or sequences).';
-  } else {
-    errors.password = firstError;
-  }
+  // Filter out "common words or patterns" errors
+  const filteredErrors = passwordValidation.errors.filter(
+    (err) => !err.toLowerCase().includes('common')
+  );
+  errors.password = filteredErrors[0] || 'Invalid password';
 }
 
     // For sign up, validate additional fields
