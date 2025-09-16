@@ -17,6 +17,11 @@ export default function Auth() {
   const [fullName, setFullName] = useState('');
   const [phone, setPhone] = useState('');
   const [validationErrors, setValidationErrors] = useState<Record<string, string>>({});
+  const [passwordStrength, setPasswordStrength] = useState<{ score: number; label: string }>({
+    score: 0,
+    label: 'Weak'
+  });
+
   const { user } = useAuth();
   const navigate = useNavigate();
   const { secureSignUp, secureSignIn, isLoading } = useSecureAuth();
@@ -27,51 +32,74 @@ export default function Auth() {
     }
   }, [user, navigate]);
 
-  const mapPasswordError = (error: string): string => {
-    const err = error.toLowerCase();
+  const validateField = (field: string, value: string, isSignUp: boolean = false) => {
+    const errors: Record<string, string> = {};
 
-    if (err.includes('length')) return 'Password must be at least 12 characters long';
-    if (err.includes('uppercase')) return 'Password needs at least one uppercase letter';
-    if (err.includes('lowercase')) return 'Password needs at least one lowercase letter';
-    if (err.includes('digit') || err.includes('number')) return 'Password needs at least one number';
-    if (err.includes('special') || err.includes('symbol')) return 'Password needs at least one special character (e.g., !@#$)';
-    if (err.includes('common')) return ''; // ignored completely
+    switch (field) {
+      case "email":
+        if (!validateEmailFormat(value)) {
+          errors.email = "Please enter a valid email address";
+        }
+        break;
 
-    return 'Invalid password';
+      case "password": {
+        const passwordValidation = validatePasswordStrength(value);
+        if (!passwordValidation.isValid) {
+          const filteredErrors = passwordValidation.errors.filter(
+            (err) => !err.toLowerCase().includes("common")
+          );
+          errors.password = filteredErrors[0] || "Invalid password";
+        }
+
+        // ✅ Directly use score + label from security.ts
+        if (isSignUp) {
+          setPasswordStrength({
+            score: passwordValidation.score,
+            label: passwordValidation.label,
+          });
+        }
+        break;
+      }
+
+      case "fullName":
+        if (isSignUp && (!value.trim() || value.length < 2)) {
+          errors.fullName = "Full name must be at least 2 characters";
+        }
+        break;
+
+      case "phone":
+        if (isSignUp && value) {
+          const phoneValidation = normalizePhone(value);
+          if (!phoneValidation.isValid) {
+            errors.phone = phoneValidation.error || "Invalid phone number";
+          }
+        }
+        break;
+
+      default:
+        break;
+    }
+
+    return errors;
   };
 
   const validateForm = (isSignUp: boolean = false) => {
-    const errors: Record<string, string> = {};
+    const fields = isSignUp
+      ? ["email", "password", "fullName", "phone"]
+      : ["email", "password"];
 
-    // Validate email
-    if (!validateEmailFormat(email)) {
-      errors.email = 'Please enter a valid email address';
-    }
+    let errors: Record<string, string> = {};
+    for (const field of fields) {
+      const value =
+        field === "email"
+          ? email
+          : field === "password"
+          ? password
+          : field === "fullName"
+          ? fullName
+          : phone;
 
-    // Validate password
-    const passwordValidation = validatePasswordStrength(password);
-    if (!passwordValidation.isValid) {
-      const filteredErrors = passwordValidation.errors
-        .filter((err) => !err.toLowerCase().includes('common'))
-        .map(mapPasswordError)
-        .filter(Boolean); // remove empty ones
-      if (filteredErrors.length > 0) {
-        errors.password = filteredErrors[0];
-      }
-    }
-
-    // For sign up, validate additional fields
-    if (isSignUp) {
-      if (!fullName.trim() || fullName.length < 2) {
-        errors.fullName = 'Full name must be at least 2 characters';
-      }
-
-      if (phone) {
-        const phoneValidation = normalizePhone(phone);
-        if (!phoneValidation.isValid) {
-          errors.phone = phoneValidation.error || 'Invalid phone number';
-        }
-      }
+      errors = { ...errors, ...validateField(field, value, isSignUp) };
     }
 
     setValidationErrors(errors);
@@ -99,8 +127,7 @@ export default function Auth() {
     try {
       const result = await secureSignUp(email, password, fullName);
       if (!result.error) {
-        // Success - but user needs to confirm email before signing in
-        // Don't navigate automatically, let them know to check email
+        // Success - let user confirm email before signing in
       }
     } catch (error) {
       logger.error('Sign up error:', error);
@@ -123,6 +150,7 @@ export default function Auth() {
               <TabsTrigger value="signup">Sign Up</TabsTrigger>
             </TabsList>
 
+            {/* --- Sign In --- */}
             <TabsContent value="signin">
               <form onSubmit={handleSignIn} className="space-y-4">
                 <div className="space-y-2">
@@ -134,7 +162,7 @@ export default function Auth() {
                     value={email}
                     onChange={(e) => setEmail(e.target.value)}
                     required
-                    aria-describedby={validationErrors.email ? 'signin-email-error' : undefined}
+                    aria-describedby={validationErrors.email ? "signin-email-error" : undefined}
                   />
                   {validationErrors.email && (
                     <p id="signin-email-error" className="text-sm text-destructive">
@@ -142,6 +170,7 @@ export default function Auth() {
                     </p>
                   )}
                 </div>
+
                 <div className="space-y-2">
                   <Label htmlFor="signin-password">Password</Label>
                   <Input
@@ -151,7 +180,7 @@ export default function Auth() {
                     value={password}
                     onChange={(e) => setPassword(e.target.value)}
                     required
-                    aria-describedby={validationErrors.password ? 'signin-password-error' : undefined}
+                    aria-describedby={validationErrors.password ? "signin-password-error" : undefined}
                   />
                   {validationErrors.password && (
                     <p id="signin-password-error" className="text-sm text-destructive">
@@ -159,12 +188,14 @@ export default function Auth() {
                     </p>
                   )}
                 </div>
+
                 <Button type="submit" className="w-full" disabled={isLoading}>
-                  {isLoading ? 'Signing in...' : 'Sign In'}
+                  {isLoading ? "Signing in..." : "Sign In"}
                 </Button>
               </form>
             </TabsContent>
 
+            {/* --- Sign Up --- */}
             <TabsContent value="signup">
               <form onSubmit={handleSignUp} className="space-y-4">
                 <div className="space-y-2">
@@ -176,7 +207,7 @@ export default function Auth() {
                     value={fullName}
                     onChange={(e) => setFullName(e.target.value)}
                     required
-                    aria-describedby={validationErrors.fullName ? 'signup-name-error' : undefined}
+                    aria-describedby={validationErrors.fullName ? "signup-name-error" : undefined}
                   />
                   {validationErrors.fullName && (
                     <p id="signup-name-error" className="text-sm text-destructive">
@@ -184,6 +215,7 @@ export default function Auth() {
                     </p>
                   )}
                 </div>
+
                 <div className="space-y-2">
                   <Label htmlFor="signup-email">Email</Label>
                   <Input
@@ -193,7 +225,7 @@ export default function Auth() {
                     value={email}
                     onChange={(e) => setEmail(e.target.value)}
                     required
-                    aria-describedby={validationErrors.email ? 'signup-email-error' : undefined}
+                    aria-describedby={validationErrors.email ? "signup-email-error" : undefined}
                   />
                   {validationErrors.email && (
                     <p id="signup-email-error" className="text-sm text-destructive">
@@ -201,6 +233,7 @@ export default function Auth() {
                     </p>
                   )}
                 </div>
+
                 <div className="space-y-2">
                   <Label htmlFor="signup-phone">Phone Number (Optional)</Label>
                   <Input
@@ -209,7 +242,7 @@ export default function Auth() {
                     placeholder="Enter your phone number (e.g., +971501234567)"
                     value={phone}
                     onChange={(e) => setPhone(e.target.value)}
-                    aria-describedby={validationErrors.phone ? 'signup-phone-error' : undefined}
+                    aria-describedby={validationErrors.phone ? "signup-phone-error" : undefined}
                   />
                   {validationErrors.phone && (
                     <p id="signup-phone-error" className="text-sm text-destructive">
@@ -217,6 +250,7 @@ export default function Auth() {
                     </p>
                   )}
                 </div>
+
                 <div className="space-y-2">
                   <Label htmlFor="signup-password">Password</Label>
                   <Input
@@ -227,7 +261,7 @@ export default function Auth() {
                     onChange={(e) => setPassword(e.target.value)}
                     required
                     minLength={12}
-                    aria-describedby={validationErrors.password ? 'signup-password-error' : undefined}
+                    aria-describedby={validationErrors.password ? "signup-password-error" : undefined}
                   />
                   {validationErrors.password && (
                     <p id="signup-password-error" className="text-sm text-destructive">
@@ -235,8 +269,32 @@ export default function Auth() {
                     </p>
                   )}
                 </div>
+
+                {/* ✅ Password strength meter */}
+                {password && (
+                  <div className="space-y-1">
+                    <div className="w-full h-2 rounded bg-muted">
+                      <div
+                        className={`h-2 rounded transition-all ${
+                          passwordStrength.score <= 25
+                            ? "bg-red-500"
+                            : passwordStrength.score <= 50
+                            ? "bg-orange-500"
+                            : passwordStrength.score <= 75
+                            ? "bg-yellow-500"
+                            : "bg-green-500"
+                        }`}
+                        style={{ width: `${passwordStrength.score}%` }}
+                      />
+                    </div>
+                    <p className="text-sm text-muted-foreground">
+                      {passwordStrength.label}
+                    </p>
+                  </div>
+                )}
+
                 <Button type="submit" className="w-full" disabled={isLoading}>
-                  {isLoading ? 'Creating account...' : 'Sign Up'}
+                  {isLoading ? "Creating account..." : "Sign Up"}
                 </Button>
               </form>
             </TabsContent>
