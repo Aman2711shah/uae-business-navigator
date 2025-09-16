@@ -30,12 +30,13 @@ export const validateEmailFormat = (email: string): boolean => {
 export const validatePasswordStrength = (password: string): {
   isValid: boolean;
   errors: string[];
-  strength: 'weak' | 'medium' | 'strong';
+  score: number;
+  label: 'Weak' | 'Fair' | 'Good' | 'Strong';
 } => {
   const errors: string[] = [];
   let score = 0;
   
-  // Enhanced password requirements (consistent with validation.ts)
+  // Enhanced password requirements
   if (password.length < 12) {
     errors.push('Password must be at least 12 characters long');
   } else {
@@ -66,31 +67,37 @@ export const validatePasswordStrength = (password: string): {
     score += 1;
   }
   
-  // Check for common patterns
+  // Check for repeated characters
   if (/(.)\1{2,}/.test(password)) {
     errors.push('Password cannot contain repeated characters');
   }
   
+  // Disallow only letters
   if (/^[a-zA-Z]+$/.test(password)) {
     errors.push('Password cannot contain only letters');
   }
   
+  // Disallow only numbers
   if (/^\d+$/.test(password)) {
     errors.push('Password cannot contain only numbers');
   }
-  
-  // Check against common passwords
-  const commonPasswords = ['password', '123456', 'qwerty', 'abc123', 'letmein', 'admin'];
-  if (commonPasswords.some(common => password.toLowerCase().includes(common))) {
-    errors.push('Password contains common words or patterns');
-  }
-  
-  const strength = score >= 5 ? 'strong' : score >= 3 ? 'medium' : 'weak';
+
+  // 🚨 "common words" check removed 🚨
+
+  // Normalize score to 0–100 scale
+  const normalizedScore = Math.min(100, score * 20);
+
+  let label: 'Weak' | 'Fair' | 'Good' | 'Strong';
+  if (normalizedScore <= 25) label = 'Weak';
+  else if (normalizedScore <= 50) label = 'Fair';
+  else if (normalizedScore <= 75) label = 'Good';
+  else label = 'Strong';
   
   return {
-    isValid: errors.length === 0 && strength !== 'weak',
+    isValid: errors.length === 0 && label !== 'Weak',
     errors,
-    strength
+    score: normalizedScore,
+    label
   };
 };
 
