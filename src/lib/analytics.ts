@@ -50,7 +50,7 @@ class Analytics {
   // Track custom events
   track(eventName: string, parameters?: Record<string, any>) {
     if (!this.gaId || typeof window === 'undefined') {
-      console.log('Analytics tracking (offline):', eventName, parameters);
+      // Analytics tracking (offline): eventName, parameters
       return;
     }
 
@@ -103,7 +103,7 @@ class Analytics {
   // Track page views
   trackPageView(pagePath: string, pageTitle?: string) {
     if (!this.gaId || typeof window === 'undefined') {
-      console.log('Analytics page view (offline):', pagePath, pageTitle);
+      // Analytics page view (offline): pagePath, pageTitle
       return;
     }
 

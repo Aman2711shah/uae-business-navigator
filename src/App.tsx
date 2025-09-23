@@ -1,6 +1,7 @@
 import { Toaster } from "@/components/ui/toaster";
 import { Toaster as Sonner } from "@/components/ui/sonner";
 import { TooltipProvider } from "@/components/ui/tooltip";
+import { ThemeProvider } from "next-themes";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import SupportButton from "@/components/ui/support-button";
 import { BrowserRouter, Routes, Route } from "react-router-dom";
@@ -13,9 +14,7 @@ import Index from "./pages/Index";
 import Auth from "./pages/Auth";
 import Admin from "./pages/Admin";
 import Dashboard from "./pages/Dashboard";
-import Services from "./pages/Services";
 import ServicesSupabase from "./pages/ServicesSupabase";
-import ServiceDetail from "./pages/ServiceDetail";
 import ServiceDetailSupabase from "./pages/ServiceDetailSupabase";
 import SubServiceDetail from "./pages/SubServiceDetail";
 import PaymentSuccess from "./pages/PaymentSuccess";
@@ -49,8 +48,9 @@ const App = () => {
 
   return (
     <QueryClientProvider client={queryClient}>
-      <AuthProvider>
-        <TooltipProvider>
+      <ThemeProvider attribute="class" defaultTheme="system" enableSystem>
+        <AuthProvider>
+          <TooltipProvider>
           <Toaster />
           <Sonner />
           <BrowserRouter>
@@ -60,8 +60,6 @@ const App = () => {
               <Route path="/dashboard" element={<ProtectedRoute><Dashboard /></ProtectedRoute>} />
               <Route path="/admin" element={<ProtectedRoute><Admin /></ProtectedRoute>} />
               <Route path="/services" element={<ProtectedRoute><ServicesSupabase /></ProtectedRoute>} />
-              <Route path="/services-old" element={<ProtectedRoute><Services /></ProtectedRoute>} />
-              <Route path="/service/:serviceId" element={<ProtectedRoute><ServiceDetail /></ProtectedRoute>} />
               <Route path="/service-detail/:serviceId" element={<ProtectedRoute><ServiceDetailSupabase /></ProtectedRoute>} />
                <Route path="/sub-service-detail/:subServiceId" element={<ProtectedRoute><SubServiceDetail /></ProtectedRoute>} />
                <Route path="/payment-success" element={<ProtectedRoute><PaymentSuccess /></ProtectedRoute>} />
@@ -89,8 +87,9 @@ const App = () => {
               <Route path="*" element={<NotFound />} />
             </Routes>
           </BrowserRouter>
-        </TooltipProvider>
-      </AuthProvider>
+          </TooltipProvider>
+        </AuthProvider>
+      </ThemeProvider>
     </QueryClientProvider>
   );
 };
