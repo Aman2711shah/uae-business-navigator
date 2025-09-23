@@ -1,11 +1,14 @@
-import React from "react";
-import { Search } from "lucide-react";
+import React, { useState } from "react";
+import { Search, ChevronDown } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { Input } from "@/components/ui/input";
+import { Collapsible, CollapsibleContent, CollapsibleTrigger } from "@/components/ui/collapsible";
 import { StepProps } from "@/types/businessSetup";
 
 const BusinessActivityStep: React.FC<StepProps> = ({ state, setState }) => {
+  const [openCategories, setOpenCategories] = useState<{ [key: string]: boolean }>({});
+
   const handleActivityToggle = (activity: string) => {
     if (state.selectedActivities.includes(activity)) {
       setState({
@@ -16,6 +19,13 @@ const BusinessActivityStep: React.FC<StepProps> = ({ state, setState }) => {
         selectedActivities: [...state.selectedActivities, activity]
       });
     }
+  };
+
+  const toggleCategory = (category: string) => {
+    setOpenCategories(prev => ({
+      ...prev,
+      [category]: !prev[category]
+    }));
   };
 
   return (
@@ -38,22 +48,37 @@ const BusinessActivityStep: React.FC<StepProps> = ({ state, setState }) => {
       </div>
       
       {Object.entries(state.filteredActivities).map(([category, activities]) => (
-        <div key={category} className="space-y-3">
-          <h3 className="text-lg font-semibold text-foreground">{category}</h3>
-          <div className="grid grid-cols-1 gap-2">
-            {activities.map((activity) => (
-              <Button
-                key={activity}
-                variant={state.selectedActivities.includes(activity) ? "default" : "outline"}
-                className="justify-start h-auto p-3 text-left"
-                onClick={() => handleActivityToggle(activity)}
-                disabled={!state.selectedActivities.includes(activity) && state.selectedActivities.length >= 3}
-              >
-                {activity}
-              </Button>
-            ))}
-          </div>
-        </div>
+        <Collapsible 
+          key={category} 
+          open={openCategories[category]} 
+          onOpenChange={() => toggleCategory(category)}
+          className="space-y-2"
+        >
+          <CollapsibleTrigger asChild>
+            <Button 
+              variant="ghost" 
+              className="w-full justify-between p-4 h-auto text-left hover:bg-muted/50"
+            >
+              <h3 className="text-lg font-semibold text-foreground">{category}</h3>
+              <ChevronDown className={`h-4 w-4 transition-transform duration-200 ${openCategories[category] ? 'rotate-180' : ''}`} />
+            </Button>
+          </CollapsibleTrigger>
+          <CollapsibleContent className="space-y-2">
+            <div className="grid grid-cols-1 gap-2 pl-4">
+              {activities.map((activity) => (
+                <Button
+                  key={activity}
+                  variant={state.selectedActivities.includes(activity) ? "default" : "outline"}
+                  className="justify-start h-auto p-3 text-left"
+                  onClick={() => handleActivityToggle(activity)}
+                  disabled={!state.selectedActivities.includes(activity) && state.selectedActivities.length >= 3}
+                >
+                  {activity}
+                </Button>
+              ))}
+            </div>
+          </CollapsibleContent>
+        </Collapsible>
       ))}
       
       {state.selectedActivities.length > 0 && (
