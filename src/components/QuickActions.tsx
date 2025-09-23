@@ -48,22 +48,22 @@ const QuickActions = () => {
   };
 
   return (
-    <div className="px-4">
-      <h2 className="text-xl font-bold text-foreground mb-4">Quick Actions</h2>
-      <div className="grid grid-cols-2 gap-4">
+    <div className="px-4 sm:px-6">
+      <h2 className="text-lg sm:text-xl font-bold text-foreground mb-4">Quick Actions</h2>
+      <div className="grid grid-cols-2 gap-3 sm:gap-4">
         {quickActions.map((action, index) => (
           <Card 
             key={index} 
-            className="border-none shadow-sm hover:shadow-md transition-all duration-300 cursor-pointer hover:scale-105"
+            className="border-none shadow-sm hover:shadow-md transition-all duration-300 cursor-pointer hover:scale-105 touch-target"
             onClick={() => handleActionClick(index)}
           >
-            <CardContent className="p-5">
-              <div className="flex flex-col items-center text-center space-y-3">
-                <div className={`w-14 h-14 rounded-xl ${action.bgColor} flex items-center justify-center`}>
-                  <action.icon className={`h-7 w-7 ${action.color}`} />
+            <CardContent className="p-4 sm:p-5">
+              <div className="flex flex-col items-center text-center space-y-2 sm:space-y-3">
+                <div className={`w-12 h-12 sm:w-14 sm:h-14 rounded-xl ${action.bgColor} flex items-center justify-center`}>
+                  <action.icon className={`h-6 w-6 sm:h-7 sm:w-7 ${action.color}`} />
                 </div>
                 <div className="space-y-1">
-                  <h3 className="font-semibold text-foreground text-sm leading-tight">
+                  <h3 className="font-semibold text-foreground text-xs sm:text-sm leading-tight">
                     {action.title}
                   </h3>
                   <p className="text-muted-foreground text-xs leading-relaxed">

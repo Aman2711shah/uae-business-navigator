@@ -24,7 +24,7 @@ const Index = () => {
   }, [user]);
 
   return (
-    <div className="min-h-screen bg-gradient-to-b from-background to-muted/20 pb-20">
+    <div className="min-h-screen bg-gradient-to-b from-background to-muted/20 pb-16 sm:pb-20">
       <Header />
       <SearchBar />
       <SpecialOffer />

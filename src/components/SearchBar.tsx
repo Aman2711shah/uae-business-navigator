@@ -46,16 +46,16 @@ const SearchBar = () => {
   };
 
   return (
-    <div className="relative p-4">
+    <div className="relative p-4 sm:p-6">
       <div className="relative">
-        <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 h-5 w-5 text-muted-foreground z-10" />
+        <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 h-4 w-4 sm:h-5 sm:w-5 text-muted-foreground z-10" />
         <Input 
           ref={inputRef}
           placeholder="Search services across WAZEET..." 
           value={searchTerm}
           onChange={(e) => handleInputChange(e.target.value)}
           onFocus={handleInputFocus}
-          className="pl-10 h-12 bg-muted/50 border-none rounded-xl text-base"
+          className="pl-9 sm:pl-10 h-11 sm:h-12 bg-muted/50 border-none rounded-xl text-sm sm:text-base"
         />
         
         {/* Search Results Dropdown */}
@@ -70,13 +70,13 @@ const SearchBar = () => {
                   <div
                     key={index}
                     onClick={() => handleResultClick(result.route)}
-                    className="flex items-center justify-between p-3 hover:bg-muted/50 rounded-lg cursor-pointer transition-colors group"
+                    className="flex items-center justify-between p-3 sm:p-4 hover:bg-muted/50 rounded-lg cursor-pointer transition-colors group touch-target"
                   >
                     <div className="flex-1 min-w-0">
-                      <h4 className="font-medium text-foreground truncate group-hover:text-primary">
+                      <h4 className="font-medium text-sm sm:text-base text-foreground truncate group-hover:text-primary">
                         {result.name}
                       </h4>
-                      <p className="text-sm text-muted-foreground truncate mt-1">
+                      <p className="text-xs sm:text-sm text-muted-foreground truncate mt-1">
                         {result.description}
                       </p>
                       <div className="flex items-center gap-2 mt-2">
@@ -93,7 +93,7 @@ const SearchBar = () => {
                         )}
                       </div>
                     </div>
-                    <ArrowRight className="h-4 w-4 text-muted-foreground group-hover:text-primary ml-3 flex-shrink-0" />
+                    <ArrowRight className="h-3 w-3 sm:h-4 sm:w-4 text-muted-foreground group-hover:text-primary ml-3 flex-shrink-0" />
                   </div>
                 ))}
               </div>

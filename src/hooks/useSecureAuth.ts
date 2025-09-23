@@ -40,7 +40,7 @@ export const useSecureAuth = () => {
       }
       
       // Show password strength feedback
-      if (passwordValidation.strength === 'medium') {
+      if (passwordValidation.label === 'Fair') {
         toast({
           title: "Password accepted",
           description: "Consider using a stronger password for better security",
