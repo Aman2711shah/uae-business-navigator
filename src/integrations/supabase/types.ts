@@ -102,72 +102,6 @@ export type Database = {
           },
         ]
       }
-      business_activities: {
-        Row: {
-          activity_code: string | null
-          category: string
-          created_at: string
-          description: string | null
-          id: string
-          is_active: boolean | null
-          license_requirements: string[] | null
-          minimum_capital: number | null
-          name: string
-          updated_at: string
-        }
-        Insert: {
-          activity_code?: string | null
-          category: string
-          created_at?: string
-          description?: string | null
-          id?: string
-          is_active?: boolean | null
-          license_requirements?: string[] | null
-          minimum_capital?: number | null
-          name: string
-          updated_at?: string
-        }
-        Update: {
-          activity_code?: string | null
-          category?: string
-          created_at?: string
-          description?: string | null
-          id?: string
-          is_active?: boolean | null
-          license_requirements?: string[] | null
-          minimum_capital?: number | null
-          name?: string
-          updated_at?: string
-        }
-        Relationships: []
-      }
-      business_applications: {
-        Row: {
-          activity: string | null
-          company_name: string | null
-          country: string | null
-          created_at: string | null
-          email: string | null
-          phone: string | null
-        }
-        Insert: {
-          activity?: string | null
-          company_name?: string | null
-          country?: string | null
-          created_at?: string | null
-          email?: string | null
-          phone?: string | null
-        }
-        Update: {
-          activity?: string | null
-          company_name?: string | null
-          country?: string | null
-          created_at?: string | null
-          email?: string | null
-          phone?: string | null
-        }
-        Relationships: []
-      }
       business_setup_costs: {
         Row: {
           category: string
@@ -438,77 +372,6 @@ export type Database = {
           website_or_linkedin?: string | null
         }
         Relationships: []
-      }
-      custom_packages: {
-        Row: {
-          additional_fees: Json | null
-          base_price: number
-          created_at: string
-          description: string | null
-          id: string
-          included_services: string[] | null
-          is_active: boolean | null
-          max_activities: number
-          max_shareholders: number
-          max_visas: number
-          name: string
-          package_type: string
-          per_activity_price: number | null
-          per_shareholder_price: number | null
-          per_visa_price: number | null
-          tenure_years: number[]
-          updated_at: string
-          zone_id: string | null
-        }
-        Insert: {
-          additional_fees?: Json | null
-          base_price?: number
-          created_at?: string
-          description?: string | null
-          id?: string
-          included_services?: string[] | null
-          is_active?: boolean | null
-          max_activities?: number
-          max_shareholders?: number
-          max_visas?: number
-          name: string
-          package_type: string
-          per_activity_price?: number | null
-          per_shareholder_price?: number | null
-          per_visa_price?: number | null
-          tenure_years?: number[]
-          updated_at?: string
-          zone_id?: string | null
-        }
-        Update: {
-          additional_fees?: Json | null
-          base_price?: number
-          created_at?: string
-          description?: string | null
-          id?: string
-          included_services?: string[] | null
-          is_active?: boolean | null
-          max_activities?: number
-          max_shareholders?: number
-          max_visas?: number
-          name?: string
-          package_type?: string
-          per_activity_price?: number | null
-          per_shareholder_price?: number | null
-          per_visa_price?: number | null
-          tenure_years?: number[]
-          updated_at?: string
-          zone_id?: string | null
-        }
-        Relationships: [
-          {
-            foreignKeyName: "custom_packages_zone_id_fkey"
-            columns: ["zone_id"]
-            isOneToOne: false
-            referencedRelation: "zones"
-            referencedColumns: ["id"]
-          },
-        ]
       }
       document_requirements: {
         Row: {
@@ -1011,59 +874,6 @@ export type Database = {
           user_name?: string
         }
         Relationships: []
-      }
-      package_pricing_tiers: {
-        Row: {
-          created_at: string
-          id: string
-          max_activities: number | null
-          max_shareholders: number | null
-          max_visas: number | null
-          min_activities: number | null
-          min_shareholders: number | null
-          min_visas: number | null
-          package_id: string | null
-          tenure_years: number
-          tier_name: string
-          tier_price: number
-        }
-        Insert: {
-          created_at?: string
-          id?: string
-          max_activities?: number | null
-          max_shareholders?: number | null
-          max_visas?: number | null
-          min_activities?: number | null
-          min_shareholders?: number | null
-          min_visas?: number | null
-          package_id?: string | null
-          tenure_years: number
-          tier_name: string
-          tier_price: number
-        }
-        Update: {
-          created_at?: string
-          id?: string
-          max_activities?: number | null
-          max_shareholders?: number | null
-          max_visas?: number | null
-          min_activities?: number | null
-          min_shareholders?: number | null
-          min_visas?: number | null
-          package_id?: string | null
-          tenure_years?: number
-          tier_name?: string
-          tier_price?: number
-        }
-        Relationships: [
-          {
-            foreignKeyName: "package_pricing_tiers_package_id_fkey"
-            columns: ["package_id"]
-            isOneToOne: false
-            referencedRelation: "custom_packages"
-            referencedColumns: ["id"]
-          },
-        ]
       }
       packages: {
         Row: {
@@ -1888,45 +1698,6 @@ export type Database = {
           id?: string
           role?: Database["public"]["Enums"]["app_role"]
           user_id?: string
-        }
-        Relationships: []
-      }
-      zones: {
-        Row: {
-          contact_info: Json | null
-          created_at: string
-          description: string | null
-          id: string
-          is_active: boolean | null
-          key_benefits: string[] | null
-          location: string | null
-          name: string
-          updated_at: string
-          zone_type: string
-        }
-        Insert: {
-          contact_info?: Json | null
-          created_at?: string
-          description?: string | null
-          id?: string
-          is_active?: boolean | null
-          key_benefits?: string[] | null
-          location?: string | null
-          name: string
-          updated_at?: string
-          zone_type: string
-        }
-        Update: {
-          contact_info?: Json | null
-          created_at?: string
-          description?: string | null
-          id?: string
-          is_active?: boolean | null
-          key_benefits?: string[] | null
-          location?: string | null
-          name?: string
-          updated_at?: string
-          zone_type?: string
         }
         Relationships: []
       }

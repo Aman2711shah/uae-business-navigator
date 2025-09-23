@@ -13,7 +13,7 @@ import ShareholdersStep from "@/components/business-setup/ShareholdersStep";
 import VisaRequirementsStep from "@/components/business-setup/VisaRequirementsStep";
 import TenureStep from "@/components/business-setup/TenureStep";
 import LegalEntityStep from "@/components/business-setup/LegalEntityStep";
-import EnhancedCostEstimationStep from "@/components/business-setup/EnhancedCostEstimationStep";
+import CostEstimationStep from "@/components/business-setup/CostEstimationStep";
 import SummaryStep from "@/components/business-setup/SummaryStep";
 import SavedQuoteManager from "@/components/business-setup/SavedQuoteManager";
 const BusinessSetupFlow = () => {
@@ -338,7 +338,7 @@ const BusinessSetupFlow = () => {
       case 5:
         return <LegalEntityStep {...stepProps} />;
       case 6:
-        return <EnhancedCostEstimationStep {...stepProps} />;
+        return <CostEstimationStep {...stepProps} />;
       case 7:
         return <SummaryStep {...stepProps} />;
       default:
