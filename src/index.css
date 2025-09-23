@@ -8,49 +8,49 @@ All colors MUST be HSL.
 
 @layer base {
   :root {
-    /* Clean Professional Light Theme */
-    --background: 255 255 255;         /* Pure white background */
-    --foreground: 15 23 42;            /* slate-900 */
+    /* Clean Professional Light Theme (HSL values) */
+    --background: 0 0% 100%;            /* white */
+    --foreground: 222 47% 11%;          /* slate-900 */
 
-    --card: 255 255 255;               /* White cards */
-    --card-foreground: 15 23 42;       /* slate-900 */
+    --card: 0 0% 100%;                  /* white */
+    --card-foreground: 222 47% 11%;     /* slate-900 */
 
-    --popover: 255 255 255;            /* White popover */
-    --popover-foreground: 15 23 42;    /* slate-900 */
+    --popover: 0 0% 100%;               /* white */
+    --popover-foreground: 222 47% 11%;  /* slate-900 */
 
     /* Professional Blue Primary */
-    --primary: 37 99 235;              /* blue-600 */
-    --primary-foreground: 255 255 255; /* white */
-    --primary-hover: 29 78 216;        /* blue-700 */
-    --primary-light: 147 197 253;      /* blue-300 */
-    --primary-glow: 96 165 250;        /* blue-400 */
+    --primary: 217 91% 60%;             /* blue-600 */
+    --primary-foreground: 0 0% 100%;    /* white */
+    --primary-hover: 221 83% 53%;       /* blue-700 */
+    --primary-light: 212 96% 78%;       /* blue-300 */
+    --primary-glow: 214 84% 56%;        /* blue-400 */
 
-    /* Clean Gray Secondary */
-    --secondary: 248 250 252;          /* slate-50 */
-    --secondary-foreground: 51 65 85;  /* slate-700 */
-    --secondary-accent: 241 245 249;   /* slate-100 */
+    /* Neutral Secondary */
+    --secondary: 210 40% 98%;           /* slate-50 */
+    --secondary-foreground: 215 19% 35%;/* slate-700 */
+    --secondary-accent: 210 40% 96%;    /* slate-100 */
 
-    --muted: 248 250 252;              /* slate-50 */
-    --muted-foreground: 100 116 139;   /* slate-500 */
+    --muted: 210 40% 98%;               /* slate-50 */
+    --muted-foreground: 215 16% 47%;    /* slate-500 */
 
-    --accent: 248 250 252;             /* slate-50 */
-    --accent-foreground: 15 23 42;     /* slate-900 */
+    --accent: 210 40% 98%;              /* slate-50 */
+    --accent-foreground: 222 47% 11%;   /* slate-900 */
 
-    --destructive: 220 38 38;          /* red-600 */
-    --destructive-foreground: 255 255 255; /* white */
+    --destructive: 0 72% 51%;           /* red-600 */
+    --destructive-foreground: 0 0% 100%;/* white */
 
-    --border: 226 232 240;             /* slate-200 */
-    --input: 255 255 255;              /* white */
-    --ring: 37 99 235;                 /* blue-600 */
+    --border: 214 32% 91%;              /* slate-200 */
+    --input: 0 0% 100%;                 /* white */
+    --ring: 217 91% 60%;                /* blue-600 */
 
     /* Chat UI Colors */
-    --chat-bubble: 255 255 255;        /* white */
-    --chat-assistant: 248 250 252;     /* slate-50 */
+    --chat-bubble: 0 0% 100%;           /* white */
+    --chat-assistant: 210 40% 98%;      /* slate-50 */
     
     /* Navigation Colors */
-    --nav-background: 255 255 255;     /* white */
-    --nav-selected: 37 99 235;         /* blue-600 */
-    --nav-unselected: 148 163 184;     /* slate-400 */
+    --nav-background: 0 0% 100%;        /* white */
+    --nav-selected: 217 91% 60%;        /* blue-600 */
+    --nav-unselected: 215 13% 59%;      /* slate-400 */
     
     /* Clean Gradients */
     --gradient-primary: linear-gradient(135deg, hsl(220 91% 52%), hsl(220 91% 60%));
@@ -73,17 +73,17 @@ All colors MUST be HSL.
     --transition-spring: all 0.5s cubic-bezier(0.175, 0.885, 0.32, 1.275);
     --transition-bounce: all 0.3s cubic-bezier(0.68, -0.55, 0.265, 1.55);
 
-    --radius: 6px;                     /* Clean border radius */
+    --radius: 6px;                      /* Clean border radius */
 
     /* Sidebar Colors */
-    --sidebar-background: 255 255 255;
-    --sidebar-foreground: 15 23 42;
-    --sidebar-primary: 37 99 235;
-    --sidebar-primary-foreground: 255 255 255;
-    --sidebar-accent: 248 250 252;
-    --sidebar-accent-foreground: 15 23 42;
-    --sidebar-border: 226 232 240;
-    --sidebar-ring: 37 99 235;
+    --sidebar-background: 0 0% 100%;
+    --sidebar-foreground: 222 47% 11%;
+    --sidebar-primary: 217 91% 60%;
+    --sidebar-primary-foreground: 0 0% 100%;
+    --sidebar-accent: 210 40% 98%;
+    --sidebar-accent-foreground: 222 47% 11%;
+    --sidebar-border: 214 32% 91%;
+    --sidebar-ring: 217 91% 60%;
   }
 
   .dark {

@@ -242,6 +242,19 @@ const BusinessSetupFlow = () => {
       setCurrentStep(currentStep - 1);
     }
   };
+  const handleHeaderBack = () => {
+    if (currentStep > 1) {
+      setCurrentStep(currentStep - 1);
+      return;
+    }
+    // Use history when available, otherwise go home
+    // @ts-ignore - history state idx is available in React Router v6
+    if ((window.history.state && window.history.state.idx > 0) || window.history.length > 1) {
+      navigate(-1);
+    } else {
+      navigate('/');
+    }
+  };
   const canProceed = () => {
     switch (currentStep) {
       case 1:
@@ -349,7 +362,7 @@ const BusinessSetupFlow = () => {
       {/* Header */}
       <div className="bg-white shadow-sm border-b sticky top-0 z-10">
         <div className="flex items-center justify-between p-4">
-          <Button variant="ghost" size="icon" onClick={() => navigate(-1)}>
+          <Button variant="ghost" size="icon" onClick={handleHeaderBack}>
             <ArrowLeft className="h-5 w-5" />
           </Button>
           <h1 className="text-lg font-semibold text-foreground">Company Setup</h1>
