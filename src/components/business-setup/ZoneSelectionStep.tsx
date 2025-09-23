@@ -10,6 +10,7 @@ import { useToast } from '@/hooks/use-toast';
 interface Zone {
   id: string;
   name: string;
+  zone_type: string;
   type: 'mainland' | 'freezone';
   description: string;
   location: string;

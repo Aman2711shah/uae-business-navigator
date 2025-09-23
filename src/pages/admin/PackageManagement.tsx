@@ -13,9 +13,13 @@ import { Badge } from '@/components/ui/badge';
 interface Zone {
   id: string;
   name: string;
+  zone_type: string;
   type: 'mainland' | 'freezone';
   description: string;
   location: string;
+  key_benefits: string[];
+  contact_info: any;
+  is_active: boolean;
 }
 
 interface CustomPackage {
@@ -87,8 +91,17 @@ const PackageManagement = () => {
 
       if (zonesError) throw zonesError;
 
-      setPackages(packagesData || []);
-      setZones((zonesData || []).map(zone => ({ ...zone, type: zone.zone_type as 'mainland' | 'freezone' })));
+      setPackages((packagesData || []).map(pkg => ({
+        ...pkg,
+        zone: pkg.zone ? { 
+          ...pkg.zone, 
+          type: pkg.zone.zone_type as 'mainland' | 'freezone' 
+        } : undefined
+      })));
+      setZones((zonesData || []).map(zone => ({ 
+        ...zone, 
+        type: zone.zone_type as 'mainland' | 'freezone' 
+      })));
     } catch (error) {
       console.error('Error fetching data:', error);
       toast({

@@ -19,6 +19,7 @@ import { businessActivities } from '@/data/businessSetupData';
 interface Zone {
   id: string;
   name: string;
+  zone_type: string;
   type: 'mainland' | 'freezone';
   description: string;
   location: string;
@@ -28,21 +29,18 @@ interface Zone {
 }
 
 interface Package {
-  id: string;
-  name: string;
-  description: string;
+  id: number;
+  freezone_name: string;
+  package_name: string;
   package_type: string;
-  base_price: number;
-  max_activities: number;
-  max_shareholders: number;
+  price_aed: number;
+  base_cost: number;
+  per_visa_cost: number;
   max_visas: number;
-  tenure_years: number[];
-  zone_id: string;
-  is_mainland: boolean;
-  setup_timeline_days: number;
-  min_share_capital: number;
-  included_services: string[];
-  is_active: boolean;
+  shareholders_allowed: number;
+  activities_allowed: number;
+  tenure_years: number;
+  included_services: string;
 }
 
 const steps = [
@@ -159,7 +157,7 @@ const CustomBusinessSetupFlow = () => {
         return (
           <ZoneSelectionStep
             selectedZone={selectedZone}
-            onSelectZone={setSelectedZone}
+            onSelectZone={(zone: Zone) => setSelectedZone(zone)}
             onNext={nextStep}
             onBack={prevStep}
           />
@@ -167,21 +165,16 @@ const CustomBusinessSetupFlow = () => {
       case 6:
         return selectedZone ? (
           <PackageSelectionStep
-            selectedZone={selectedZone}
-            selectedPackage={selectedPackage}
+            selectedFreezone={selectedZone.name}
+            selectedType={selectedZone.type}
             onSelectPackage={setSelectedPackage}
-            requirements={getRequirements()}
-            onNext={nextStep}
-            onBack={prevStep}
+            selectedPackage={selectedPackage}
           />
         ) : null;
       case 7:
         return (
           <SummaryStep
             {...stepProps}
-            selectedZone={selectedZone}
-            selectedPackage={selectedPackage}
-            onComplete={handleComplete}
           />
         );
       default:

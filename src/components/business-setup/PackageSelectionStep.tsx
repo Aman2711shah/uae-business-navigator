@@ -24,14 +24,25 @@ interface PackageSelectionStepProps {
   selectedFreezone: string;
   selectedType: 'freezone' | 'mainland';
   onSelectPackage: (pkg: Package) => void;
-  selectedPackage?: Package;
+  selectedPackage?: Package | null;
+  requirements?: {
+    activities: number;
+    shareholders: number;
+    visas: number;
+    tenure: number;
+  };
+  onNext?: () => void;
+  onBack?: () => void;
 }
 
 const PackageSelectionStep: React.FC<PackageSelectionStepProps> = ({
   selectedFreezone,
   selectedType,
   onSelectPackage,
-  selectedPackage
+  selectedPackage,
+  requirements,
+  onNext,
+  onBack
 }) => {
   const [packages, setPackages] = useState<Package[]>([]);
   const [loading, setLoading] = useState(false);
@@ -40,7 +51,6 @@ const PackageSelectionStep: React.FC<PackageSelectionStepProps> = ({
     if (selectedFreezone && selectedType === 'freezone') {
       fetchPackages();
     } else if (selectedType === 'mainland') {
-      // For mainland, we'll show standard packages
       setMainlandPackages();
     }
   }, [selectedFreezone, selectedType]);
@@ -64,7 +74,6 @@ const PackageSelectionStep: React.FC<PackageSelectionStepProps> = ({
   };
 
   const setMainlandPackages = () => {
-    // Standard mainland packages
     const mainlandPackages: Package[] = [
       {
         id: 0,
@@ -114,7 +123,7 @@ const PackageSelectionStep: React.FC<PackageSelectionStepProps> = ({
 
   const getPackageFeatures = (pkg: Package) => {
     const services = pkg.included_services?.split(',').map(s => s.trim()) || [];
-    return services.slice(0, 5); // Show max 5 features
+    return services.slice(0, 5);
   };
 
   const formatPrice = (price: number) => {
@@ -123,6 +132,17 @@ const PackageSelectionStep: React.FC<PackageSelectionStepProps> = ({
       currency: 'AED',
       minimumFractionDigits: 0
     }).format(price);
+  };
+
+  const isPackageCompatible = (pkg: Package) => {
+    if (!requirements) return true;
+    
+    return (
+      pkg.activities_allowed >= requirements.activities &&
+      pkg.shareholders_allowed >= requirements.shareholders &&
+      pkg.max_visas >= requirements.visas &&
+      pkg.tenure_years >= requirements.tenure
+    );
   };
 
   if (loading) {
@@ -144,78 +164,84 @@ const PackageSelectionStep: React.FC<PackageSelectionStepProps> = ({
       </div>
 
       <div className="grid gap-6">
-        {packages.map((pkg) => (
-          <Card 
-            key={pkg.id}
-            className={`cursor-pointer transition-all hover:shadow-lg ${
-              selectedPackage?.id === pkg.id ? 'ring-2 ring-primary shadow-lg' : ''
-            }`}
-            onClick={() => onSelectPackage(pkg)}
-          >
-            <CardHeader>
-              <div className="flex justify-between items-start">
-                <div>
-                  <CardTitle className="flex items-center gap-2">
-                    {pkg.package_name}
-                    <Badge variant="outline">{pkg.package_type}</Badge>
-                  </CardTitle>
-                  <CardDescription>{selectedFreezone}</CardDescription>
-                </div>
-                <div className="text-right">
-                  <div className="text-2xl font-bold text-primary">
-                    {formatPrice(pkg.price_aed)}
+        {packages.map((pkg) => {
+          const isCompatible = isPackageCompatible(pkg);
+          return (
+            <Card 
+              key={pkg.id}
+              className={`cursor-pointer transition-all hover:shadow-lg ${
+                selectedPackage?.id === pkg.id ? 'ring-2 ring-primary shadow-lg' : ''
+              } ${!isCompatible ? 'opacity-60' : ''}`}
+              onClick={() => isCompatible && onSelectPackage(pkg)}
+            >
+              <CardHeader>
+                <div className="flex justify-between items-start">
+                  <div>
+                    <CardTitle className="flex items-center gap-2">
+                      {pkg.package_name}
+                      <Badge variant="outline">{pkg.package_type}</Badge>
+                      {!isCompatible && (
+                        <Badge variant="destructive" className="text-xs">
+                          Requirements not met
+                        </Badge>
+                      )}
+                    </CardTitle>
+                    <CardDescription>{selectedFreezone}</CardDescription>
                   </div>
-                  <div className="text-sm text-muted-foreground">Starting from</div>
-                </div>
-              </div>
-            </CardHeader>
-            
-            <CardContent className="space-y-4">
-              {/* Package Stats */}
-              <div className="grid grid-cols-2 md:grid-cols-4 gap-4 text-sm">
-                <div className="flex items-center gap-2">
-                  <Users className="h-4 w-4 text-muted-foreground" />
-                  <span>Up to {pkg.max_visas} visas</span>
-                </div>
-                <div className="flex items-center gap-2">
-                  <DollarSign className="h-4 w-4 text-muted-foreground" />
-                  <span>{formatPrice(pkg.per_visa_cost || 0)}/visa</span>
-                </div>
-                <div className="flex items-center gap-2">
-                  <Calendar className="h-4 w-4 text-muted-foreground" />
-                  <span>{pkg.tenure_years} year license</span>
-                </div>
-                <div className="flex items-center gap-2">
-                  <Award className="h-4 w-4 text-muted-foreground" />
-                  <span>{pkg.activities_allowed} activities</span>
-                </div>
-              </div>
-
-              {/* Included Services */}
-              <div>
-                <h4 className="font-medium mb-2">Included Services</h4>
-                <div className="grid grid-cols-1 md:grid-cols-2 gap-2">
-                  {getPackageFeatures(pkg).map((feature, index) => (
-                    <div key={index} className="flex items-center gap-2 text-sm">
-                      <CheckCircle className="h-3 w-3 text-green-600 flex-shrink-0" />
-                      <span>{feature}</span>
+                  <div className="text-right">
+                    <div className="text-2xl font-bold text-primary">
+                      {formatPrice(pkg.price_aed)}
                     </div>
-                  ))}
+                    <div className="text-sm text-muted-foreground">Starting from</div>
+                  </div>
                 </div>
-              </div>
+              </CardHeader>
+              
+              <CardContent className="space-y-4">
+                <div className="grid grid-cols-2 md:grid-cols-4 gap-4 text-sm">
+                  <div className="flex items-center gap-2">
+                    <Users className="h-4 w-4 text-muted-foreground" />
+                    <span>Up to {pkg.max_visas} visas</span>
+                  </div>
+                  <div className="flex items-center gap-2">
+                    <DollarSign className="h-4 w-4 text-muted-foreground" />
+                    <span>{formatPrice(pkg.per_visa_cost || 0)}/visa</span>
+                  </div>
+                  <div className="flex items-center gap-2">
+                    <Calendar className="h-4 w-4 text-muted-foreground" />
+                    <span>{pkg.tenure_years} year license</span>
+                  </div>
+                  <div className="flex items-center gap-2">
+                    <Award className="h-4 w-4 text-muted-foreground" />
+                    <span>{pkg.activities_allowed} activities</span>
+                  </div>
+                </div>
 
-              {/* Select Button */}
-              <div className="pt-2">
-                <Button 
-                  className="w-full"
-                  variant={selectedPackage?.id === pkg.id ? "default" : "outline"}
-                >
-                  {selectedPackage?.id === pkg.id ? "Selected" : "Select Package"}
-                </Button>
-              </div>
-            </CardContent>
-          </Card>
-        ))}
+                <div>
+                  <h4 className="font-medium mb-2">Included Services</h4>
+                  <div className="grid grid-cols-1 md:grid-cols-2 gap-2">
+                    {getPackageFeatures(pkg).map((feature, index) => (
+                      <div key={index} className="flex items-center gap-2 text-sm">
+                        <CheckCircle className="h-3 w-3 text-green-600 flex-shrink-0" />
+                        <span>{feature}</span>
+                      </div>
+                    ))}
+                  </div>
+                </div>
+
+                <div className="pt-2">
+                  <Button 
+                    className="w-full"
+                    variant={selectedPackage?.id === pkg.id ? "default" : "outline"}
+                    disabled={!isCompatible}
+                  >
+                    {selectedPackage?.id === pkg.id ? "Selected" : "Select Package"}
+                  </Button>
+                </div>
+              </CardContent>
+            </Card>
+          );
+        })}
       </div>
 
       {packages.length === 0 && (
@@ -227,6 +253,23 @@ const PackageSelectionStep: React.FC<PackageSelectionStepProps> = ({
           </CardContent>
         </Card>
       )}
+
+      <div className="flex gap-3 pt-4">
+        {onBack && (
+          <Button variant="outline" onClick={onBack} className="flex-1">
+            Back
+          </Button>
+        )}
+        {onNext && (
+          <Button 
+            onClick={onNext} 
+            disabled={!selectedPackage}
+            className="flex-1"
+          >
+            Next
+          </Button>
+        )}
+      </div>
     </div>
   );
 };
