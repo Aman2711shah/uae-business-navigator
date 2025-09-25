@@ -10,16 +10,89 @@ export interface LegalEntityType {
   description: string;
 }
 
-export interface BusinessSetupState {
-  selectedActivities: string[];
+export interface BusinessCategory {
+  id: string;
+  name: string;
+  description: string;
+  services: BusinessService[];
+}
+
+export interface BusinessService {
+  id: string;
+  name: string;
+  category: string;
+  standardPrice: number;
+  premiumPrice: number;
+  timeline: string;
+  description: string;
+  documentRequirements: string[];
+  isRequired: boolean;
+}
+
+export interface VisaType {
+  id: string;
+  name: string;
+  description: string;
+  price: number;
+  processingTime: string;
+}
+
+export interface FreezonePackageData {
+  id: string;
+  name: string;
+  activities: number;
   shareholders: number;
-  totalVisas: number;
   tenure: number;
   entityType: string;
+  basePrice: number;
+  visaPrice: number;
+  additionalFees: Record<string, number>;
+}
+
+export interface PricingBreakdown {
+  basePrice: number;
+  visaCosts: number;
+  serviceCosts: number;
+  additionalCosts: number;
+  totalPrice: number;
+  estimatedTimeline: string;
+  breakdown: {
+    freezonePackage: FreezonePackageData;
+    selectedServices: BusinessService[];
+    selectedVisas: VisaType[];
+    additionalFees: Record<string, number>;
+  };
+}
+
+export interface BusinessSetupState {
+  // Step 1: Business Category
+  selectedCategory: string;
+  availableServices: BusinessService[];
+  
+  // Step 2: Services Selection
+  selectedServices: string[];
+  
+  // Step 3: Shareholders
+  shareholders: number;
+  
+  // Step 4: Visas
+  totalVisas: number;
+  selectedVisaTypes: VisaType[];
+  
+  // Step 5: License Tenure
+  tenure: number;
+  
+  // Step 6: Entity Type
+  entityType: string;
+  
+  // Pricing & Results
   estimatedCost: number;
-  costBreakdown: any;
-  recommendedPackage: any;
-  alternativePackages: any[];
+  costBreakdown: PricingBreakdown | null;
+  recommendedPackage: FreezonePackageData | null;
+  alternativePackages: FreezonePackageData[];
+  
+  // Legacy fields (to maintain compatibility)
+  selectedActivities: string[];
   isFreezone: boolean;
   searchTerm: string;
   filteredActivities: {[key: string]: string[]};
