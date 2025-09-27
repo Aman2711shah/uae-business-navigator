@@ -36,7 +36,7 @@ export const initializeProductionSecurity = () => {
 const preventClickjacking = () => {
   try {
     if (window.self !== window.top) {
-      window.top!.location.href = window.self.location.href;
+      window.top!.location = window.self.location;
     }
   } catch (e) {
     // Frame-busting protection

@@ -52,15 +52,15 @@ const SavedQuoteManager: React.FC<SavedQuoteManagerProps> = ({
 
       const quoteData = {
         quote_name: name,
-        selected_activities: (currentState.selectedServices || currentState.selectedActivities || []) as string[],
+        selected_activities: currentState.selectedActivities,
         shareholders: currentState.shareholders,
         total_visas: currentState.totalVisas,
         tenure: currentState.tenure,
         entity_type: currentState.entityType,
         estimated_cost: currentState.estimatedCost,
-        recommended_package: JSON.parse(JSON.stringify(currentState.recommendedPackage || {})),
-        alternative_packages: JSON.parse(JSON.stringify(currentState.alternativePackages || [])),
-        cost_breakdown: JSON.parse(JSON.stringify(currentState.costBreakdown || {})),
+        recommended_package: currentState.recommendedPackage,
+        alternative_packages: currentState.alternativePackages,
+        cost_breakdown: currentState.costBreakdown,
         is_freezone: currentState.isFreezone,
         updated_at: new Date().toISOString()
       };
@@ -68,7 +68,7 @@ const SavedQuoteManager: React.FC<SavedQuoteManagerProps> = ({
       if (isUpdate && quoteId) {
         const { data, error } = await supabase
           .from("saved_quotes")
-          .update(quoteData as any)
+          .update(quoteData)
           .eq("id", quoteId)
           .select()
           .single();
@@ -81,7 +81,7 @@ const SavedQuoteManager: React.FC<SavedQuoteManagerProps> = ({
           .insert({
             ...quoteData,
             user_id: user.id
-          } as any)
+          })
           .select()
           .single();
         

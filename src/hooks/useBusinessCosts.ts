@@ -86,11 +86,10 @@ export const useBusinessCosts = () => {
     const licenseType = entityType === "fzc" ? "FZ-LLC" : "Branch";
     const activityCount = selectedActivities.length;
     
-    // Filter packages that can accommodate the selected number of activities
     return freezoneCosts
       .filter(cost => 
         cost.license_type === licenseType && 
-        cost.no_of_activity >= activityCount // Package must support at least the number of selected activities
+        cost.no_of_activity >= activityCount
       )
       .map(cost => ({
         name: cost.freezone_name,
@@ -98,9 +97,7 @@ export const useBusinessCosts = () => {
         minimumCost: cost.minimum_cost,
         baseLicenseCost: cost.base_license_cost,
         visaCost: cost.visa_cost,
-        additionalFee: cost.additional_fee,
-        maxActivities: cost.no_of_activity, // Include max activities for reference
-        isEligible: cost.no_of_activity >= activityCount
+        additionalFee: cost.additional_fee
       }));
   };
 
@@ -111,72 +108,51 @@ export const useBusinessCosts = () => {
     visas: number,
     selectedFreezone?: string
   ) => {
-    if (!freezoneCosts) return { totalCost: 0, breakdown: null, eligiblePackages: [] };
+    if (!freezoneCosts) return { totalCost: 0, breakdown: null };
     
     const licenseType = entityType === "fzc" ? "FZ-LLC" : "Branch";
     const activityCount = selectedActivities.length;
     
-    // Get all eligible packages (that can accommodate the selected activities)
-    const eligiblePackages = freezoneCosts.filter(cost => 
-      cost.license_type === licenseType &&
-      cost.no_of_activity >= activityCount // Must support at least the number of selected activities
-    );
-    
-    if (eligiblePackages.length === 0) {
-      return { 
-        totalCost: 0, 
-        breakdown: null, 
-        eligiblePackages: [],
-        error: `No packages available for ${activityCount} activities. Please reduce the number of selected activities.`
-      };
-    }
-    
-    // Find the specific freezone cost or use the cheapest eligible option
+    // Find the freezone cost (use first available if no specific freezone selected)
     const freezoneCost = selectedFreezone 
-      ? eligiblePackages.find(cost => cost.freezone_name === selectedFreezone)
-      : eligiblePackages.sort((a, b) => a.base_license_cost - b.base_license_cost)[0]; // Cheapest option
+      ? freezoneCosts.find(cost => 
+          cost.freezone_name === selectedFreezone && 
+          cost.license_type === licenseType &&
+          cost.no_of_activity >= activityCount
+        )
+      : freezoneCosts.find(cost => 
+          cost.license_type === licenseType &&
+          cost.no_of_activity >= activityCount
+        );
     
-    if (!freezoneCost) return { totalCost: 0, breakdown: null, eligiblePackages };
+    if (!freezoneCost) return { totalCost: 0, breakdown: null };
     
-    // Calculate additional costs for activities beyond the package limit
-    let activityExtraCost = 0;
-    if (activityCount > freezoneCost.no_of_activity) {
-      // This shouldn't happen as we filter for eligible packages, but keeping for safety
-      activityExtraCost = (activityCount - freezoneCost.no_of_activity) * 1000; // 1000 AED per extra activity
-    }
-    
-    // Calculate costs based on package structure
-    const baseLicenseFee = freezoneCost.base_license_cost;
+    // Calculate costs based on new structure
+    const totalLicenseFee = freezoneCost.base_license_cost;
     const legalEntityFee = 0; // Included in base license cost
     const shareholderFee = freezoneCost.additional_fee * Math.max(0, shareholders - 1);
     const visaFee = freezoneCost.visa_cost * visas;
     
-    const totalCost = baseLicenseFee + legalEntityFee + shareholderFee + visaFee + activityExtraCost;
+    const totalCost = totalLicenseFee + legalEntityFee + shareholderFee + visaFee;
     
     const breakdown = {
-      activities: selectedActivities.map((activity, index) => ({
+      activities: selectedActivities.map(activity => ({
         activity,
-        fee: index < freezoneCost.no_of_activity 
-          ? baseLicenseFee / Math.min(selectedActivities.length, freezoneCost.no_of_activity) 
-          : 1000 // Extra activities cost 1000 AED each
+        fee: totalLicenseFee / selectedActivities.length // Distribute base cost across activities
       })),
-      baseLicenseFee,
+      totalLicenseFee,
       legalEntityFee,
       shareholderFee,
       visaFee,
-      activityExtraCost,
       shareholders: shareholders - 1,
       visaCount: visas,
       entityType: licenseType,
       isFreezone: true,
       freezoneName: freezoneCost.freezone_name,
-      minimumCost: freezoneCost.minimum_cost,
-      packageActivityLimit: freezoneCost.no_of_activity,
-      selectedActivityCount: activityCount,
-      isWithinLimit: activityCount <= freezoneCost.no_of_activity
+      minimumCost: freezoneCost.minimum_cost
     };
     
-    return { totalCost, breakdown, eligiblePackages };
+    return { totalCost, breakdown };
   };
 
   // Legacy functions for mainland costs (keeping for backward compatibility)

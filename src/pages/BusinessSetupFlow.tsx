@@ -8,13 +8,12 @@ import { useToast } from "@/hooks/use-toast";
 import { businessActivities, businessSetupSteps } from "@/data/businessSetupData";
 import { BusinessSetupState } from "@/types/businessSetup";
 import { logger } from "@/lib/logger";
-import BusinessCategoryStep from "@/components/business-setup/BusinessCategoryStep";
-import ServicesSelectionStep from "@/components/business-setup/ServicesSelectionStep";
+import BusinessActivityStep from "@/components/business-setup/BusinessActivityStep";
 import ShareholdersStep from "@/components/business-setup/ShareholdersStep";
-import VisaSelectionStep from "@/components/business-setup/VisaSelectionStep";
+import VisaRequirementsStep from "@/components/business-setup/VisaRequirementsStep";
 import TenureStep from "@/components/business-setup/TenureStep";
 import LegalEntityStep from "@/components/business-setup/LegalEntityStep";
-import EnhancedCostEstimationStep from "@/components/business-setup/EnhancedCostEstimationStep";
+import CostEstimationStep from "@/components/business-setup/CostEstimationStep";
 import SummaryStep from "@/components/business-setup/SummaryStep";
 import SavedQuoteManager from "@/components/business-setup/SavedQuoteManager";
 const BusinessSetupFlow = () => {
@@ -26,13 +25,7 @@ const BusinessSetupFlow = () => {
   const [isLoadingCosts, setIsLoadingCosts] = useState(false);
   const [isSaving, setIsSaving] = useState(false);
   const [state, setState] = useState<BusinessSetupState>({
-    // New flow fields
-    selectedCategory: "",
-    availableServices: [],
-    selectedServices: [],
-    selectedVisaTypes: [],
-    
-    // Core fields
+    selectedActivities: [],
     shareholders: 1,
     totalVisas: 0,
     tenure: 1,
@@ -41,9 +34,6 @@ const BusinessSetupFlow = () => {
     costBreakdown: null,
     recommendedPackage: null,
     alternativePackages: [],
-    
-    // Legacy fields for compatibility
-    selectedActivities: [],
     isFreezone: true,
     searchTerm: "",
     filteredActivities: businessActivities
@@ -80,11 +70,90 @@ const BusinessSetupFlow = () => {
       }));
     }
   }, [state.searchTerm]);
-  // Legacy cost calculation - kept for compatibility
   const calculateCost = async () => {
-    // This function is no longer used with the new enhanced flow
-    // Cost calculation is now handled in EnhancedCostEstimationStep
-    logger.info('Legacy calculateCost called - using new enhanced pricing');
+    setIsLoadingCosts(true);
+    try {
+      // Fetch packages from Supabase
+      const { data: packages, error } = await supabase
+        .from('packages')
+        .select('*')
+        .gte('max_visas', state.totalVisas)
+        .gte('shareholders_allowed', state.shareholders)
+        .gte('activities_allowed', state.selectedActivities.length)
+        .eq('tenure_years', state.tenure);
+
+      if (error) throw error;
+
+      if (packages && packages.length > 0) {
+        // Calculate actual costs for each package
+        const calculatedPackages = packages.map(pkg => {
+          const baseCost = pkg.base_cost;
+          const visaCost = state.totalVisas * (pkg.per_visa_cost || 0);
+          const totalCost = baseCost + visaCost;
+          
+          return {
+            ...pkg,
+            calculatedCost: totalCost
+          };
+        });
+
+        // Sort by price and get recommended + alternatives
+        calculatedPackages.sort((a, b) => a.calculatedCost - b.calculatedCost);
+        const recommended = calculatedPackages[0];
+        const alternatives = calculatedPackages.slice(1, 3);
+
+        setState(prev => ({
+          ...prev,
+          estimatedCost: recommended.calculatedCost,
+          recommendedPackage: recommended,
+          alternativePackages: alternatives,
+          costBreakdown: {
+            packageName: recommended.package_name,
+            freezoneName: recommended.freezone_name,
+            baseCost: recommended.base_cost,
+            visaCost: state.totalVisas * (recommended.per_visa_cost || 0),
+            totalCost: recommended.calculatedCost,
+            includedServices: recommended.included_services,
+            isFreezone: true
+          },
+          isFreezone: true
+        }));
+      } else {
+        // Fallback to legacy calculation if no packages found
+        const activityCosts = getActivityCosts(state.selectedActivities, false);
+        const totalLicenseFee = activityCosts.reduce((sum, item) => sum + item.fee, 0);
+        const legalEntityFee = getEntityCost(state.entityType, false);
+        const shareholderFee = getShareholderFee() * Math.max(0, state.shareholders - 1);
+        const visaFee = getVisaFee() * state.totalVisas;
+        const totalCost = totalLicenseFee + legalEntityFee + shareholderFee + visaFee;
+        
+        setState(prev => ({
+          ...prev,
+          estimatedCost: totalCost,
+          costBreakdown: {
+            activities: activityCosts,
+            totalLicenseFee,
+            legalEntityFee,
+            shareholderFee,
+            visaFee,
+            shareholders: state.shareholders - 1,
+            visaCount: state.totalVisas,
+            entityType: state.entityType,
+            isFreezone: false
+          },
+          isFreezone: false
+        }));
+      }
+    } catch (error) {
+      logger.error('Error calculating costs:', error);
+      toast({
+        title: "Calculation Error",
+        description: "Failed to calculate costs. Please try again.",
+        variant: "destructive"
+      });
+    } finally {
+      setIsLoadingCosts(false);
+    }
   };
 
   // Auto-save functionality
@@ -98,8 +167,7 @@ const BusinessSetupFlow = () => {
       } = await supabase.auth.getUser();
       
       const selectionData = {
-        selectedCategory: state.selectedCategory,
-        selectedServices: state.selectedServices,
+        selectedActivities: state.selectedActivities,
         shareholders: state.shareholders,
         totalVisas: state.totalVisas,
         tenure: state.tenure,
@@ -154,13 +222,19 @@ const BusinessSetupFlow = () => {
 
   // Auto-calculate when dependencies change
   useEffect(() => {
-    if (state.selectedServices && state.selectedServices.length > 0 && currentStep === 7) {
-      // Cost calculation is handled in EnhancedCostEstimationStep
+    if (state.selectedActivities.length > 0 && currentStep === 6) {
+      calculateCost();
     }
-  }, [state.selectedServices, state.shareholders, state.totalVisas, state.tenure, currentStep]);
+  }, [state.selectedActivities, state.shareholders, state.totalVisas, state.tenure, currentStep]);
   const nextStep = () => {
     if (currentStep < 7) {
       setCurrentStep(currentStep + 1);
+      if (currentStep === 5) {
+        calculateCost();
+      }
+      if (currentStep === 6) {
+        saveToProfile();
+      }
     }
   };
   const prevStep = () => {
@@ -184,18 +258,16 @@ const BusinessSetupFlow = () => {
   const canProceed = () => {
     switch (currentStep) {
       case 1:
-        return state.selectedCategory !== "";
+        return state.selectedActivities.length > 0 && state.selectedActivities.length <= 5;
       case 2:
-        return state.selectedServices && state.selectedServices.length > 0;
-      case 3:
         return state.shareholders > 0 && state.shareholders <= 5;
+      case 3:
+        return state.totalVisas >= 0 && state.totalVisas <= 5;
       case 4:
-        return state.totalVisas >= 0 && state.totalVisas <= 10;
-      case 5:
         return state.tenure > 0;
-      case 6:
+      case 5:
         return state.entityType !== "";
-      case 7:
+      case 6:
         return true; // Allow proceeding from cost estimation
       default:
         return true;
@@ -207,19 +279,14 @@ const BusinessSetupFlow = () => {
     
     switch (step) {
       case 1:
-        if (!state.selectedCategory) {
-          errors.push('Please select a business category');
+        if (state.selectedActivities.length === 0) {
+          errors.push('Please select at least one business activity');
+        }
+        if (state.selectedActivities.length > 5) {
+          errors.push('Please select no more than 5 business activities');
         }
         break;
       case 2:
-        if (!state.selectedServices || state.selectedServices.length === 0) {
-          errors.push('Please select at least one service');
-        }
-        if (state.selectedServices && state.selectedServices.length > 10) {
-          errors.push('Please select no more than 10 services');
-        }
-        break;
-      case 3:
         if (state.shareholders < 1) {
           errors.push('At least one shareholder is required');
         }
@@ -227,20 +294,20 @@ const BusinessSetupFlow = () => {
           errors.push('Maximum 5 shareholders allowed');
         }
         break;
-      case 4:
+      case 3:
         if (state.totalVisas < 0) {
           errors.push('Number of visas cannot be negative');
         }
-        if (state.totalVisas > 10) {
-          errors.push('Maximum 10 visas allowed');
+        if (state.totalVisas > 5) {
+          errors.push('Maximum 5 visas allowed');
         }
         break;
-      case 5:
+      case 4:
         if (state.tenure < 1) {
           errors.push('Please select a valid tenure');
         }
         break;
-      case 6:
+      case 5:
         if (!state.entityType) {
           errors.push('Please select a legal entity type');
         }
@@ -274,19 +341,19 @@ const BusinessSetupFlow = () => {
     };
     switch (currentStep) {
       case 1:
-        return <BusinessCategoryStep {...stepProps} />;
+        return <BusinessActivityStep {...stepProps} />;
       case 2:
-        return <ServicesSelectionStep {...stepProps} />;
-      case 3:
         return <ShareholdersStep {...stepProps} />;
+      case 3:
+        return <VisaRequirementsStep {...stepProps} />;
       case 4:
-        return <VisaSelectionStep {...stepProps} />;
-      case 5:
         return <TenureStep {...stepProps} />;
-      case 6:
+      case 5:
         return <LegalEntityStep {...stepProps} />;
+      case 6:
+        return <CostEstimationStep {...stepProps} />;
       case 7:
-        return <EnhancedCostEstimationStep {...stepProps} />;
+        return <SummaryStep {...stepProps} />;
       default:
         return null;
     }
