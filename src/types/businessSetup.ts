@@ -1,7 +1,10 @@
 export interface BusinessSetupStep {
-  number: number;
+  id: string;
   title: string;
-  icon: any;
+  description: string;
+  component: React.ComponentType<any>;
+  number: number; // Step number for display
+  icon?: React.ComponentType<any>; // Icon component
 }
 
 export interface LegalEntityType {
@@ -27,6 +30,7 @@ export interface BusinessService {
   description: string;
   documentRequirements: string[];
   isRequired: boolean;
+  isExtra?: boolean; // For marking activities that exceed package limits
 }
 
 export interface VisaType {
@@ -47,6 +51,8 @@ export interface FreezonePackageData {
   basePrice: number;
   visaPrice: number;
   additionalFees: Record<string, number>;
+  packageActivityLimit?: number;
+  isWithinLimit?: boolean;
 }
 
 export interface PricingBreakdown {
@@ -61,7 +67,9 @@ export interface PricingBreakdown {
     selectedServices: BusinessService[];
     selectedVisas: VisaType[];
     additionalFees: Record<string, number>;
+    eligiblePackages?: any[];
   };
+  error?: string;
 }
 
 export interface BusinessSetupState {

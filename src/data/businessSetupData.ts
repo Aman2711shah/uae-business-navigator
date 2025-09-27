@@ -201,7 +201,7 @@ export const legalEntityTypes: LegalEntityType[] = [
   { value: "offshore", label: "Offshore Company", description: "International business" }
 ];
 
-export const businessSetupSteps: BusinessSetupStep[] = [
+export const businessSetupSteps = [
   { number: 1, title: "Category", icon: Building2 },
   { number: 2, title: "Services", icon: FileText },
   { number: 3, title: "Shareholders", icon: Users },

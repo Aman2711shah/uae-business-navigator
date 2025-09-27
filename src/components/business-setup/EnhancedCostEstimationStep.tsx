@@ -5,59 +5,116 @@ import { Separator } from "@/components/ui/separator";
 import { DollarSign, Clock, FileText, Building, Users, CreditCard } from "lucide-react";
 import { StepProps } from "@/types/businessSetup";
 import { useGoogleSheetsData } from "@/hooks/useGoogleSheetsData";
+import { useBusinessCosts } from "@/hooks/useBusinessCosts";
 
 const EnhancedCostEstimationStep: React.FC<StepProps> = ({ state, setState }) => {
-  const { calculatePricing, businessCategories } = useGoogleSheetsData();
+  const { businessCategories } = useGoogleSheetsData();
+  const { calculateFreezoneTotal, getFreezoneOptions } = useBusinessCosts();
 
   useEffect(() => {
-    // Calculate pricing when component mounts or dependencies change
-    if (state.selectedServices && state.selectedServices.length > 0) {
-      const pricingData = calculatePricing(
-        state.selectedServices,
+    // Use activities for cost calculation if available, otherwise fall back to services
+    const activitiesOrServices = state.selectedActivities?.length > 0 
+      ? state.selectedActivities 
+      : state.selectedServices || [];
+    
+    if (activitiesOrServices.length > 0 && state.shareholders > 0 && state.entityType) {
+      // Use the updated cost calculation that respects activity limits
+      const result = calculateFreezoneTotal(
+        activitiesOrServices,
+        state.entityType,
         state.shareholders,
-        state.totalVisas,
-        state.tenure,
-        state.entityType
+        state.totalVisas || 0
       );
+      
+      if (result.error) {
+        const breakdown = {
+          basePrice: 0,
+          visaCosts: 0,
+          serviceCosts: 0,
+          additionalCosts: 0,
+          totalPrice: 0,
+          estimatedTimeline: "N/A",
+          breakdown: {
+            freezonePackage: {
+              id: 'none',
+              name: 'No Eligible Package',
+              activities: activitiesOrServices.length,
+              shareholders: state.shareholders,
+              tenure: state.tenure,
+              entityType: state.entityType,
+              basePrice: 0,
+              visaPrice: 0,
+              additionalFees: {}
+            },
+            selectedServices: [],
+            selectedVisas: state.selectedVisaTypes || [],
+            additionalFees: {}
+          },
+          error: result.error
+        };
+        
+        setState({
+          estimatedCost: 0,
+          costBreakdown: breakdown
+        });
+        return;
+      }
 
       const selectedCategory = businessCategories.find(cat => cat.id === state.selectedCategory);
       const selectedServiceDetails = selectedCategory?.services.filter(service => 
-        state.selectedServices.includes(service.id)
+        activitiesOrServices.includes(service.id)
       ) || [];
 
       const breakdown = {
-        basePrice: pricingData.basePrice,
-        visaCosts: pricingData.visaCosts,
-        serviceCosts: pricingData.serviceCosts,
-        additionalCosts: pricingData.shareholderCosts,
-        totalPrice: pricingData.totalPrice,
-        estimatedTimeline: pricingData.estimatedTimeline,
+        basePrice: result.breakdown?.baseLicenseFee || 0,
+        visaCosts: result.breakdown?.visaFee || 0,
+        serviceCosts: result.breakdown?.activityExtraCost || 0,
+        additionalCosts: result.breakdown?.shareholderFee || 0,
+        totalPrice: result.totalCost,
+        estimatedTimeline: "30-45 days",
         breakdown: {
           freezonePackage: {
-            id: 'standard',
-            name: `${state.entityType} Package`,
-            activities: state.selectedServices.length,
+            id: 'freezone',
+            name: result.breakdown?.freezoneName || 'Freezone Package',
+            activities: activitiesOrServices.length,
             shareholders: state.shareholders,
             tenure: state.tenure,
             entityType: state.entityType,
-            basePrice: pricingData.basePrice,
-            visaPrice: pricingData.visaCosts / Math.max(1, state.totalVisas),
-            additionalFees: {}
+            basePrice: result.breakdown?.baseLicenseFee || 0,
+            visaPrice: result.breakdown?.visaFee || 0,
+            additionalFees: {},
+            packageActivityLimit: result.breakdown?.packageActivityLimit,
+            isWithinLimit: result.breakdown?.isWithinLimit
           },
-          selectedServices: selectedServiceDetails,
+          selectedServices: activitiesOrServices.map((activity, index) => ({
+            id: activity,
+            name: activity.replace(/-/g, ' ').replace(/\b\w/g, l => l.toUpperCase()),
+            category: 'business',
+            description: index < (result.breakdown?.packageActivityLimit || 0) 
+              ? "Included in package" 
+              : "Additional activity (extra cost)",
+            timeline: "7-14 days",
+            standardPrice: result.breakdown?.activities[index]?.fee || 0,
+            premiumPrice: (result.breakdown?.activities[index]?.fee || 0) * 1.5,
+            documentRequirements: ['Business License'],
+            isRequired: index === 0,
+            isExtra: index >= (result.breakdown?.packageActivityLimit || 0)
+          })),
           selectedVisas: state.selectedVisaTypes || [],
           additionalFees: {
-            'Shareholder Fees': pricingData.shareholderCosts
-          }
+            'Shareholder Fees': result.breakdown?.shareholderFee || 0,
+            ...(result.breakdown?.activityExtraCost ? { 'Extra Activities': result.breakdown.activityExtraCost } : {})
+          },
+          eligiblePackages: result.eligiblePackages
         }
       };
 
       setState({
-        estimatedCost: pricingData.totalPrice,
+        estimatedCost: result.totalCost,
         costBreakdown: breakdown
       });
     }
-  }, [state.selectedServices, state.shareholders, state.totalVisas, state.tenure, state.entityType]);
+  }, [state.selectedActivities, state.selectedServices, state.shareholders, state.totalVisas, state.tenure, state.entityType, businessCategories, calculateFreezoneTotal, setState]);
 
   if (!state.costBreakdown) {
     return (
@@ -71,6 +128,21 @@ const EnhancedCostEstimationStep: React.FC<StepProps> = ({ state, setState }) =>
   }
 
   const { costBreakdown } = state;
+
+  // Show error if no eligible packages
+  if (costBreakdown.error) {
+    return (
+      <div className="space-y-6">
+        <div className="text-center">
+          <h2 className="text-2xl font-bold text-foreground mb-2">Package Eligibility Issue</h2>
+          <p className="text-destructive">{costBreakdown.error}</p>
+          <p className="text-muted-foreground mt-2">
+            Please reduce the number of selected activities or choose a different package type.
+          </p>
+        </div>
+      </div>
+    );
+  }
 
   return (
     <div className="space-y-6">
@@ -158,15 +230,29 @@ const EnhancedCostEstimationStep: React.FC<StepProps> = ({ state, setState }) =>
         </div>
       </Card>
 
-      {/* Selected Services Details */}
+      {/* Selected Activities/Services Details */}
       {costBreakdown.breakdown.selectedServices.length > 0 && (
         <Card className="p-6">
-          <h3 className="text-lg font-semibold text-foreground mb-4">Selected Services</h3>
+          <h3 className="text-lg font-semibold text-foreground mb-4 flex items-center">
+            Selected Activities
+            {costBreakdown.breakdown.freezonePackage.packageActivityLimit && (
+              <Badge variant="outline" className="ml-2 text-xs">
+                Package limit: {costBreakdown.breakdown.freezonePackage.packageActivityLimit} activities
+              </Badge>
+            )}
+          </h3>
           <div className="space-y-3">
             {costBreakdown.breakdown.selectedServices.map((service, index) => (
               <div key={service.id} className="flex justify-between items-start">
                 <div className="flex-1">
-                  <p className="font-medium text-foreground">{service.name}</p>
+                  <p className="font-medium text-foreground flex items-center">
+                    {service.name}
+                    {service.isExtra && (
+                      <Badge variant="destructive" className="ml-2 text-xs">
+                        Extra
+                      </Badge>
+                    )}
+                  </p>
                   <p className="text-sm text-muted-foreground">{service.description}</p>
                   <Badge variant="outline" className="mt-1 text-xs">
                     {service.timeline}
@@ -178,6 +264,14 @@ const EnhancedCostEstimationStep: React.FC<StepProps> = ({ state, setState }) =>
               </div>
             ))}
           </div>
+          
+          {!costBreakdown.breakdown.freezonePackage.isWithinLimit && (
+            <div className="mt-4 p-3 bg-amber-50 dark:bg-amber-900/20 border border-amber-200 dark:border-amber-800 rounded-lg">
+              <p className="text-amber-800 dark:text-amber-200 text-sm">
+                ⚠️ You have selected more activities than your package supports. Additional activities will incur extra costs.
+              </p>
+            </div>
+          )}
         </Card>
       )}
 
