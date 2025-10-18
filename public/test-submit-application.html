@@ -6,12 +6,14 @@
 <body>
     <h1>Testing Submit Application Function</h1>
     <button id="testBtn">Test Function</button>
-    <div id="results"></div>
+    <div id="results" aria-live="polite"></div>
 
     <script>
         document.getElementById('testBtn').addEventListener('click', async () => {
             const resultsDiv = document.getElementById('results');
-            resultsDiv.innerHTML = 'Testing...';
+            // Clear previous and show status without using innerHTML
+            while (resultsDiv.firstChild) resultsDiv.removeChild(resultsDiv.firstChild);
+            resultsDiv.appendChild(document.createTextNode('Testing...'));
             
             try {
                 const testData = {
@@ -41,25 +43,41 @@
                 const result = await response.json();
                 console.log('Response body:', result);
                 
+                // Build safe DOM nodes
+                const h2 = document.createElement('h2');
+                const p1 = document.createElement('p');
+                const p2 = document.createElement('p');
+                while (resultsDiv.firstChild) resultsDiv.removeChild(resultsDiv.firstChild);
                 if (result.ok) {
-                    resultsDiv.innerHTML = `
-                        <h2>✅ Test Successful!</h2>
-                        <p><strong>Request ID:</strong> ${result.requestId}</p>
-                        <p>Check the console for full response details.</p>
-                    `;
+                    h2.appendChild(document.createTextNode('✅ Test Successful!'));
+                    p1.appendChild(document.createTextNode('Request ID: '));
+                    const strong = document.createElement('strong');
+                    strong.appendChild(document.createTextNode(result.requestId || 'unknown'));
+                    p1.appendChild(strong);
+                    p2.appendChild(document.createTextNode('Check the console for full response details.'));
                 } else {
-                    resultsDiv.innerHTML = `
-                        <h2>❌ Test Failed</h2>
-                        <p><strong>Error:</strong> ${result.error}</p>
-                    `;
+                    h2.appendChild(document.createTextNode('❌ Test Failed'));
+                    p1.appendChild(document.createTextNode('Error: '));
+                    const strong = document.createElement('strong');
+                    strong.appendChild(document.createTextNode(String(result.error || 'Unknown error')));
+                    p1.appendChild(strong);
                 }
+                resultsDiv.appendChild(h2);
+                resultsDiv.appendChild(p1);
+                if (p2.textContent) resultsDiv.appendChild(p2);
                 
             } catch (error) {
                 console.error('Test error:', error);
-                resultsDiv.innerHTML = `
-                    <h2>❌ Test Error</h2>
-                    <p><strong>Error:</strong> ${error.message}</p>
-                `;
+                while (resultsDiv.firstChild) resultsDiv.removeChild(resultsDiv.firstChild);
+                const h2 = document.createElement('h2');
+                h2.appendChild(document.createTextNode('❌ Test Error'));
+                const p = document.createElement('p');
+                const strong = document.createElement('strong');
+                strong.appendChild(document.createTextNode('Error: '));
+                p.appendChild(strong);
+                p.appendChild(document.createTextNode(error && error.message ? String(error.message) : 'Unknown error'));
+                resultsDiv.appendChild(h2);
+                resultsDiv.appendChild(p);
             }
         });
     </script>
