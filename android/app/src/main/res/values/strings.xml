@@ -1,0 +1,7 @@
+<?xml version='1.0' encoding='utf-8'?>
+<resources>
+    <string name="app_name">Wazeet</string>
+    <string name="title_activity_main">Wazeet</string>
+    <string name="package_name">com.wazeet.app</string>
+    <string name="custom_url_scheme">com.wazeet.app</string>
+</resources>

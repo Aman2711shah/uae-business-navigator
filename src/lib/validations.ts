@@ -169,14 +169,16 @@ export const validateFile = (file: File): { isValid: boolean; error?: string } =
   if (!ALLOWED_TYPES.includes(file.type)) {
     return {
       isValid: false,
-      error: 'File must be PDF, PNG, or JPEG format'
+      // Align error message with tests and server expectations
+      error: `File type ${file.type} not allowed`
     };
   }
 
   if (file.size > MAX_SIZE) {
     return {
       isValid: false,
-      error: 'File size must be less than 10MB'
+      // Include explicit limit phrasing for test compatibility
+      error: 'File size exceeds 10MB limit'
     };
   }
 
