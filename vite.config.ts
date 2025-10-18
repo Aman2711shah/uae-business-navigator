@@ -9,6 +9,15 @@ export default defineConfig(({ mode }) => ({
     host: "::",
     port: 8080,
   },
+  test: {
+    // Exclude Playwright e2e specs from vitest run
+    exclude: [
+      'node_modules',
+      'dist',
+      '.git',
+      'tests/e2e/**',
+    ],
+  },
   plugins: [
     react(),
     mode === 'development' &&

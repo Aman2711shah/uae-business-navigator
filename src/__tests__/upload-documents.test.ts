@@ -1,17 +1,18 @@
 import { describe, it, expect, vi, beforeEach } from 'vitest';
 import { uploadDocuments } from '../lib/uploads';
 
-// Mock Supabase client
-const mockSupabaseStorage = {
+// Mock Supabase client storage using hoisted variables to satisfy Vitest's hoisting behavior
+const mockSupabaseStorage = vi.hoisted(() => ({
   from: vi.fn(() => ({
     upload: vi.fn(),
     getPublicUrl: vi.fn()
   }))
-};
+}));
 
+// Ensure the storage mock is defined before using in vi.mock factory
 vi.mock('@/integrations/supabase/client', () => ({
   supabase: {
-    storage: mockSupabaseStorage
+    storage: mockSupabaseStorage as any,
   }
 }));
 
