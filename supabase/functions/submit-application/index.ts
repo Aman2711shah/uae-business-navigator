@@ -134,11 +134,13 @@ serve(async (req) => {
       });
     }
 
-    // Generate human-readable request ID
+    // Generate human-readable request ID with crypto-safe randomness and expected prefix
     const now = new Date();
     const dateStr = now.toISOString().slice(0, 10).replace(/-/g, ''); // YYYYMMDD
-    const randomNum = Math.floor(Math.random() * 9999).toString().padStart(4, '0');
-    const requestId = `WZ-${dateStr}-${randomNum}`;
+    const bytes = new Uint32Array(1);
+    crypto.getRandomValues(bytes);
+    const randomNum = (bytes[0] % 10000).toString().padStart(4, '0');
+    const requestId = `WZT-${dateStr}-${randomNum}`;
     
     logStep("Generated request ID", { requestId });
 

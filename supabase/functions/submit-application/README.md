@@ -42,7 +42,7 @@ curl -X POST https://ajxbjxoujummahqcctuo.supabase.co/functions/v1/submit-applic
 ```json
 {
   "ok": true,
-  "requestId": "WZ-20250106-1234"
+  "requestId": "WZT-20250106-1234"
 }
 ```
 
@@ -75,8 +75,8 @@ curl -X POST https://ajxbjxoujummahqcctuo.supabase.co/functions/v1/submit-applic
 ## Features
 
 ### 1. Request ID Generation
-- Format: `WZ-YYYYMMDD-XXXX`
-- Example: `WZ-20250106-1234`
+- Format: `WZT-YYYYMMDD-XXXX`
+- Example: `WZT-20250106-1234`
 - Automatically generated with date and random 4-digit number
 
 ### 2. Database Storage
