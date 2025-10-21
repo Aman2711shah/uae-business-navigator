@@ -14,7 +14,6 @@ import { Separator } from "@/components/ui/separator";
 import { useToast } from "@/hooks/use-toast";
 import { useAuth } from "@/contexts/AuthContext";
 import { supabase } from "@/integrations/supabase/client";
-import { ThemeSwitcher } from "@/components/ThemeSwitcher";
 
 const profileSchema = z.object({
   full_name: z.string().min(2, "Full name must be at least 2 characters").max(100, "Full name too long"),
@@ -454,9 +453,6 @@ const ProfileSettings = () => {
             </div>
           </CardContent>
         </Card>
-
-        {/* Theme Settings */}
-        <ThemeSwitcher />
 
         {/* Save Button - Mobile */}
         <div className="md:hidden">

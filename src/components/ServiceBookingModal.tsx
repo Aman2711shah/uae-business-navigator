@@ -549,14 +549,14 @@ const ServiceBookingModal = ({ isOpen, onClose, subService, parentService }: Ser
                         
                         // Open Stripe checkout in a new tab (recommended for security)
                         if (data.checkoutUrl) {
-                          // Redirecting to checkout URL
+                          console.log('Redirecting to checkout URL:', data.checkoutUrl);
                           window.open(data.checkoutUrl, '_blank');
                           return;
                         }
                         
                         // Fallback: redirect in current window if new tab fails
                         if (data.sessionId) {
-                          // Using session ID fallback
+                          console.log('Using session ID fallback:', data.sessionId);
                           window.location.href = `https://checkout.stripe.com/c/pay/${data.sessionId}`;
                           return;
                         }

@@ -121,7 +121,7 @@ export const useSecureAuth = () => {
       const storedCSRFToken = sessionStorage.getItem('auth_csrf_token');
       if (storedCSRFToken) {
         // CSRF validation would be implemented here for state-changing operations
-        // CSRF token validation would occur here
+        console.log('CSRF token validation would occur here');
       }
       
       const { data, error } = await supabase.auth.signInWithPassword({

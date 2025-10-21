@@ -8,82 +8,82 @@ All colors MUST be HSL.
 
 @layer base {
   :root {
-    /* Clean Professional Light Theme (HSL values) */
-    --background: 0 0% 100%;            /* white */
-    --foreground: 222 47% 11%;          /* slate-900 */
+    /* 3D Light Blue Theme - Airy & Clean */
+    --background: 200 100% 97%;        /* Ultra light blue #f0f8ff */
+    --foreground: 210 25% 40%;         /* Readable blue-grey text #5a6b7d */
 
-    --card: 0 0% 100%;                  /* white */
-    --card-foreground: 222 47% 11%;     /* slate-900 */
+    --card: 0 0% 100%;                 /* Pure white cards */
+    --card-foreground: 210 25% 40%;    /* Readable blue-grey text on cards */
 
-    --popover: 0 0% 100%;               /* white */
-    --popover-foreground: 222 47% 11%;  /* slate-900 */
+    --popover: 0 0% 100%;              /* White popover */
+    --popover-foreground: 210 25% 40%; /* Readable blue-grey popover text */
 
-    /* Professional Blue Primary */
-    --primary: 217 91% 60%;             /* blue-600 */
-    --primary-foreground: 0 0% 100%;    /* white */
-    --primary-hover: 221 83% 53%;       /* blue-700 */
-    --primary-light: 212 96% 78%;       /* blue-300 */
-    --primary-glow: 214 84% 56%;        /* blue-400 */
+    /* Professional Gray/Black Primary Palette - Clean & Modern */
+    --primary: 0 0% 9%;                /* Deep charcoal black #171717 */
+    --primary-foreground: 0 0% 100%;   /* White text on primary */
+    --primary-hover: 0 0% 15%;         /* Lighter black hover */
+    --primary-light: 0 0% 25%;         /* Light charcoal #404040 */
+    --primary-glow: 0 0% 50%;          /* Medium gray glow #808080 */
 
-    /* Neutral Secondary */
-    --secondary: 210 40% 98%;           /* slate-50 */
-    --secondary-foreground: 215 19% 35%;/* slate-700 */
-    --secondary-accent: 210 40% 96%;    /* slate-100 */
+    /* Professional Light Gray Secondary - Clean & Elegant */
+    --secondary: 0 0% 96%;             /* Very light gray #F5F5F5 */
+    --secondary-foreground: 0 0% 9%;   /* Black text on light gray */
+    --secondary-accent: 0 0% 85%;      /* Medium light gray #D9D9D9 */
 
-    --muted: 210 40% 98%;               /* slate-50 */
-    --muted-foreground: 215 16% 47%;    /* slate-500 */
+    --muted: 0 0% 94%;                 /* Light gray muted #F0F0F0 */
+    --muted-foreground: 0 0% 45%;      /* Medium gray text #737373 */
 
-    --accent: 210 40% 98%;              /* slate-50 */
-    --accent-foreground: 222 47% 11%;   /* slate-900 */
+    --accent: 0 0% 92%;                /* Light gray accent bg #EBEBEB */
+    --accent-foreground: 0 0% 15%;     /* Dark gray accent text #262626 */
 
-    --destructive: 0 72% 51%;           /* red-600 */
-    --destructive-foreground: 0 0% 100%;/* white */
+    --destructive: 0 84% 60%;
+    --destructive-foreground: 0 0% 100%;
 
-    --border: 214 32% 91%;              /* slate-200 */
-    --input: 0 0% 100%;                 /* white */
-    --ring: 217 91% 60%;                /* blue-600 */
+    --border: 0 0% 88%;                /* Light gray border #E0E0E0 */
+    --input: 0 0% 100%;                /* White input backgrounds */
+    --ring: 0 0% 15%;                  /* Dark gray focus rings */
 
     /* Chat UI Colors */
-    --chat-bubble: 0 0% 100%;           /* white */
-    --chat-assistant: 210 40% 98%;      /* slate-50 */
+    --chat-bubble: 0 0% 100%;          /* White chat bubble */
+    --chat-assistant: 0 0% 15%;        /* Dark gray assistant text */
     
     /* Navigation Colors */
-    --nav-background: 0 0% 100%;        /* white */
-    --nav-selected: 217 91% 60%;        /* blue-600 */
-    --nav-unselected: 215 13% 59%;      /* slate-400 */
+    --nav-background: 0 0% 100%;       /* White navigation */
+    --nav-selected: 0 0% 9%;           /* Black for selected tabs */
+    --nav-unselected: 0 0% 60%;        /* Medium gray for unselected */
     
-    /* Clean Gradients */
-    --gradient-primary: linear-gradient(135deg, hsl(220 91% 52%), hsl(220 91% 60%));
-    --gradient-card: linear-gradient(135deg, hsl(0 0% 100%), hsl(210 40% 98%));
-    --gradient-blue: linear-gradient(135deg, hsl(220 91% 52%), hsl(220 91% 60%));
-    --gradient-button: linear-gradient(135deg, hsl(220 91% 52%), hsl(220 91% 48%));
-    --gradient-hover: linear-gradient(135deg, hsl(220 91% 48%), hsl(220 91% 44%));
-    --gradient-soft: linear-gradient(135deg, hsl(210 40% 98%), hsl(220 13% 91%));
+    /* Professional Gray Gradients & Depth */
+    --gradient-primary: linear-gradient(135deg, hsl(0 0% 9%), hsl(0 0% 15%));
+    --gradient-card: linear-gradient(135deg, hsl(0 0% 100%), hsl(0 0% 98%));
+    --gradient-blue: linear-gradient(135deg, hsl(0 0% 9%), hsl(0 0% 25%));
+    --gradient-button: linear-gradient(135deg, hsl(0 0% 9%), hsl(0 0% 15%));
+    --gradient-hover: linear-gradient(135deg, hsl(0 0% 15%), hsl(0 0% 20%));
+    --gradient-soft: linear-gradient(135deg, hsl(0 0% 85%), hsl(0 0% 90%));
     
-    /* Clean Shadows */
-    --shadow-card: 0 1px 3px 0 hsl(0 0% 0% / 0.1), 0 1px 2px 0 hsl(0 0% 0% / 0.06);
-    --shadow-lg: 0 10px 15px -3px hsl(0 0% 0% / 0.1), 0 4px 6px -2px hsl(0 0% 0% / 0.05);
-    --shadow-glow: 0 0 15px hsl(220 91% 52% / 0.15);
-    --shadow-button: 0 1px 2px 0 hsl(0 0% 0% / 0.05);
-    --shadow-button-hover: 0 4px 6px -1px hsl(0 0% 0% / 0.1), 0 2px 4px -1px hsl(0 0% 0% / 0.06);
-    --shadow-inset: inset 0 2px 4px 0 hsl(0 0% 0% / 0.06);
+    /* Gray/Black 3D Shadow System */
+    --shadow-card: 0 4px 12px rgba(23, 23, 23, 0.08), 0 2px 4px rgba(23, 23, 23, 0.05);
+    --shadow-lg: 0 8px 25px rgba(23, 23, 23, 0.12), 0 4px 10px rgba(23, 23, 23, 0.08);
+    --shadow-glow: 0 0 30px hsl(0 0% 25% / 0.3), 0 0 60px hsl(0 0% 50% / 0.15);
+    --shadow-button: 0 2px 8px rgba(23, 23, 23, 0.15), 0 1px 3px rgba(23, 23, 23, 0.1);
+    --shadow-button-hover: 0 4px 15px rgba(23, 23, 23, 0.25), 0 2px 8px rgba(23, 23, 23, 0.15);
+    --shadow-inset: inset 0 1px 2px rgba(255, 255, 255, 0.8);
     
-    /* Smooth Animations */
+    /* Enhanced Animations */
     --transition-smooth: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
     --transition-spring: all 0.5s cubic-bezier(0.175, 0.885, 0.32, 1.275);
     --transition-bounce: all 0.3s cubic-bezier(0.68, -0.55, 0.265, 1.55);
 
-    --radius: 6px;                      /* Clean border radius */
+    --radius: 1rem;                    /* Increased border radius for 3D feel */
 
     /* Sidebar Colors */
     --sidebar-background: 0 0% 100%;
-    --sidebar-foreground: 222 47% 11%;
-    --sidebar-primary: 217 91% 60%;
+    --sidebar-foreground: 210 25% 40%;
+    --sidebar-primary: 200 100% 60%;
     --sidebar-primary-foreground: 0 0% 100%;
-    --sidebar-accent: 210 40% 98%;
-    --sidebar-accent-foreground: 222 47% 11%;
-    --sidebar-border: 214 32% 91%;
-    --sidebar-ring: 217 91% 60%;
+    --sidebar-accent: 200 100% 92%;
+    --sidebar-accent-foreground: 200 100% 35%;
+    --sidebar-border: 200 30% 88%;
+    --sidebar-ring: 200 100% 60%;
   }
 
   .dark {

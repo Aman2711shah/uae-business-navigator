@@ -13,10 +13,6 @@ import { AdminBootstrap } from '@/components/admin/AdminBootstrap';
 import { AnalyticsSettings } from '@/components/admin/AnalyticsSettings';
 import { SecurityDashboard } from '@/components/admin/SecurityDashboard';
 import { SecurityLogger } from '@/components/admin/SecurityLogger';
-import PackageManagement from '@/pages/admin/PackageManagement';
-import ZoneManagement from '@/pages/admin/ZoneManagement';
-import ActivityManagement from '@/pages/admin/ActivityManagement';
-import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 
 export default function Admin() {
   const { isAdmin, loading } = useUserRole();
@@ -28,7 +24,6 @@ export default function Admin() {
   const [statusFilter, setStatusFilter] = useState('all');
   const [dateFilter, setDateFilter] = useState('');
   const [searchTerm, setSearchTerm] = useState('');
-  const [activeTab, setActiveTab] = useState('overview');
   const { toast } = useToast();
 
   useEffect(() => {
@@ -164,17 +159,6 @@ export default function Admin() {
         <h1 className="text-3xl font-bold">Admin Dashboard</h1>
       </div>
 
-      <Tabs value={activeTab} onValueChange={setActiveTab} className="space-y-6">
-        <TabsList className="grid w-full grid-cols-5">
-          <TabsTrigger value="overview">Overview</TabsTrigger>
-          <TabsTrigger value="packages">Packages</TabsTrigger>
-          <TabsTrigger value="zones">Zones</TabsTrigger>
-          <TabsTrigger value="activities">Activities</TabsTrigger>
-          <TabsTrigger value="security">Security</TabsTrigger>
-        </TabsList>
-
-        <TabsContent value="overview" className="space-y-6">
-
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 mb-8">
         <Card>
           <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
@@ -216,6 +200,11 @@ export default function Admin() {
         </Card>
       </div>
 
+      {/* Security Dashboard */}
+      <SecurityDashboard />
+
+      {/* Security Event Logger */}
+      <SecurityLogger />
 
       <Card>
         <CardHeader>
@@ -311,32 +300,16 @@ export default function Admin() {
         </CardContent>
       </Card>
 
+      {/* Analytics Configuration */}
+      <AnalyticsSettings />
 
-        <div className="mt-6">
-          <Button onClick={fetchAdminData}>
-            Refresh Data
-          </Button>
-        </div>
-        </TabsContent>
-
-        <TabsContent value="packages">
-          <PackageManagement />
-        </TabsContent>
-
-        <TabsContent value="zones">
-          <ZoneManagement />
-        </TabsContent>
-
-        <TabsContent value="activities">
-          <ActivityManagement />
-        </TabsContent>
-
-        <TabsContent value="security">
-          <SecurityDashboard />
-          <SecurityLogger />
-          <AnalyticsSettings />
-        </TabsContent>
-      </Tabs>
+      <div className="mt-6">
+        <Button onClick={fetchAdminData}>
+          Refresh Data
+        </Button>
+      </div>
+      
+      
     </div>
   );
 }
